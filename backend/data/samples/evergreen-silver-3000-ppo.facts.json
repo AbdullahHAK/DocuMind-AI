@@ -1,0 +1,15 @@
+{
+  "plan_name": "Evergreen Silver 3000 PPO",
+  "insurer": "Evergreen Mutual Health (fictional)",
+  "plan_type": "PPO",
+  "plan_year": "2026",
+  "deductible_individual": 3000,
+  "deductible_family": 6000,
+  "oop_max_individual": 8500,
+  "oop_max_family": 17000,
+  "coinsurance_in_network_percent": 30,
+  "coinsurance_out_of_network_percent": 50,
+  "primary_care_copay": 30,
+  "specialist_copay": 60,
+  "emergency_room_copay": 400
+}

@@ -2,7 +2,7 @@
 against the ground truth in questions.json.
 
 Needs ANTHROPIC_API_KEY (backend/.env) and costs real money: roughly one
-Claude call per question (~$0.02-0.05 each with the default model), so the
+Claude call per question (~$0.03-0.06 each with the default model), so the
 whole set is about $1. Use --limit to try a few first.
 
 Metrics

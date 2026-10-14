@@ -1,6 +1,5 @@
 import type { CostEstimate } from '../types'
-
-const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
+import { formatMoney as money } from '../format'
 
 /** The estimate is computed by the backend in plain Python - the LLM never does the math. */
 export function CostBreakdown({ estimate }: { estimate: CostEstimate }) {

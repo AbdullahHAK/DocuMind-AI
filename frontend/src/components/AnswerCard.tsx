@@ -1,4 +1,5 @@
 import { documentFileUrl } from '../api'
+import { shortSection } from '../format'
 import type { Answer, SourcePreview } from '../types'
 import { CostBreakdown } from './CostBreakdown'
 import { SourcesList } from './SourcesList'
@@ -55,7 +56,7 @@ export function AnswerCard({ answer, sources, docId }: Props) {
               <figcaption>
                 <a href={documentFileUrl(docId, c.page)} target="_blank" rel="noreferrer">
                   {c.page ? `Page ${c.page}` : 'Your policy'}
-                  {c.section ? ` · ${c.section}` : ''} ↗
+                  {c.section ? ` · ${shortSection(c.section)}` : ''} ↗
                 </a>
               </figcaption>
             </figure>

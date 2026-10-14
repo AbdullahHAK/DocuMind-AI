@@ -1,4 +1,5 @@
 import { documentFileUrl } from '../api'
+import { shortSection } from '../format'
 import type { SourcePreview } from '../types'
 
 /** Everything retrieval found - shown collapsed, for transparency about what the AI read. */
@@ -14,7 +15,7 @@ export function SourcesList({ sources, docId }: { sources: SourcePreview[]; docI
           <li key={s.source_id}>
             <header>
               <span>
-                {s.source_id} · {s.kind === 'policy' ? s.section ?? 'Your policy' : s.title}
+                {s.source_id} · {s.kind === 'policy' ? shortSection(s.section) ?? 'Your policy' : s.title}
               </span>
               {s.kind === 'policy' && s.page ? (
                 <a href={documentFileUrl(docId, s.page)} target="_blank" rel="noreferrer">

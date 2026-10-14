@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { documentFileUrl, uploadDocument } from '../api'
+import { formatMoney as money } from '../format'
 import type { DocumentInfo, PlanFacts } from '../types'
 
 interface Props {
@@ -9,8 +10,6 @@ interface Props {
   onUseSample: () => void
 }
 
-const money = (n: number | null | undefined) =>
-  n == null ? '—' : n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 
 const FACTS: { key: keyof PlanFacts; label: string; format?: (n: number) => string }[] = [
   { key: 'deductible_individual', label: 'Deductible' },

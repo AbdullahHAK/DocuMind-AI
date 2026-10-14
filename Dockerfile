@@ -22,6 +22,9 @@ RUN pip install -r requirements.txt
 
 COPY --chown=app:app backend/ ./
 COPY --from=frontend --chown=app:app /frontend/dist /app/frontend/dist
+# WORKDIR creates /app/backend as root; the app user must be able to write
+# its model cache and runtime storage there.
+RUN mkdir -p .cache storage && chown -R app:app /app
 USER app
 
 # Bake the embedding/reranking models into the image so containers start

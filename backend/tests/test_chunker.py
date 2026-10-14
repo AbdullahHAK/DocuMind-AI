@@ -67,3 +67,9 @@ def test_embedding_text_includes_section_header():
 
 def test_clean_text_rejoins_hyphenated_words():
     assert clean_text("cover-\nage  is   limited") == "coverage is limited"
+
+
+def test_clean_text_drops_page_number_lines():
+    assert clean_text("Page 11\n7.5 Weight Management\nText.\n3 of 40") == "7.5 Weight Management\nText."
+    # numbers inside sentences are kept
+    assert clean_text("You pay $30 per visit.\n12") == "You pay $30 per visit."

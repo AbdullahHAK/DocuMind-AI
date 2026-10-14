@@ -16,6 +16,11 @@ from pypdf.errors import PdfReadError
 # almost certainly a scanned image, which would need OCR (out of scope).
 MIN_TOTAL_CHARS = 300
 
+# Running footers/headers like "Page 11" or "Page 3 of 40" carry no meaning but
+# would otherwise end up inside chunks (pypdf often extracts them first).
+# Bare numbers are kept: in tables they're often real values (e.g. a visit limit).
+PAGE_NUMBER_LINE = re.compile(r"^\s*(?:page\s+\d{1,4}(?:\s+of\s+\d{1,4})?|\d{1,4}\s+of\s+\d{1,4})\s*$", re.IGNORECASE | re.MULTILINE)
+
 
 class PdfLoadError(ValueError):
     """Raised with a user-friendly message when a PDF can't be used."""
@@ -33,6 +38,7 @@ def clean_text(text: str) -> str:
     text = re.sub(r"(\w)-\n(\w)", r"\1\2", text)  # re-join words hyphenated across lines
     text = re.sub(r"[ \t]+", " ", text)  # collapse runs of spaces
     text = re.sub(r" *\n *", "\n", text)
+    text = PAGE_NUMBER_LINE.sub("", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 

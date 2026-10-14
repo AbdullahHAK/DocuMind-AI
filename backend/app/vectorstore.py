@@ -6,6 +6,8 @@ at *rank positions*, so we don't have to make cosine scores and BM25 scores
 comparable - a chunk ranked high by either method rises to the top.
 """
 
+import warnings
+
 from qdrant_client import QdrantClient, models
 
 from app.config import Settings
@@ -46,8 +48,12 @@ class VectorStore:
             # IDF modifier: Qdrant computes inverse document frequency for us, completing BM25
             sparse_vectors_config={SPARSE: models.SparseVectorParams(modifier=models.Modifier.IDF)},
         )
-        for field in ("doc_id", "kind", "version"):
-            self.client.create_payload_index(self.collection, field, models.PayloadSchemaType.KEYWORD)
+        # Indexes make filtered search fast on a Qdrant server; embedded mode
+        # ignores them (and warns), which is fine at demo scale.
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            for field in ("doc_id", "kind", "version"):
+                self.client.create_payload_index(self.collection, field, models.PayloadSchemaType.KEYWORD)
 
     def upsert(self, chunks: list[Chunk], batch_size: int = 64) -> None:
         for start in range(0, len(chunks), batch_size):

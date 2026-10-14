@@ -1,0 +1,10 @@
+# Secrets - never commit real API keys
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node (frontend, later)
+node_modules/

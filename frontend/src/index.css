@@ -10,6 +10,7 @@
   --accent-strong: #0b5246;
   --accent-soft: #e2f1ec;
   --focus: #2a8f7c;
+  --on-accent: #ffffff;
 
   --green: #1d7a46;
   --green-soft: #e3f3e8;
@@ -43,6 +44,7 @@
     --accent-strong: #79d6c2;
     --accent-soft: #1c3530;
     --focus: #4fc2a9;
+    --on-accent: #0c1f1a;
     --green: #6ad398;
     --green-soft: #173323;
     --amber: #f0c060;
@@ -127,7 +129,7 @@ textarea {
   height: 38px;
   border-radius: 11px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -343,7 +345,7 @@ textarea {
   align-self: flex-end;
   max-width: 80%;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   padding: 10px 16px;
   border-radius: 18px 18px 4px 18px;
 }
@@ -374,7 +376,7 @@ textarea {
   border: none;
   border-radius: var(--radius-sm);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   font-weight: 600;
   padding: 0 20px;
   cursor: pointer;

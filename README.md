@@ -79,7 +79,7 @@ Without an API key the app still runs: you'll see which policy sections were ret
 
 ```bash
 cd backend
-pytest -q                              # 86 tests, ~15 s, no network/API key needed
+pytest -q                              # 90 tests, ~15 s, no network/API key needed
 python eval/run_retrieval_eval.py      # retrieval quality, free (local models only)
 python eval/run_answer_eval.py         # full pipeline with Claude, ~$1 for 34 questions
 ```

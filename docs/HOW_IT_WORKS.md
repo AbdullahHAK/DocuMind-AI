@@ -157,7 +157,7 @@ backend/
   data/federal/         federal rules knowledge base (Markdown)
   data/samples/         fictional sample policy + its facts
   eval/                 questions.json + retrieval and answer evals
-  tests/                86 tests (fake models, fake LLM)
+  tests/                90 tests (fake models, fake LLM)
 frontend/src/
   api.ts                fetch helpers + SSE parser
   App.tsx               layout, current document

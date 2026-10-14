@@ -22,7 +22,7 @@ def _setup(store):
 
 def test_policy_and_federal_are_retrieved_separately(store, embedder):
     _setup(store)
-    result = Retriever(store, embedder, Settings(relevance_threshold=0.0)).retrieve("adult dental care", "mine")
+    result = Retriever(store, embedder, Settings(gate_threshold=0.0, federal_min_score=0.0)).retrieve("adult dental care", "mine")
     assert result.policy[0].chunk.text.startswith("Routine dental care")
     assert all(sc.chunk.kind == "policy" for sc in result.policy)
     assert [sc.chunk.kind for sc in result.federal] == ["federal"]
@@ -30,14 +30,14 @@ def test_policy_and_federal_are_retrieved_separately(store, embedder):
 
 def test_threshold_filters_irrelevant_chunks(store, embedder):
     _setup(store)
-    result = Retriever(store, embedder, Settings(relevance_threshold=0.0)).retrieve("pizza delivery near me", "mine")
+    result = Retriever(store, embedder, Settings(gate_threshold=0.0, federal_min_score=0.0)).retrieve("pizza delivery near me", "mine")
     assert not result.found_anything
     assert result.best_policy_score is not None and result.best_policy_score < 0
 
 
 def test_results_are_sorted_by_rerank_score(store, embedder):
     _setup(store)
-    result = Retriever(store, embedder, Settings(relevance_threshold=-100)).retrieve("emergency room copay", "mine")
+    result = Retriever(store, embedder, Settings(gate_threshold=-100)).retrieve("emergency room copay", "mine")
     scores = [sc.score for sc in result.policy]
     assert scores == sorted(scores, reverse=True)
     assert result.policy[0].chunk.text.startswith("Emergency room")

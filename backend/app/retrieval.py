@@ -1,8 +1,15 @@
 """Two-stage retrieval: cheap-and-wide, then expensive-and-precise.
 
 Stage 1  hybrid search (dense + BM25, fused with RRF) pulls ~24 candidates.
-Stage 2  a cross-encoder reranks them and we keep the best few that clear
-         ``relevance_threshold``.
+Stage 2  a cross-encoder reranks them and we keep the best few.
+
+Relevance gate: if even the best candidate scores below ``gate_threshold``,
+the question is off-topic for this policy and we answer with a fallback
+*without* calling the LLM (saves money, and the model can't make things up
+from irrelevant text). The eval showed this cross-encoder is poorly
+calibrated on insurance text, so the gate is deliberately lenient: it only
+catches clearly unrelated questions, and the LLM's own "not_in_policy"
+verdict is the second line of defence.
 
 We search two sources separately - the user's policy and the federal rules -
 so federal text can never crowd out the user's own policy (or vice versa),
@@ -14,6 +21,7 @@ from dataclasses import dataclass, field
 from app.config import Settings
 from app.indexer import FEDERAL_DOC_ID
 from app.models import Chunk
+from app.query_expansion import expand_query
 from app.vectorstore import VectorStore
 
 
@@ -31,6 +39,8 @@ class RetrievalResult:
     best_policy_score: float | None = None
     best_federal_score: float | None = None
 
+    search_query: str = ""
+
     @property
     def found_anything(self) -> bool:
         return bool(self.policy or self.federal)
@@ -47,22 +57,27 @@ class Retriever:
         ranked = [ScoredChunk(c, s) for c, s in zip(candidates, scores)]
         return sorted(ranked, key=lambda sc: sc.score, reverse=True)
 
-    def _select(self, ranked: list[ScoredChunk], top_k: int, threshold: float) -> list[ScoredChunk]:
-        return [sc for sc in ranked if sc.score >= threshold][:top_k]
-
-    def retrieve(self, question: str, doc_id: str, *, threshold: float | None = None) -> RetrievalResult:
-        threshold = self.settings.relevance_threshold if threshold is None else threshold
+    def retrieve(self, question: str, doc_id: str, *, gate_threshold: float | None = None) -> RetrievalResult:
         s = self.settings
+        gate = s.gate_threshold if gate_threshold is None else gate_threshold
+        query = expand_query(question)
 
         policy_ranked = self._rerank(
-            question, self.store.hybrid_search(question, doc_id=doc_id, kind="policy", limit=s.retrieval_candidates)
+            query, self.store.hybrid_search(query, doc_id=doc_id, kind="policy", limit=s.retrieval_candidates)
         )
         federal_ranked = self._rerank(
-            question, self.store.hybrid_search(question, doc_id=FEDERAL_DOC_ID, limit=s.retrieval_candidates // 2)
+            query, self.store.hybrid_search(query, doc_id=FEDERAL_DOC_ID, limit=s.retrieval_candidates // 2)
         )
-        return RetrievalResult(
-            policy=self._select(policy_ranked, s.policy_top_k, threshold),
-            federal=self._select(federal_ranked, s.federal_top_k, threshold),
+        result = RetrievalResult(
             best_policy_score=policy_ranked[0].score if policy_ranked else None,
             best_federal_score=federal_ranked[0].score if federal_ranked else None,
+            search_query=query,
         )
+        best = max([sc.score for sc in policy_ranked[:1] + federal_ranked[:1]], default=float("-inf"))
+        if best < gate:
+            return result  # off-topic: nothing passes the gate
+
+        result.policy = policy_ranked[: s.policy_top_k]
+        # federal text is optional context, so it must clear a stricter bar of its own
+        result.federal = [sc for sc in federal_ranked if sc.score >= s.federal_min_score][: s.federal_top_k]
+        return result

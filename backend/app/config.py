@@ -44,9 +44,10 @@ class Settings(BaseSettings):
     retrieval_candidates: int = 24  # hybrid search pulls this many, reranker trims
     policy_top_k: int = 6
     federal_top_k: int = 3
-    # Cross-encoder scores are logits: > 0 means "probably relevant".
-    # Below this, a chunk is treated as noise. Calibrated with eval/run_retrieval_eval.py.
-    relevance_threshold: float = -4.0
+    # Cross-encoder scores are logits (> 0 ~ "probably relevant"). Both values
+    # were picked from the sweep in eval/run_retrieval_eval.py.
+    gate_threshold: float = -6.0  # best chunk below this -> off-topic, skip the LLM
+    federal_min_score: float = -2.0  # federal chunks must clear this to be attached
 
     # --- Uploads -----------------------------------------------------------
     max_upload_mb: int = 10

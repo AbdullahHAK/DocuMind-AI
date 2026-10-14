@@ -28,6 +28,8 @@ class SparseVector(Protocol):
 class Embedder:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
+        # fastembed creates only the last folder of cache_dir, not its parents
+        settings.models_cache_dir.mkdir(parents=True, exist_ok=True)
 
     @cached_property
     def _dense(self) -> TextEmbedding:

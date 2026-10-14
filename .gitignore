@@ -12,3 +12,4 @@ node_modules/
 # Local runtime state (vector index, uploads, downloaded models)
 backend/storage/
 backend/.cache/
+frontend/dist/

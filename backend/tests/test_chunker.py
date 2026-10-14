@@ -10,6 +10,10 @@ def test_heading_classification():
     assert SectionTracker.classify("SECTION 7 - EXCLUSIONS AND LIMITATIONS") == "major"
     assert SectionTracker.classify("7.3 Dental and Vision") == "minor"
     assert SectionTracker.classify("4. Prior Authorization") == "minor"
+    assert SectionTracker.classify("Article IV") == "major"
+    # A wrapped sentence fragment that happens to start with "Section" is not a heading.
+    assert SectionTracker.classify("Section 3.11.") is None
+    assert SectionTracker.classify("Section 4 lists the services that need it.") is None
     # Ordinary sentences that start with a number are not headings.
     assert SectionTracker.classify("30 visits per calendar year are covered.") is None
     assert SectionTracker.classify("The plan pays 70% after the deductible") is None
@@ -28,6 +32,18 @@ def test_new_heading_starts_new_chunk_with_section_label():
     assert "Cosmetic surgery" in chunks[0].text
     assert chunks[1].section == "SECTION 7 - EXCLUSIONS › 7.3 Dental and Vision"
     assert "Routine dental care" in chunks[1].text
+
+
+def test_wrapped_major_heading_is_rejoined():
+    page = Page(
+        8,
+        "SECTION 5 - CARE OUT OF NETWORK AND OUTSIDE THE\nUNITED STATES\n"
+        "5.3 Care Outside the United States\nEmergency services abroad are covered at the In-Network level.",
+    )
+    chunks = _chunks([page])
+    assert chunks[-1].section == (
+        "SECTION 5 - CARE OUT OF NETWORK AND OUTSIDE THE UNITED STATES › 5.3 Care Outside the United States"
+    )
 
 
 def test_section_carries_across_pages_but_chunks_do_not():
@@ -51,7 +67,14 @@ def test_long_section_is_split_with_overlap():
 
 
 def test_tiny_fragments_are_dropped():
-    assert _chunks([Page(1, "Page 2 of 9")]) == []
+    assert _chunks([Page(1, "Some short footer text")]) == []
+
+
+def test_heading_without_body_is_not_a_chunk():
+    page = Page(1, "SECTION 5 - CARE OUTSIDE THE UNITED STATES\n5.1 Out-of-Network Care\nCovered at the out-of-network level.")
+    chunks = _chunks([page])
+    assert len(chunks) == 1
+    assert chunks[0].text.startswith("5.1 Out-of-Network Care")
 
 
 def test_chunk_ids_are_deterministic():
@@ -71,5 +94,5 @@ def test_clean_text_rejoins_hyphenated_words():
 
 def test_clean_text_drops_page_number_lines():
     assert clean_text("Page 11\n7.5 Weight Management\nText.\n3 of 40") == "7.5 Weight Management\nText."
-    # numbers inside sentences are kept
-    assert clean_text("You pay $30 per visit.\n12") == "You pay $30 per visit."
+    # bare numbers may be real table values (e.g. a visit limit), so they are kept
+    assert clean_text("Visit limit\n12") == "Visit limit\n12"

@@ -17,8 +17,14 @@ import uuid
 from app.ingest.pdf import Page
 from app.models import Chunk, ChunkKind
 
-# "SECTION 7 - EXCLUSIONS", "Article IV", "PART 2: Benefits"
-MAJOR_HEADING = re.compile(r"^(?:SECTION|Section|ARTICLE|Article|PART|Part)\s+[\dIVXL]+\b.{0,80}$")
+# "SECTION 7 - EXCLUSIONS", "Article IV", "PART 2: Benefits". The number must be
+# followed by nothing or by a separator + title, so a wrapped sentence fragment
+# like "Section 3.11." is NOT mistaken for a heading.
+MAJOR_HEADING = re.compile(
+    r"^(?:SECTION|Section|ARTICLE|Article|PART|Part)\s+[\dIVXL]+(?:\s*[-–—:.]?\s+[A-Z][^.]{1,80})?$"
+)
+# Continuation of a major heading wrapped onto a second line: "UNITED STATES"
+HEADING_CONTINUATION = re.compile(r"^[A-Z][A-Z0-9 ,&/'()\-]{1,60}$")
 # "7.3 Dental and Vision", "4. Prior Authorization" - short, title-like lines only
 MINOR_HEADING = re.compile(r"^\d{1,2}(?:\.\d{1,2}){0,2}\.?\s+[A-Z][A-Za-z0-9 ,&/'()\-]{2,70}$")
 SENTENCE_END = re.compile(r"(?<=[.;:!?])\s+")
@@ -123,12 +129,20 @@ def chunk_pages(
 
     for page in pages:
         buffer_section = tracker.label
+        previous_was_major = False
         for raw_line in page.text.splitlines():
             line = raw_line.strip()
             if not line:
                 continue
 
             level = SectionTracker.classify(line)
+            if previous_was_major and not level and HEADING_CONTINUATION.match(line):
+                # second line of a long all-caps heading: glue it back on
+                tracker.update(f"{tracker.major} {line}", "major")
+                buffer_section = tracker.label
+                buffer[-1] = tracker.major
+                continue
+            previous_was_major = level == "major"
             if level:
                 flush(page.number)
                 tracker.update(line, level)
@@ -140,7 +154,9 @@ def chunk_pages(
                     flush(page.number)
                     buffer = tail
                 buffer.append(piece)
-                buffer_has_new_text = True
+                # a heading on its own isn't worth a chunk; it rides along with the
+                # text that follows it
+                buffer_has_new_text = buffer_has_new_text or not level
 
         flush(page.number)  # chunks never cross a page boundary
 

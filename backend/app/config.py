@@ -16,10 +16,19 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BACKEND_DIR / ".env", extra="ignore")
 
     # --- LLM ---------------------------------------------------------------
-    anthropic_api_key: str | None = None  # the SDK reads it from the env too
-    llm_model: str = "claude-opus-5-5"
-    llm_effort: str = "medium"  # low | medium | high | xhigh | max
+    # "gemini" or "anthropic". Empty = use whichever API key is set (Gemini first).
+    llm_provider: str | None = None
+    gemini_api_key: str | None = None  # free tier: https://aistudio.google.com/apikey
+    # Free-tier models are often overloaded; if one fails we try the next.
+    # flash-lite is first because it answered in ~1-3 s while larger models
+    # were timing out on the free tier (see eval/run_answer_eval.py for quality).
+    gemini_model: str = "gemini-3.5-flash-lite"
+    gemini_fallback_models: list[str] = ["gemini-3.5-flash", "gemini-3.8-flash"]
+    anthropic_api_key: str | None = None
+    anthropic_model: str = "claude-opus-5-5"
+    llm_effort: str = "medium"  # low | medium | high (Claude also accepts xhigh | max)
     llm_max_tokens: int = 8000
+    llm_timeout_seconds: int = 30
 
     # --- Storage -----------------------------------------------------------
     data_dir: Path = BACKEND_DIR / "data"  # checked-in knowledge (federal docs, sample)

@@ -1,7 +1,5 @@
-from types import SimpleNamespace
-
-from app.config import Settings
 from app.ingest.pdf import Page
+from app.llm import LLMError
 from app.plan_facts import PlanFacts, document_head, extract_plan_facts
 
 
@@ -13,21 +11,27 @@ def test_document_head_truncates_and_labels_pages():
     assert "c" not in head
 
 
-def _client(parsed, stop="end_turn"):
-    def parse(**kwargs):
-        return SimpleNamespace(parsed_output=parsed, stop_reason=stop)
-    return SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(parse=parse)))
+class FakeLLM:
+    name = "fake"
+
+    def __init__(self, result=None, error=None):
+        self.result, self.error, self.calls = result, error, []
+
+    def generate(self, **kwargs):
+        self.calls.append(kwargs)
+        if self.error:
+            raise self.error
+        return self.result
 
 
 def test_extract_returns_dict():
-    facts = PlanFacts(
-        plan_name="X", insurer=None, plan_type="PPO", plan_year="2026", deductible_individual=3000,
-        deductible_family=None, oop_max_individual=8500, oop_max_family=None, coinsurance_in_network_percent=30,
-        coinsurance_out_of_network_percent=None, primary_care_copay=30, specialist_copay=None, emergency_room_copay=None,
-    )
-    out = extract_plan_facts(_client(facts), Settings(), [Page(1, "text")])
+    facts = PlanFacts(**{f: None for f in PlanFacts.model_fields} | {"deductible_individual": 3000, "plan_type": "PPO"})
+    llm = FakeLLM(result=facts)
+    out = extract_plan_facts(llm, [Page(1, "text")])
     assert out["deductible_individual"] == 3000
+    assert llm.calls[0]["schema"] is PlanFacts
+    assert llm.calls[0]["effort"] == "low"
 
 
 def test_extract_failure_is_non_fatal():
-    assert extract_plan_facts(_client(None, stop="refusal"), Settings(), [Page(1, "text")]) is None
+    assert extract_plan_facts(FakeLLM(error=LLMError("busy")), [Page(1, "text")]) is None

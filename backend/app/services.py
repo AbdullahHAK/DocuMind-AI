@@ -9,7 +9,6 @@ import json
 import logging
 from dataclasses import dataclass, field
 
-import anthropic
 from qdrant_client import QdrantClient
 
 from app.answering import AnswerService
@@ -17,6 +16,7 @@ from app.config import Settings
 from app.documents import DocumentRecord, DocumentRegistry
 from app.embeddings import Embedder
 from app.indexer import index_federal_corpus, index_policy_pdf
+from app.llm import StructuredLLM, build_llm
 from app.ratelimit import DailyBudget, SlidingWindowLimiter
 from app.retrieval import Retriever
 from app.vectorstore import VectorStore, create_client
@@ -34,7 +34,7 @@ class Services:
     store: VectorStore
     registry: DocumentRegistry
     retriever: Retriever
-    llm_client: anthropic.Anthropic | None
+    llm: StructuredLLM | None
     answers: AnswerService | None
     question_limiter: SlidingWindowLimiter = field(init=False)
     upload_limiter: SlidingWindowLimiter = field(init=False)
@@ -83,28 +83,21 @@ class Services:
             self.registry.delete(doc_id)
 
 
-def build_llm_client(settings: Settings) -> anthropic.Anthropic | None:
-    if not settings.anthropic_api_key:
-        log.warning("ANTHROPIC_API_KEY is not set: retrieval works, but questions can't be answered.")
-        return None
-    return anthropic.Anthropic(api_key=settings.anthropic_api_key)
-
-
 def build_services(
     settings: Settings,
     *,
     qdrant: QdrantClient | None = None,
     embedder=None,
-    llm_client: anthropic.Anthropic | None = None,
+    llm: StructuredLLM | None = None,
 ) -> Services:
     embedder = embedder or Embedder(settings)
     store = VectorStore(qdrant or create_client(settings), settings.qdrant_collection, embedder)
-    llm_client = llm_client or build_llm_client(settings)
+    llm = llm or build_llm(settings)
     return Services(
         settings=settings,
         store=store,
         registry=DocumentRegistry(settings.uploads_dir),
         retriever=Retriever(store, embedder, settings),
-        llm_client=llm_client,
-        answers=AnswerService(llm_client, settings) if llm_client else None,
+        llm=llm,
+        answers=AnswerService(llm, settings) if llm else None,
     )

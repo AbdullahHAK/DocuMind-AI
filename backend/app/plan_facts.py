@@ -7,12 +7,10 @@ questions, it just can't estimate costs.
 
 import logging
 
-import anthropic
 from pydantic import BaseModel, Field
 
-from app.answering import FALLBACK_BETA
-from app.config import Settings
 from app.ingest.pdf import Page
+from app.llm import LLMError, StructuredLLM
 
 log = logging.getLogger(__name__)
 
@@ -53,22 +51,16 @@ def document_head(pages: list[Page], max_chars: int = MAX_CHARS) -> str:
     return "\n\n".join(out)
 
 
-def extract_plan_facts(client: anthropic.Anthropic, settings: Settings, pages: list[Page]) -> dict | None:
+def extract_plan_facts(llm: StructuredLLM, pages: list[Page]) -> dict | None:
     try:
-        response = client.beta.messages.parse(
-            model=settings.llm_model,
-            max_tokens=2000,
-            output_config={"effort": "low"},  # simple extraction - no deep reasoning needed
-            betas=[FALLBACK_BETA],
-            fallbacks="default",
+        facts = llm.generate(
             system=EXTRACTION_PROMPT,
-            messages=[{"role": "user", "content": f"<document>\n{document_head(pages)}\n</document>"}],
-            output_format=PlanFacts,
+            user=f"<document>\n{document_head(pages)}\n</document>",
+            schema=PlanFacts,
+            max_tokens=2000,
+            effort="low",  # simple extraction - no deep reasoning needed
         )
-    except anthropic.APIError as exc:
+    except LLMError as exc:
         log.warning("Plan facts extraction failed: %s", exc)
         return None
-    if response.stop_reason != "end_turn" or response.parsed_output is None:
-        log.warning("Plan facts extraction stopped early: %s", response.stop_reason)
-        return None
-    return response.parsed_output.model_dump()
+    return facts.model_dump()

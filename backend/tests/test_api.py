@@ -4,7 +4,6 @@
 import io
 import json
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -21,31 +20,30 @@ BACKEND = Path(__file__).resolve().parent.parent
 
 
 class FakeLLM:
-    """Answers every question by quoting the first policy excerpt it was given."""
+    """StructuredLLM stand-in: answers by quoting the first policy excerpt it was given."""
+
+    name = "fake"
 
     def __init__(self):
         self.calls = 0
-        self.beta = SimpleNamespace(messages=SimpleNamespace(parse=self.parse))
 
-    def parse(self, *, output_format, messages, **_):
+    def generate(self, *, schema, user, **_):
         self.calls += 1
-        content = messages[0]["content"]
-        if output_format is PlanFacts:
-            parsed = PlanFacts(**{f: None for f in PlanFacts.model_fields} | {"plan_name": "Uploaded Gold PPO"})
-        else:
-            first_line = content.split('<excerpt id="P1"', 1)[1].split("\n")[1]
-            parsed = LLMAnswer(
-                verdict="not_covered", headline="No.", explanation="Because the policy says so.",
-                policy_citations=[LLMPolicyCitation(source_id="P1", quote=first_line)],
-                conditions=[], exclusions=[], federal_notes=[], questions_to_ask=["Ask?"], cost_rule=None,
-            )
-        return SimpleNamespace(parsed_output=parsed, stop_reason="end_turn",
-                               usage=SimpleNamespace(input_tokens=1, output_tokens=1))
+        if schema is PlanFacts:
+            return PlanFacts(**{f: None for f in PlanFacts.model_fields} | {"plan_name": "Uploaded Gold PPO"})
+        first_line = user.split('<excerpt id="P1"', 1)[1].split("\n")[1]
+        return LLMAnswer(
+            verdict="not_covered", headline="No.", explanation="Because the policy says so.",
+            policy_citations=[LLMPolicyCitation(source_id="P1", quote=first_line)],
+            conditions=[], exclusions=[], federal_notes=[], questions_to_ask=["Ask?"], cost_rule=None,
+        )
 
 
 def make_client(tmp_path, embedder, llm=None, **overrides):
+    # keys are blanked so a developer's real backend/.env never leaks into tests
+    overrides = {"gemini_api_key": None, "anthropic_api_key": None} | overrides
     settings = Settings(storage_dir=tmp_path, gate_threshold=-2.0, **overrides)
-    services = build_services(settings, qdrant=QdrantClient(":memory:"), embedder=embedder, llm_client=llm)
+    services = build_services(settings, qdrant=QdrantClient(":memory:"), embedder=embedder, llm=llm)
     return TestClient(create_app(services, warm_up=False)), services
 
 
@@ -130,7 +128,7 @@ def test_off_topic_question_skips_llm(tmp_path, embedder):
 
 
 def test_ask_without_api_key_reports_error_but_still_shows_sources(tmp_path, embedder):
-    test_client, _ = make_client(tmp_path, embedder, llm=None, anthropic_api_key=None)
+    test_client, _ = make_client(tmp_path, embedder, llm=None)
     with test_client as c:
         assert c.get("/api/health").json()["llm_configured"] is False
         events = parse_sse(c.post("/api/ask", json={"question": "Is adult dental care covered?", "doc_id": SAMPLE_DOC_ID}).text)

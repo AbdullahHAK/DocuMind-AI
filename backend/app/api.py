@@ -113,8 +113,8 @@ def upload_document(request: Request, file: UploadFile = File(...)):
         raise HTTPException(422, str(exc)) from exc
 
     facts = None
-    if svc.llm_client is not None:
-        facts = extract_plan_facts(svc.llm_client, svc.settings, load_pdf(pdf_path))
+    if svc.llm is not None:
+        facts = extract_plan_facts(svc.llm, load_pdf(pdf_path))
     if facts and facts.get("plan_name"):
         title = str(facts["plan_name"])[:80]
 

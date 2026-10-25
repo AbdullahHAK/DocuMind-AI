@@ -1,11 +1,8 @@
-from types import SimpleNamespace
-
-import anthropic
-import httpx2 as httpx  # anthropic 1.x is built on httpx2
 import pytest
 
 from app.answering import AnswerError, AnswerService, compute_cost
 from app.config import Settings
+from app.llm import LLMError
 from app.models import Chunk
 from app.retrieval import RetrievalResult, ScoredChunk
 from app.schemas import LLMAnswer, LLMCostRule, LLMPolicyCitation
@@ -30,53 +27,49 @@ def _llm_answer(**overrides):
     return LLMAnswer(**data)
 
 
-class FakeClient:
-    """Stands in for anthropic.Anthropic: records the call, returns a canned response or raises."""
+class FakeLLM:
+    """Implements the StructuredLLM interface: records calls, returns a canned answer or raises."""
 
-    def __init__(self, parsed=None, stop_reason="end_turn", error=None):
+    name = "fake"
+
+    def __init__(self, parsed=None, error=None):
         self.calls = []
-        self._parsed, self._stop, self._error = parsed, stop_reason, error
-        self.beta = SimpleNamespace(messages=SimpleNamespace(parse=self._parse))
+        self._parsed, self._error = parsed, error
 
-    def _parse(self, **kwargs):
+    def generate(self, **kwargs):
         self.calls.append(kwargs)
         if self._error:
             raise self._error
-        return SimpleNamespace(
-            parsed_output=self._parsed, stop_reason=self._stop,
-            usage=SimpleNamespace(input_tokens=100, output_tokens=50), _request_id="req_test",
-        )
+        return self._parsed
 
 
-def _service(client):
-    return AnswerService(client, Settings())
+def _service(llm):
+    return AnswerService(llm, Settings())
 
 
 def test_no_retrieval_returns_fallback_without_calling_llm():
-    client = FakeClient()
-    answer = _service(client).answer("pizza?", RetrievalResult())
+    llm = FakeLLM()
+    answer = _service(llm).answer("pizza?", RetrievalResult())
     assert answer.verdict == "not_in_policy"
     assert answer.used_llm is False
-    assert client.calls == []
+    assert llm.calls == []
 
 
 def test_happy_path_returns_verified_answer():
-    client = FakeClient(parsed=_llm_answer())
-    answer = _service(client).answer("Do I need prior auth for an MRI?", _retrieval(), FACTS)
+    llm = FakeLLM(parsed=_llm_answer())
+    answer = _service(llm).answer("Do I need prior auth for an MRI?", _retrieval(), FACTS)
     assert answer.verdict == "covered_with_conditions"
     assert answer.citations[0].page == 5
-    call = client.calls[0]
-    assert call["model"] == "claude-opus-5-5"
-    assert call["output_format"] is LLMAnswer
-    assert call["fallbacks"] == "default"
-    assert "<excerpt id=\"P1\"" in call["messages"][0]["content"]
+    call = llm.calls[0]
+    assert call["schema"] is LLMAnswer
+    assert call["effort"] == "medium"
+    assert '<excerpt id="P1"' in call["user"]
 
 
 def test_cost_estimate_is_computed_in_python():
     rule = LLMCostRule(billed_amount=1800, deductible_met=None, covered=True, deductible_applies=True,
                        copay=None, coinsurance_percent=30)
-    client = FakeClient(parsed=_llm_answer(cost_rule=rule))
-    answer = _service(client).answer("MRI cost?", _retrieval(), FACTS)
+    answer = _service(FakeLLM(parsed=_llm_answer(cost_rule=rule))).answer("MRI cost?", _retrieval(), FACTS)
     assert answer.cost_estimate.you_pay == 1800
 
 
@@ -87,18 +80,7 @@ def test_cost_skipped_without_amount_or_plan_facts():
     assert compute_cost(rule.model_copy(update={"billed_amount": 500}), None) is None
 
 
-def test_refusal_becomes_friendly_error():
-    with pytest.raises(AnswerError):
-        _service(FakeClient(parsed=None, stop_reason="refusal")).answer("q", _retrieval())
-
-
-def test_truncated_output_becomes_friendly_error():
-    with pytest.raises(AnswerError, match="incomplete"):
-        _service(FakeClient(parsed=None, stop_reason="max_tokens")).answer("q", _retrieval())
-
-
-def test_rate_limit_becomes_friendly_error():
-    response = httpx.Response(429, request=httpx.Request("POST", "https://api.anthropic.com/v1/messages"))
-    error = anthropic.RateLimitError("rate limited", response=response, body=None)
+def test_llm_errors_propagate_as_answer_errors():
+    assert AnswerError is LLMError
     with pytest.raises(AnswerError, match="busy"):
-        _service(FakeClient(error=error)).answer("q", _retrieval())
+        _service(FakeLLM(error=LLMError("busy"))).answer("q", _retrieval())

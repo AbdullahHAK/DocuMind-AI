@@ -2,29 +2,21 @@
 
 Pipeline for one question:
   1. relevance gate failed?  -> fallback answer, no LLM call
-  2. call Claude with structured output (the response must match LLMAnswer)
+  2. call the LLM with structured output (the response must match LLMAnswer)
   3. verify citations against the source text, downgrade unsupported verdicts
   4. if the question is about cost, compute the estimate in Python
 """
 
-import logging
-
-import anthropic
-
 from app.config import Settings
 from app.costs import CostRule, PlanCosts, estimate_cost
+from app.llm import LLMError, StructuredLLM
 from app.prompts import SYSTEM_PROMPT, build_user_message, source_ids
 from app.retrieval import RetrievalResult
 from app.schemas import Answer, CostEstimateOut, LLMAnswer, LLMCostRule
 from app.verification import verify_citations
 
-log = logging.getLogger(__name__)
-
-FALLBACK_BETA = "server-side-fallback-2026-07-01"
-
-
-class AnswerError(Exception):
-    """Something went wrong talking to the LLM. The message is safe to show users."""
+# Kept as the name the API layer catches; raised by any LLM provider.
+AnswerError = LLMError
 
 
 def fallback_answer() -> Answer:
@@ -73,44 +65,18 @@ def compute_cost(rule: LLMCostRule | None, facts: dict | None) -> CostEstimateOu
 
 
 class AnswerService:
-    def __init__(self, client: anthropic.Anthropic, settings: Settings) -> None:
-        self.client = client
+    def __init__(self, llm: StructuredLLM, settings: Settings) -> None:
+        self.llm = llm
         self.settings = settings
 
     def _call_llm(self, question: str, retrieval: RetrievalResult, plan_facts: dict | None) -> LLMAnswer:
-        try:
-            response = self.client.beta.messages.parse(
-                model=self.settings.llm_model,
-                max_tokens=self.settings.llm_max_tokens,
-                output_config={"effort": self.settings.llm_effort},
-                # if a safety classifier declines, Anthropic retries on a fallback model server-side
-                betas=[FALLBACK_BETA],
-                fallbacks="default",
-                system=SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": build_user_message(question, retrieval, plan_facts)}],
-                output_format=LLMAnswer,
-            )
-        except anthropic.AuthenticationError as exc:
-            log.error("Anthropic authentication failed - check ANTHROPIC_API_KEY")
-            raise AnswerError("The AI service isn't configured correctly. Please try again later.") from exc
-        except anthropic.RateLimitError as exc:
-            raise AnswerError("The AI service is busy right now. Please try again in a minute.") from exc
-        except (anthropic.APIConnectionError, anthropic.APITimeoutError) as exc:
-            raise AnswerError("Couldn't reach the AI service. Please try again.") from exc
-        except anthropic.APIStatusError as exc:
-            log.error("Anthropic API error %s: %s", exc.status_code, exc.message)
-            raise AnswerError("The AI service returned an error. Please try again.") from exc
-
-        log.info(
-            "llm request_id=%s stop=%s in=%s out=%s",
-            getattr(response, "_request_id", None), response.stop_reason,
-            response.usage.input_tokens, response.usage.output_tokens,
+        return self.llm.generate(
+            system=SYSTEM_PROMPT,
+            user=build_user_message(question, retrieval, plan_facts),
+            schema=LLMAnswer,
+            max_tokens=self.settings.llm_max_tokens,
+            effort=self.settings.llm_effort,
         )
-        if response.stop_reason == "refusal":
-            raise AnswerError("I can't help with that question. Try asking about what your policy covers.")
-        if response.stop_reason == "max_tokens" or response.parsed_output is None:
-            raise AnswerError("The answer came back incomplete. Please try asking again.")
-        return response.parsed_output
 
     def answer(self, question: str, retrieval: RetrievalResult, plan_facts: dict | None = None) -> Answer:
         if not retrieval.found_anything:

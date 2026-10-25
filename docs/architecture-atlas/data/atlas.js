@@ -1,17 +1,17 @@
 window.ATLAS = {
  "meta": {
-  "generated_at": "2026-10-25T07:05:31+00:00",
-  "git_commit": "997a1fb",
+  "generated_at": "2026-10-25T18:01:09+00:00",
+  "git_commit": "1a00025",
   "git_dirty": true,
   "counts": {
-   "files_analysed": 103,
-   "files_excluded": 37,
-   "symbols": 453,
-   "edges": 1088,
+   "files_analysed": 109,
+   "files_excluded": 38,
+   "symbols": 498,
+   "edges": 1198,
    "endpoints": 5,
-   "env_vars": 36,
-   "test_files": 18,
-   "test_functions": 119
+   "env_vars": 43,
+   "test_files": 19,
+   "test_functions": 126
   },
   "status_legend": {
    "verified": "directly established by code or configuration",
@@ -29,6 +29,21 @@ window.ATLAS = {
    "layer": "deployment",
    "lines": 10,
    "lang": ".dockerignore",
+   "doc": "",
+   "imports": [],
+   "symbols": [],
+   "dependents": [],
+   "tested_by": [],
+   "tests": []
+  },
+  {
+   "id": "file:.gcloudignore",
+   "path": ".gcloudignore",
+   "name": ".gcloudignore",
+   "dir": ".",
+   "layer": "config",
+   "lines": 17,
+   "lang": ".gcloudignore",
    "doc": "",
    "imports": [],
    "symbols": [],
@@ -87,7 +102,7 @@ window.ATLAS = {
    "name": "Dockerfile",
    "dir": ".",
    "layer": "deployment",
-   "lines": 35,
+   "lines": 43,
    "lang": "Dockerfile",
    "doc": "",
    "imports": [],
@@ -300,7 +315,7 @@ window.ATLAS = {
    "name": "api.py",
    "dir": "backend/app",
    "layer": "backend · http",
-   "lines": 236,
+   "lines": 242,
    "lang": "py",
    "doc": "HTTP endpoints.",
    "imports": [
@@ -484,7 +499,7 @@ window.ATLAS = {
    "name": "config.py",
    "dir": "backend/app",
    "layer": "backend · configuration",
-   "lines": 91,
+   "lines": 115,
    "lang": "py",
    "doc": "Application settings, read from environment variables (or backend/.env).",
    "imports": [
@@ -517,6 +532,7 @@ window.ATLAS = {
    "symbols": [
     "sym:backend/app/config.py#BACKEND_DIR",
     "sym:backend/app/config.py#Settings",
+    "sym:backend/app/config.py#Settings.collection_name",
     "sym:backend/app/config.py#Settings.uploads_dir",
     "sym:backend/app/config.py#Settings.qdrant_path",
     "sym:backend/app/config.py#get_settings"
@@ -535,8 +551,10 @@ window.ATLAS = {
     "file:backend/eval/common.py",
     "file:backend/eval/run_answer_eval.py",
     "file:backend/redteam/run_redteam.py",
+    "file:backend/scripts/precompute_embeddings.py",
     "file:backend/tests/test_answering.py",
     "file:backend/tests/test_api.py",
+    "file:backend/tests/test_gemini_embedder.py",
     "file:backend/tests/test_indexer.py",
     "file:backend/tests/test_llm.py",
     "file:backend/tests/test_retrieval.py"
@@ -544,6 +562,7 @@ window.ATLAS = {
    "tested_by": [
     "file:backend/tests/test_answering.py",
     "file:backend/tests/test_api.py",
+    "file:backend/tests/test_gemini_embedder.py",
     "file:backend/tests/test_indexer.py",
     "file:backend/tests/test_llm.py",
     "file:backend/tests/test_retrieval.py"
@@ -671,16 +690,70 @@ window.ATLAS = {
    "name": "embeddings.py",
    "dir": "backend/app",
    "layer": "backend · retrieval",
-   "lines": 79,
+   "lines": 239,
    "lang": "py",
    "doc": "Local embedding and reranking models (via fastembed / ONNX, no API key needed).",
    "imports": [
+    {
+     "module": "base64",
+     "names": [],
+     "line": 14,
+     "file": null
+    },
+    {
+     "module": "hashlib",
+     "names": [],
+     "line": 15,
+     "file": null
+    },
+    {
+     "module": "json",
+     "names": [],
+     "line": 16,
+     "file": null
+    },
+    {
+     "module": "threading",
+     "names": [],
+     "line": 17,
+     "file": null
+    },
+    {
+     "module": "time",
+     "names": [],
+     "line": 18,
+     "file": null
+    },
+    {
+     "module": "array",
+     "names": [
+      "array"
+     ],
+     "line": 19,
+     "file": null
+    },
+    {
+     "module": "collections",
+     "names": [
+      "deque"
+     ],
+     "line": 20,
+     "file": null
+    },
     {
      "module": "functools",
      "names": [
       "cached_property"
      ],
-     "line": 14,
+     "line": 21,
+     "file": null
+    },
+    {
+     "module": "pathlib",
+     "names": [
+      "Path"
+     ],
+     "line": 22,
      "file": null
     },
     {
@@ -688,7 +761,7 @@ window.ATLAS = {
      "names": [
       "Protocol"
      ],
-     "line": 15,
+     "line": 23,
      "file": null
     },
     {
@@ -697,7 +770,7 @@ window.ATLAS = {
       "SparseTextEmbedding",
       "TextEmbedding"
      ],
-     "line": 17,
+     "line": 25,
      "file": null
     },
     {
@@ -705,7 +778,7 @@ window.ATLAS = {
      "names": [
       "TextCrossEncoder"
      ],
-     "line": 18,
+     "line": 26,
      "file": null
     },
     {
@@ -713,8 +786,41 @@ window.ATLAS = {
      "names": [
       "Settings"
      ],
-     "line": 20,
+     "line": 28,
      "file": "backend/app/config.py"
+    },
+    {
+     "module": "google.genai",
+     "names": [
+      "errors",
+      "types"
+     ],
+     "line": 146,
+     "file": null
+    },
+    {
+     "module": "app.llm",
+     "names": [
+      "LLMError"
+     ],
+     "line": 148,
+     "file": "backend/app/llm.py"
+    },
+    {
+     "module": "google",
+     "names": [
+      "genai"
+     ],
+     "line": 125,
+     "file": null
+    },
+    {
+     "module": "google.genai",
+     "names": [
+      "types"
+     ],
+     "line": 126,
+     "file": null
     }
    ],
    "symbols": [
@@ -729,6 +835,23 @@ window.ATLAS = {
     "sym:backend/app/embeddings.py#Embedder.embed_documents",
     "sym:backend/app/embeddings.py#Embedder.embed_query",
     "sym:backend/app/embeddings.py#Embedder.rerank",
+    "sym:backend/app/embeddings.py#GeminiEmbedder",
+    "sym:backend/app/embeddings.py#GeminiEmbedder.__init__",
+    "sym:backend/app/embeddings.py#GeminiEmbedder._wait_for_quota",
+    "sym:backend/app/embeddings.py#GeminiEmbedder.client",
+    "sym:backend/app/embeddings.py#GeminiEmbedder._sparse",
+    "sym:backend/app/embeddings.py#GeminiEmbedder.dense_size",
+    "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+    "sym:backend/app/embeddings.py#GeminiEmbedder.warm_up",
+    "sym:backend/app/embeddings.py#GeminiEmbedder.embed_documents",
+    "sym:backend/app/embeddings.py#GeminiEmbedder.embed_query",
+    "sym:backend/app/embeddings.py#GeminiEmbedder.rerank",
+    "sym:backend/app/embeddings.py#precomputed_path",
+    "sym:backend/app/embeddings.py#precomputed_key",
+    "sym:backend/app/embeddings.py#load_precomputed",
+    "sym:backend/app/embeddings.py#build_embedder",
+    "sym:backend/app/embeddings.py#_normalize",
+    "sym:backend/app/embeddings.py#cosine",
     "sym:backend/app/embeddings.py#_Sparse",
     "sym:backend/app/embeddings.py#_Sparse.__init__",
     "sym:backend/app/embeddings.py#_to_sparse"
@@ -736,10 +859,15 @@ window.ATLAS = {
    "module": "app.embeddings",
    "tests": [],
    "dependents": [
+    "file:backend/app/retrieval.py",
     "file:backend/app/services.py",
-    "file:backend/eval/common.py"
+    "file:backend/eval/common.py",
+    "file:backend/scripts/precompute_embeddings.py",
+    "file:backend/tests/test_gemini_embedder.py"
    ],
-   "tested_by": []
+   "tested_by": [
+    "file:backend/tests/test_gemini_embedder.py"
+   ]
   },
   {
    "id": "file:backend/app/graph.py",
@@ -920,6 +1048,7 @@ window.ATLAS = {
     "file:backend/app/retrieval.py",
     "file:backend/app/services.py",
     "file:backend/eval/common.py",
+    "file:backend/scripts/precompute_embeddings.py",
     "file:backend/tests/test_indexer.py",
     "file:backend/tests/test_retrieval.py"
    ],
@@ -1005,6 +1134,7 @@ window.ATLAS = {
    "dependents": [
     "file:backend/app/indexer.py",
     "file:backend/app/ingest/markdown.py",
+    "file:backend/scripts/precompute_embeddings.py",
     "file:backend/tests/test_chunker.py",
     "file:backend/tests/test_graph.py"
    ],
@@ -1066,6 +1196,7 @@ window.ATLAS = {
    "tests": [],
    "dependents": [
     "file:backend/app/indexer.py",
+    "file:backend/scripts/precompute_embeddings.py",
     "file:backend/tests/test_markdown.py"
    ],
    "tested_by": [
@@ -1078,7 +1209,7 @@ window.ATLAS = {
    "name": "pdf.py",
    "dir": "backend/app/ingest",
    "layer": "backend · ingestion",
-   "lines": 62,
+   "lines": 66,
    "lang": "py",
    "doc": "Turn a PDF into clean per-page text.",
    "imports": [
@@ -1254,15 +1385,18 @@ window.ATLAS = {
    "tests": [],
    "dependents": [
     "file:backend/app/answering.py",
+    "file:backend/app/embeddings.py",
     "file:backend/app/plan_facts.py",
     "file:backend/app/services.py",
     "file:backend/eval/run_answer_eval.py",
     "file:backend/tests/test_answering.py",
+    "file:backend/tests/test_gemini_embedder.py",
     "file:backend/tests/test_llm.py",
     "file:backend/tests/test_plan_facts.py"
    ],
    "tested_by": [
     "file:backend/tests/test_answering.py",
+    "file:backend/tests/test_gemini_embedder.py",
     "file:backend/tests/test_llm.py",
     "file:backend/tests/test_plan_facts.py"
    ]
@@ -1407,6 +1541,7 @@ window.ATLAS = {
     "file:backend/app/retrieval.py",
     "file:backend/app/vectorstore.py",
     "file:backend/tests/test_answering.py",
+    "file:backend/tests/test_gemini_embedder.py",
     "file:backend/tests/test_graph.py",
     "file:backend/tests/test_prompts.py",
     "file:backend/tests/test_retrieval.py",
@@ -1415,6 +1550,7 @@ window.ATLAS = {
    ],
    "tested_by": [
     "file:backend/tests/test_answering.py",
+    "file:backend/tests/test_gemini_embedder.py",
     "file:backend/tests/test_graph.py",
     "file:backend/tests/test_prompts.py",
     "file:backend/tests/test_retrieval.py",
@@ -1635,7 +1771,7 @@ window.ATLAS = {
    "name": "retrieval.py",
    "dir": "backend/app",
    "layer": "backend · retrieval",
-   "lines": 110,
+   "lines": 129,
    "lang": "py",
    "doc": "Two-stage retrieval: cheap-and-wide, then expensive-and-precise.",
    "imports": [
@@ -1663,11 +1799,19 @@ window.ATLAS = {
      "file": "backend/app/config.py"
     },
     {
+     "module": "app.embeddings",
+     "names": [
+      "cosine"
+     ],
+     "line": 23,
+     "file": "backend/app/embeddings.py"
+    },
+    {
      "module": "app.indexer",
      "names": [
       "FEDERAL_DOC_ID"
      ],
-     "line": 23,
+     "line": 24,
      "file": "backend/app/indexer.py"
     },
     {
@@ -1675,7 +1819,7 @@ window.ATLAS = {
      "names": [
       "Chunk"
      ],
-     "line": 24,
+     "line": 25,
      "file": "backend/app/models.py"
     },
     {
@@ -1683,7 +1827,7 @@ window.ATLAS = {
      "names": [
       "expand_query"
      ],
-     "line": 25,
+     "line": 26,
      "file": "backend/app/query_expansion.py"
     },
     {
@@ -1691,7 +1835,7 @@ window.ATLAS = {
      "names": [
       "VectorStore"
      ],
-     "line": 26,
+     "line": 27,
      "file": "backend/app/vectorstore.py"
     }
    ],
@@ -1703,6 +1847,7 @@ window.ATLAS = {
     "sym:backend/app/retrieval.py#Retriever.__init__",
     "sym:backend/app/retrieval.py#Retriever._rerank",
     "sym:backend/app/retrieval.py#Retriever._follow_references",
+    "sym:backend/app/retrieval.py#Retriever._similarity_ranked",
     "sym:backend/app/retrieval.py#Retriever.retrieve"
    ],
    "module": "app.retrieval",
@@ -1715,12 +1860,14 @@ window.ATLAS = {
     "file:backend/app/verification.py",
     "file:backend/eval/common.py",
     "file:backend/tests/test_answering.py",
+    "file:backend/tests/test_gemini_embedder.py",
     "file:backend/tests/test_prompts.py",
     "file:backend/tests/test_retrieval.py",
     "file:backend/tests/test_verification.py"
    ],
    "tested_by": [
     "file:backend/tests/test_answering.py",
+    "file:backend/tests/test_gemini_embedder.py",
     "file:backend/tests/test_prompts.py",
     "file:backend/tests/test_retrieval.py",
     "file:backend/tests/test_verification.py"
@@ -1905,7 +2052,7 @@ window.ATLAS = {
     {
      "module": "app.embeddings",
      "names": [
-      "Embedder"
+      "build_embedder"
      ],
      "line": 17,
      "file": "backend/app/embeddings.py"
@@ -1973,6 +2120,7 @@ window.ATLAS = {
     "file:backend/app/api.py",
     "file:backend/app/main.py",
     "file:backend/redteam/run_redteam.py",
+    "file:backend/scripts/precompute_embeddings.py",
     "file:backend/tests/test_api.py"
    ],
    "tested_by": [
@@ -1985,7 +2133,7 @@ window.ATLAS = {
    "name": "vectorstore.py",
    "dir": "backend/app",
    "layer": "backend · retrieval",
-   "lines": 111,
+   "lines": 126,
    "lang": "py",
    "doc": "Qdrant wrapper: store chunks with two vectors each and run hybrid search.",
    "imports": [
@@ -2034,7 +2182,8 @@ window.ATLAS = {
     "sym:backend/app/vectorstore.py#VectorStore.delete_document",
     "sym:backend/app/vectorstore.py#VectorStore.count",
     "sym:backend/app/vectorstore.py#VectorStore.get_chunks",
-    "sym:backend/app/vectorstore.py#VectorStore.hybrid_search"
+    "sym:backend/app/vectorstore.py#VectorStore.hybrid_search",
+    "sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors"
    ],
    "module": "app.vectorstore",
    "tests": [],
@@ -2115,6 +2264,21 @@ window.ATLAS = {
    "tested_by": [
     "file:backend/tests/test_verification.py"
    ]
+  },
+  {
+   "id": "file:backend/data/embeddings/gemini-embedding-001-768.json",
+   "path": "backend/data/embeddings/gemini-embedding-001-768.json",
+   "name": "gemini-embedding-001-768.json",
+   "dir": "backend/data/embeddings",
+   "layer": "data",
+   "lines": 105,
+   "lang": "json",
+   "doc": "",
+   "imports": [],
+   "symbols": [],
+   "dependents": [],
+   "tested_by": [],
+   "tests": []
   },
   {
    "id": "file:backend/data/federal/README.md",
@@ -2431,7 +2595,7 @@ window.ATLAS = {
     {
      "module": "app.embeddings",
      "names": [
-      "Embedder"
+      "build_embedder"
      ],
      "line": 13,
      "file": "backend/app/embeddings.py"
@@ -2668,7 +2832,7 @@ window.ATLAS = {
    "name": "run_retrieval_eval.py",
    "dir": "backend/eval",
    "layer": "evaluation",
-   "lines": 65,
+   "lines": 67,
    "lang": "py",
    "doc": "Measure retrieval quality on the sample policy - no LLM, no API key, free to run.",
    "imports": [
@@ -3049,6 +3213,112 @@ window.ATLAS = {
    "tested_by": []
   },
   {
+   "id": "file:backend/scripts/precompute_embeddings.py",
+   "path": "backend/scripts/precompute_embeddings.py",
+   "name": "precompute_embeddings.py",
+   "dir": "backend/scripts",
+   "layer": "tooling",
+   "lines": 64,
+   "lang": "py",
+   "doc": "Precompute Gemini embeddings for the bundled documents.",
+   "imports": [
+    {
+     "module": "base64",
+     "names": [],
+     "line": 15,
+     "file": null
+    },
+    {
+     "module": "json",
+     "names": [],
+     "line": 16,
+     "file": null
+    },
+    {
+     "module": "sys",
+     "names": [],
+     "line": 17,
+     "file": null
+    },
+    {
+     "module": "array",
+     "names": [
+      "array"
+     ],
+     "line": 18,
+     "file": null
+    },
+    {
+     "module": "pathlib",
+     "names": [
+      "Path"
+     ],
+     "line": 19,
+     "file": null
+    },
+    {
+     "module": "app.config",
+     "names": [
+      "Settings"
+     ],
+     "line": 23,
+     "file": "backend/app/config.py"
+    },
+    {
+     "module": "app.embeddings",
+     "names": [
+      "GeminiEmbedder",
+      "precomputed_key",
+      "precomputed_path"
+     ],
+     "line": 24,
+     "file": "backend/app/embeddings.py"
+    },
+    {
+     "module": "app.ingest.chunker",
+     "names": [
+      "chunk_pages"
+     ],
+     "line": 25,
+     "file": "backend/app/ingest/chunker.py"
+    },
+    {
+     "module": "app.ingest.markdown",
+     "names": [
+      "load_federal_corpus"
+     ],
+     "line": 26,
+     "file": "backend/app/ingest/markdown.py"
+    },
+    {
+     "module": "app.indexer",
+     "names": [
+      "load_policy_pages"
+     ],
+     "line": 27,
+     "file": "backend/app/indexer.py"
+    },
+    {
+     "module": "app.services",
+     "names": [
+      "SAMPLE_DOC_ID",
+      "SAMPLE_PDF_NAME",
+      "SAMPLE_TITLE"
+     ],
+     "line": 28,
+     "file": "backend/app/services.py"
+    }
+   ],
+   "symbols": [
+    "sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+    "sym:backend/scripts/precompute_embeddings.py#main"
+   ],
+   "module": "scripts.precompute_embeddings",
+   "tests": [],
+   "dependents": [],
+   "tested_by": []
+  },
+  {
    "id": "file:backend/tests/conftest.py",
    "path": "backend/tests/conftest.py",
    "name": "conftest.py",
@@ -3228,7 +3498,7 @@ window.ATLAS = {
    "name": "test_api.py",
    "dir": "backend/tests",
    "layer": "tests",
-   "lines": 221,
+   "lines": 223,
    "lang": "py",
    "doc": "End-to-end API tests: real FastAPI app, real indexing pipeline and Qdrant",
    "imports": [
@@ -3544,6 +3814,111 @@ window.ATLAS = {
     "sym:backend/tests/test_documents.py#test_save_get_delete",
     "sym:backend/tests/test_documents.py#test_get_with_bad_id_returns_none",
     "sym:backend/tests/test_documents.py#test_expired_skips_samples_and_fresh_uploads"
+   ],
+   "dependents": [],
+   "tested_by": []
+  },
+  {
+   "id": "file:backend/tests/test_gemini_embedder.py",
+   "path": "backend/tests/test_gemini_embedder.py",
+   "name": "test_gemini_embedder.py",
+   "dir": "backend/tests",
+   "layer": "tests",
+   "lines": 120,
+   "lang": "py",
+   "doc": "Gemini-embedding mode: precomputed cache, free-tier throttle, no-reranker retrieval.",
+   "imports": [
+    {
+     "module": "types",
+     "names": [
+      "SimpleNamespace"
+     ],
+     "line": 4,
+     "file": null
+    },
+    {
+     "module": "pytest",
+     "names": [],
+     "line": 6,
+     "file": null
+    },
+    {
+     "module": "google.genai",
+     "names": [
+      "errors"
+     ],
+     "line": 7,
+     "file": null
+    },
+    {
+     "module": "app.config",
+     "names": [
+      "Settings"
+     ],
+     "line": 9,
+     "file": "backend/app/config.py"
+    },
+    {
+     "module": "app.embeddings",
+     "names": [
+      "GeminiEmbedder",
+      "precomputed_key"
+     ],
+     "line": 10,
+     "file": "backend/app/embeddings.py"
+    },
+    {
+     "module": "app.llm",
+     "names": [
+      "LLMError"
+     ],
+     "line": 11,
+     "file": "backend/app/llm.py"
+    },
+    {
+     "module": "app.models",
+     "names": [
+      "Chunk"
+     ],
+     "line": 12,
+     "file": "backend/app/models.py"
+    },
+    {
+     "module": "app.retrieval",
+     "names": [
+      "Retriever"
+     ],
+     "line": 13,
+     "file": "backend/app/retrieval.py"
+    }
+   ],
+   "symbols": [
+    "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+    "sym:backend/tests/test_gemini_embedder.py#FakeClient.__init__",
+    "sym:backend/tests/test_gemini_embedder.py#FakeClient.embed_content",
+    "sym:backend/tests/test_gemini_embedder.py#Clock",
+    "sym:backend/tests/test_gemini_embedder.py#Clock.__init__",
+    "sym:backend/tests/test_gemini_embedder.py#Clock.now",
+    "sym:backend/tests/test_gemini_embedder.py#Clock.sleep",
+    "sym:backend/tests/test_gemini_embedder.py#make",
+    "sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched",
+    "sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api",
+    "sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing",
+    "sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached",
+    "sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors",
+    "sym:backend/tests/test_gemini_embedder.py#test_collection_name_differs_per_provider",
+    "sym:backend/tests/test_gemini_embedder.py#_chunk",
+    "sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity"
+   ],
+   "module": "tests.test_gemini_embedder",
+   "tests": [
+    "sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched",
+    "sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api",
+    "sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing",
+    "sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached",
+    "sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors",
+    "sym:backend/tests/test_gemini_embedder.py#test_collection_name_differs_per_provider",
+    "sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity"
    ],
    "dependents": [],
    "tested_by": []
@@ -4289,18 +4664,19 @@ window.ATLAS = {
    "name": "DEPLOY.md",
    "dir": "docs",
    "layer": "documentation",
-   "lines": 61,
+   "lines": 63,
    "lang": "md",
    "doc": "Deploying Am I Covered?",
    "imports": [],
    "symbols": [],
    "headings": [
     "Deploying Am I Covered?",
-    "Option A: Hugging Face Spaces (free, recommended for a demo)",
-    "Option B: any container host (Render, Railway, Fly.io, Google Cloud Run)",
-    "Option C: run the image yourself",
-    "open http://localhost:7860",
+    "Option A: Render free tier (no card), recommended",
+    "Option B: Hugging Face Spaces (now requires PRO)",
+    "Option C: any container host (Cloud Run, Railway, Fly.io, a VPS)",
+    "Option D: run the image yourself",
     "Keeping uploads across restarts (optional)",
+    "After changing bundled documents",
     "Cost control checklist"
    ],
    "dependents": [],
@@ -4400,7 +4776,7 @@ window.ATLAS = {
    "name": "App.tsx",
    "dir": "frontend/src",
    "layer": "frontend",
-   "lines": 98,
+   "lines": 101,
    "lang": "tsx",
    "doc": "",
    "imports": [
@@ -4690,7 +5066,7 @@ window.ATLAS = {
    "name": "DocumentPanel.tsx",
    "dir": "frontend/src/components",
    "layer": "frontend · components",
-   "lines": 138,
+   "lines": 142,
    "lang": "tsx",
    "doc": "",
    "imports": [
@@ -4930,7 +5306,7 @@ window.ATLAS = {
    "name": "types.ts",
    "dir": "frontend/src",
    "layer": "frontend",
-   "lines": 109,
+   "lines": 110,
    "lang": "ts",
    "doc": "Mirrors backend/app/schemas.py. Keep the two in sync.",
    "imports": [],
@@ -5051,6 +5427,88 @@ window.ATLAS = {
    "dependents": [],
    "tested_by": [],
    "tests": []
+  },
+  {
+   "id": "file:render.yaml",
+   "path": "render.yaml",
+   "name": "render.yaml",
+   "dir": ".",
+   "layer": "config",
+   "lines": 32,
+   "lang": "yaml",
+   "doc": "",
+   "imports": [],
+   "symbols": [],
+   "dependents": [],
+   "tested_by": [],
+   "tests": []
+  },
+  {
+   "id": "file:scripts/deploy_hf.py",
+   "path": "scripts/deploy_hf.py",
+   "name": "deploy_hf.py",
+   "dir": "scripts",
+   "layer": "config",
+   "lines": 164,
+   "lang": "py",
+   "doc": "Deploy (or update) the app as a Hugging Face Docker Space.",
+   "imports": [
+    {
+     "module": "argparse",
+     "names": [],
+     "line": 27,
+     "file": null
+    },
+    {
+     "module": "fnmatch",
+     "names": [],
+     "line": 28,
+     "file": null
+    },
+    {
+     "module": "sys",
+     "names": [],
+     "line": 29,
+     "file": null
+    },
+    {
+     "module": "pathlib",
+     "names": [
+      "Path"
+     ],
+     "line": 30,
+     "file": null
+    },
+    {
+     "module": "huggingface_hub",
+     "names": [
+      "HfApi"
+     ],
+     "line": 127,
+     "file": null
+    },
+    {
+     "module": "huggingface_hub.errors",
+     "names": [
+      "HfHubHTTPError"
+     ],
+     "line": 128,
+     "file": null
+    }
+   ],
+   "symbols": [
+    "sym:scripts/deploy_hf.py#ROOT",
+    "sym:scripts/deploy_hf.py#IGNORE",
+    "sym:scripts/deploy_hf.py#VARIABLES",
+    "sym:scripts/deploy_hf.py#space_readme",
+    "sym:scripts/deploy_hf.py#read_env_value",
+    "sym:scripts/deploy_hf.py#files_to_upload",
+    "sym:scripts/deploy_hf.py#main"
+   ],
+   "module": "deploy_hf",
+   "tests": [],
+   "dependents": [],
+   "tested_by": []
   }
  ],
  "excluded": [
@@ -5072,6 +5530,10 @@ window.ATLAS = {
   },
   {
    "path": "backend/eval/results/answers-20261025-062139.json",
+   "reason": "recorded run output (data, summarised in reports)"
+  },
+  {
+   "path": "backend/eval/results/answers-20261025-175003.json",
    "reason": "recorded run output (data, summarised in reports)"
   },
   {
@@ -5363,7 +5825,7 @@ window.ATLAS = {
    "file": "backend/app/api.py",
    "lines": [
     64,
-    67
+    73
    ],
    "doc": "",
    "parent": null,
@@ -5378,8 +5840,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/api.py",
    "lines": [
-    71,
-    72
+    77,
+    78
    ],
    "doc": "",
    "parent": null,
@@ -5394,8 +5856,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/api.py",
    "lines": [
-    76,
-    83
+    82,
+    89
    ],
    "doc": "",
    "parent": null,
@@ -5410,8 +5872,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/api.py",
    "lines": [
-    86,
-    90
+    92,
+    96
    ],
    "doc": "",
    "parent": null,
@@ -5424,8 +5886,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/api.py",
    "lines": [
-    94,
-    137
+    100,
+    143
    ],
    "doc": "",
    "parent": null,
@@ -5440,8 +5902,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/api.py",
    "lines": [
-    140,
-    141
+    146,
+    147
    ],
    "doc": "",
    "parent": null,
@@ -5454,8 +5916,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/api.py",
    "lines": [
-    144,
-    158
+    150,
+    164
    ],
    "doc": "",
    "parent": null,
@@ -5468,8 +5930,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/api.py",
    "lines": [
-    162,
-    236
+    168,
+    242
    ],
    "doc": "",
    "parent": null,
@@ -5497,10 +5959,26 @@ window.ATLAS = {
    "file": "backend/app/config.py",
    "lines": [
     15,
-    86
+    110
    ],
    "doc": "",
    "parent": null
+  },
+  {
+   "id": "sym:backend/app/config.py#Settings.collection_name",
+   "name": "Settings.collection_name",
+   "kind": "method",
+   "file": "backend/app/config.py",
+   "lines": [
+    98,
+    102
+   ],
+   "doc": "Vector sizes differ per provider, so each provider gets its own collection.",
+   "parent": "sym:backend/app/config.py#Settings",
+   "signature": "collection_name()",
+   "decorators": [
+    "property"
+   ]
   },
   {
    "id": "sym:backend/app/config.py#Settings.uploads_dir",
@@ -5508,8 +5986,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/config.py",
    "lines": [
-    81,
-    82
+    105,
+    106
    ],
    "doc": "",
    "parent": "sym:backend/app/config.py#Settings",
@@ -5524,8 +6002,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/config.py",
    "lines": [
-    85,
-    86
+    109,
+    110
    ],
    "doc": "",
    "parent": "sym:backend/app/config.py#Settings",
@@ -5540,8 +6018,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/config.py",
    "lines": [
-    90,
-    91
+    114,
+    115
    ],
    "doc": "",
    "parent": null,
@@ -5808,8 +6286,8 @@ window.ATLAS = {
    "kind": "class",
    "file": "backend/app/embeddings.py",
    "lines": [
-    23,
-    25
+    31,
+    33
    ],
    "doc": "",
    "parent": null
@@ -5820,8 +6298,8 @@ window.ATLAS = {
    "kind": "class",
    "file": "backend/app/embeddings.py",
    "lines": [
-    28,
-    70
+    36,
+    81
    ],
    "doc": "",
    "parent": null
@@ -5832,8 +6310,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    29,
-    32
+    39,
+    42
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#Embedder",
@@ -5846,8 +6324,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    35,
-    36
+    45,
+    46
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#Embedder",
@@ -5862,8 +6340,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    39,
-    40
+    49,
+    50
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#Embedder",
@@ -5878,8 +6356,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    43,
-    44
+    53,
+    54
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#Embedder",
@@ -5894,8 +6372,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    47,
-    48
+    57,
+    58
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#Embedder",
@@ -5910,8 +6388,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    50,
-    53
+    60,
+    63
    ],
    "doc": "Load all models now (at startup) rather than on the first user request.",
    "parent": "sym:backend/app/embeddings.py#Embedder",
@@ -5924,8 +6402,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    55,
-    58
+    65,
+    69
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#Embedder",
@@ -5938,8 +6416,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    60,
-    64
+    71,
+    75
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#Embedder",
@@ -5952,12 +6430,254 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    66,
-    70
+    77,
+    81
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#Embedder",
    "signature": "rerank(query, texts)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "name": "GeminiEmbedder",
+   "kind": "class",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    84,
+    194
+   ],
+   "doc": "Dense vectors from the Gemini embedding API; BM25 stays local.",
+   "parent": null
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder.__init__",
+   "name": "GeminiEmbedder.__init__",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    96,
+    105
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "__init__(settings, client, clock, sleep)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder._wait_for_quota",
+   "name": "GeminiEmbedder._wait_for_quota",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    107,
+    120
+   ],
+   "doc": "Block until sending n more texts keeps us under EMBEDDING_TEXTS_PER_MINUTE.",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "_wait_for_quota(n)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder.client",
+   "name": "GeminiEmbedder.client",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    123,
+    135
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "client()",
+   "decorators": [
+    "property"
+   ]
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder._sparse",
+   "name": "GeminiEmbedder._sparse",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    138,
+    139
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "_sparse()",
+   "decorators": [
+    "cached_property"
+   ]
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder.dense_size",
+   "name": "GeminiEmbedder.dense_size",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    142,
+    143
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "dense_size()",
+   "decorators": [
+    "property"
+   ]
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "name": "GeminiEmbedder._embed",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    145,
+    172
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "_embed(texts, task_type)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder.warm_up",
+   "name": "GeminiEmbedder.warm_up",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    174,
+    175
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "warm_up()",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_documents",
+   "name": "GeminiEmbedder.embed_documents",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    177,
+    180
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "embed_documents(texts)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_query",
+   "name": "GeminiEmbedder.embed_query",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    182,
+    191
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "embed_query(text)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#GeminiEmbedder.rerank",
+   "name": "GeminiEmbedder.rerank",
+   "kind": "method",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    193,
+    194
+   ],
+   "doc": "",
+   "parent": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "signature": "rerank(query, texts)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#precomputed_path",
+   "name": "precomputed_path",
+   "kind": "function",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    197,
+    199
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "precomputed_path(settings)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#precomputed_key",
+   "name": "precomputed_key",
+   "kind": "function",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    202,
+    203
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "precomputed_key(task_type, text)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#load_precomputed",
+   "name": "load_precomputed",
+   "kind": "function",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    206,
+    213
+   ],
+   "doc": "{sha256(task + text): unit vector}, written by scripts/precompute_embeddings.py.",
+   "parent": null,
+   "signature": "load_precomputed(settings)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#build_embedder",
+   "name": "build_embedder",
+   "kind": "function",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    216,
+    219
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "build_embedder(settings)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#_normalize",
+   "name": "_normalize",
+   "kind": "function",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    222,
+    225
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "_normalize(values)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/embeddings.py#cosine",
+   "name": "cosine",
+   "kind": "function",
+   "file": "backend/app/embeddings.py",
+   "lines": [
+    228,
+    230
+   ],
+   "doc": "Both inputs are unit vectors here, so the dot product is the cosine.",
+   "parent": null,
+   "signature": "cosine(a, b)",
    "decorators": []
   },
   {
@@ -5966,8 +6686,8 @@ window.ATLAS = {
    "kind": "class",
    "file": "backend/app/embeddings.py",
    "lines": [
-    73,
-    75
+    233,
+    235
    ],
    "doc": "",
    "parent": null
@@ -5978,8 +6698,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/embeddings.py",
    "lines": [
-    74,
-    75
+    234,
+    235
    ],
    "doc": "",
    "parent": "sym:backend/app/embeddings.py#_Sparse",
@@ -5992,8 +6712,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/app/embeddings.py",
    "lines": [
-    78,
-    79
+    238,
+    239
    ],
    "doc": "",
    "parent": null,
@@ -6547,7 +7267,7 @@ window.ATLAS = {
    "file": "backend/app/ingest/pdf.py",
    "lines": [
     46,
-    62
+    66
    ],
    "doc": "",
    "parent": null,
@@ -7074,8 +7794,8 @@ window.ATLAS = {
    "kind": "class",
    "file": "backend/app/retrieval.py",
    "lines": [
-    30,
-    33
+    31,
+    34
    ],
    "doc": "",
    "parent": null
@@ -7086,8 +7806,8 @@ window.ATLAS = {
    "kind": "class",
    "file": "backend/app/retrieval.py",
    "lines": [
-    37,
-    53
+    38,
+    54
    ],
    "doc": "",
    "parent": null
@@ -7098,8 +7818,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/retrieval.py",
    "lines": [
-    52,
-    53
+    53,
+    54
    ],
    "doc": "",
    "parent": "sym:backend/app/retrieval.py#RetrievalResult",
@@ -7114,8 +7834,8 @@ window.ATLAS = {
    "kind": "class",
    "file": "backend/app/retrieval.py",
    "lines": [
-    56,
-    110
+    57,
+    129
    ],
    "doc": "",
    "parent": null
@@ -7126,8 +7846,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/retrieval.py",
    "lines": [
-    57,
-    60
+    58,
+    61
    ],
    "doc": "",
    "parent": "sym:backend/app/retrieval.py#Retriever",
@@ -7140,8 +7860,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/retrieval.py",
    "lines": [
-    62,
-    65
+    63,
+    66
    ],
    "doc": "",
    "parent": "sym:backend/app/retrieval.py#Retriever",
@@ -7154,12 +7874,26 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/retrieval.py",
    "lines": [
-    67,
-    79
+    68,
+    80
    ],
    "doc": "One hop through the clause graph: add clauses the top chunks point at (\"see 7.5\").",
    "parent": "sym:backend/app/retrieval.py#Retriever",
    "signature": "_follow_references(top)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/retrieval.py#Retriever._similarity_ranked",
+   "name": "Retriever._similarity_ranked",
+   "kind": "method",
+   "file": "backend/app/retrieval.py",
+   "lines": [
+    82,
+    86
+   ],
+   "doc": "No-reranker mode: keep the hybrid (RRF) order, score each hit by dense cosine",
+   "parent": "sym:backend/app/retrieval.py#Retriever",
+   "signature": "_similarity_ranked(query, doc_id, kind, limit)",
    "decorators": []
   },
   {
@@ -7168,8 +7902,8 @@ window.ATLAS = {
    "kind": "method",
    "file": "backend/app/retrieval.py",
    "lines": [
-    81,
-    110
+    88,
+    129
    ],
    "doc": "",
    "parent": "sym:backend/app/retrieval.py#Retriever",
@@ -7683,7 +8417,7 @@ window.ATLAS = {
    "file": "backend/app/vectorstore.py",
    "lines": [
     36,
-    111
+    126
    ],
    "doc": "",
    "parent": null
@@ -7779,11 +8513,25 @@ window.ATLAS = {
    "file": "backend/app/vectorstore.py",
    "lines": [
     91,
-    111
+    94
    ],
    "doc": "",
    "parent": "sym:backend/app/vectorstore.py#VectorStore",
    "signature": "hybrid_search(query, doc_id, kind, limit)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors",
+   "name": "VectorStore.hybrid_search_with_vectors",
+   "kind": "method",
+   "file": "backend/app/vectorstore.py",
+   "lines": [
+    96,
+    126
+   ],
+   "doc": "Same search; optionally also returns each hit's dense vector and the query's",
+   "parent": "sym:backend/app/vectorstore.py#VectorStore",
+   "signature": "hybrid_search_with_vectors(query, doc_id, kind, limit, with_vectors)",
    "decorators": []
   },
   {
@@ -7989,7 +8737,7 @@ window.ATLAS = {
    "file": "backend/eval/run_retrieval_eval.py",
    "lines": [
     15,
-    61
+    63
    ],
    "doc": "",
    "parent": null,
@@ -8224,6 +8972,34 @@ window.ATLAS = {
    "doc": "",
    "parent": null,
    "signature": "build()",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+   "name": "bundled_texts",
+   "kind": "function",
+   "file": "backend/scripts/precompute_embeddings.py",
+   "lines": [
+    31,
+    36
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "bundled_texts(settings)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/scripts/precompute_embeddings.py#main",
+   "name": "main",
+   "kind": "function",
+   "file": "backend/scripts/precompute_embeddings.py",
+   "lines": [
+    39,
+    60
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "main()",
    "decorators": []
   },
   {
@@ -8767,7 +9543,7 @@ window.ATLAS = {
    "file": "backend/tests/test_api.py",
    "lines": [
     85,
-    86
+    88
    ],
    "doc": "",
    "parent": null,
@@ -8780,8 +9556,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    89,
-    93
+    91,
+    95
    ],
    "doc": "",
    "parent": null,
@@ -8794,8 +9570,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    96,
-    100
+    98,
+    102
    ],
    "doc": "",
    "parent": null,
@@ -8808,8 +9584,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    104,
-    105
+    106,
+    107
    ],
    "doc": "",
    "parent": null,
@@ -8824,8 +9600,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    108,
-    121
+    110,
+    123
    ],
    "doc": "",
    "parent": null,
@@ -8838,8 +9614,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    124,
-    132
+    126,
+    134
    ],
    "doc": "",
    "parent": null,
@@ -8852,8 +9628,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    135,
-    140
+    137,
+    142
    ],
    "doc": "",
    "parent": null,
@@ -8866,8 +9642,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    143,
-    145
+    145,
+    147
    ],
    "doc": "",
    "parent": null,
@@ -8880,8 +9656,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    148,
-    154
+    150,
+    156
    ],
    "doc": "",
    "parent": null,
@@ -8894,8 +9670,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    157,
-    161
+    159,
+    163
    ],
    "doc": "",
    "parent": null,
@@ -8908,8 +9684,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    164,
-    174
+    166,
+    176
    ],
    "doc": "",
    "parent": null,
@@ -8922,8 +9698,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    177,
-    179
+    179,
+    181
    ],
    "doc": "",
    "parent": null,
@@ -8936,8 +9712,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    182,
-    185
+    184,
+    187
    ],
    "doc": "",
    "parent": null,
@@ -8950,8 +9726,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    188,
-    192
+    190,
+    194
    ],
    "doc": "",
    "parent": null,
@@ -8964,8 +9740,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    195,
-    200
+    197,
+    202
    ],
    "doc": "",
    "parent": null,
@@ -8978,8 +9754,8 @@ window.ATLAS = {
    "kind": "constant",
    "file": "backend/tests/test_api.py",
    "lines": [
-    203,
-    203
+    205,
+    205
    ],
    "doc": "",
    "parent": null
@@ -8990,8 +9766,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    206,
-    212
+    208,
+    214
    ],
    "doc": "",
    "parent": null,
@@ -9004,8 +9780,8 @@ window.ATLAS = {
    "kind": "function",
    "file": "backend/tests/test_api.py",
    "lines": [
-    215,
-    221
+    217,
+    223
    ],
    "doc": "",
    "parent": null,
@@ -9400,6 +10176,226 @@ window.ATLAS = {
    "doc": "",
    "parent": null,
    "signature": "test_expired_skips_samples_and_fresh_uploads(tmp_path)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "name": "FakeClient",
+   "kind": "class",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    16,
+    26
+   ],
+   "doc": "",
+   "parent": null
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#FakeClient.__init__",
+   "name": "FakeClient.__init__",
+   "kind": "method",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    17,
+    20
+   ],
+   "doc": "",
+   "parent": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "signature": "__init__(dims, fail)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#FakeClient.embed_content",
+   "name": "FakeClient.embed_content",
+   "kind": "method",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    22,
+    26
+   ],
+   "doc": "",
+   "parent": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "signature": "embed_content(model, contents, config)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#Clock",
+   "name": "Clock",
+   "kind": "class",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    29,
+    39
+   ],
+   "doc": "",
+   "parent": null
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#Clock.__init__",
+   "name": "Clock.__init__",
+   "kind": "method",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    30,
+    32
+   ],
+   "doc": "",
+   "parent": "sym:backend/tests/test_gemini_embedder.py#Clock",
+   "signature": "__init__()",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#Clock.now",
+   "name": "Clock.now",
+   "kind": "method",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    34,
+    35
+   ],
+   "doc": "",
+   "parent": "sym:backend/tests/test_gemini_embedder.py#Clock",
+   "signature": "now()",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#Clock.sleep",
+   "name": "Clock.sleep",
+   "kind": "method",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    37,
+    39
+   ],
+   "doc": "",
+   "parent": "sym:backend/tests/test_gemini_embedder.py#Clock",
+   "signature": "sleep(s)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#make",
+   "name": "make",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    42,
+    47
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "make(tmp_path, client)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched",
+   "name": "test_vectors_are_normalized_and_batched",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    50,
+    56
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "test_vectors_are_normalized_and_batched(tmp_path)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api",
+   "name": "test_precomputed_vectors_skip_the_api",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    59,
+    65
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "test_precomputed_vectors_skip_the_api(tmp_path)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing",
+   "name": "test_free_tier_throttle_waits_instead_of_failing",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    68,
+    74
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "test_free_tier_throttle_waits_instead_of_failing(tmp_path)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached",
+   "name": "test_query_embeddings_are_cached",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    77,
+    84
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "test_query_embeddings_are_cached(tmp_path)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors",
+   "name": "test_api_errors_become_user_safe_errors",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    87,
+    90
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "test_api_errors_become_user_safe_errors(tmp_path)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#test_collection_name_differs_per_provider",
+   "name": "test_collection_name_differs_per_provider",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    93,
+    95
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "test_collection_name_differs_per_provider()",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#_chunk",
+   "name": "_chunk",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    100,
+    102
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "_chunk(doc_id, i, text)",
+   "decorators": []
+  },
+  {
+   "id": "sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity",
+   "name": "test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity",
+   "kind": "function",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "lines": [
+    105,
+    120
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity(store, embedder)",
    "decorators": []
   },
   {
@@ -10781,7 +11777,7 @@ window.ATLAS = {
    "file": "frontend/src/App.tsx",
    "lines": [
     25,
-    98
+    101
    ],
    "exported": true,
    "doc": "",
@@ -11096,7 +12092,7 @@ window.ATLAS = {
    "file": "frontend/src/components/DocumentPanel.tsx",
    "lines": [
     6,
-    14
+    15
    ],
    "exported": false,
    "doc": "",
@@ -11109,8 +12105,8 @@ window.ATLAS = {
    "kind": "const",
    "file": "frontend/src/components/DocumentPanel.tsx",
    "lines": [
-    15,
-    23
+    16,
+    24
    ],
    "exported": false,
    "doc": "",
@@ -11123,8 +12119,8 @@ window.ATLAS = {
    "kind": "component",
    "file": "frontend/src/components/DocumentPanel.tsx",
    "lines": [
-    24,
-    41
+    25,
+    42
    ],
    "exported": false,
    "doc": "",
@@ -11137,8 +12133,8 @@ window.ATLAS = {
    "kind": "const",
    "file": "frontend/src/components/DocumentPanel.tsx",
    "lines": [
-    42,
-    43
+    43,
+    44
    ],
    "exported": false,
    "doc": "",
@@ -11151,8 +12147,8 @@ window.ATLAS = {
    "kind": "component",
    "file": "frontend/src/components/DocumentPanel.tsx",
    "lines": [
-    44,
-    138
+    45,
+    142
    ],
    "exported": true,
    "doc": "",
@@ -11383,7 +12379,7 @@ window.ATLAS = {
    "file": "frontend/src/types.ts",
    "lines": [
     86,
-    91
+    92
    ],
    "exported": true,
    "doc": "",
@@ -11396,13 +12392,105 @@ window.ATLAS = {
    "kind": "type",
    "file": "frontend/src/types.ts",
    "lines": [
-    92,
-    109
+    93,
+    110
    ],
    "exported": true,
    "doc": "",
    "api_urls": [],
    "jsx": []
+  },
+  {
+   "id": "sym:scripts/deploy_hf.py#ROOT",
+   "name": "ROOT",
+   "kind": "constant",
+   "file": "scripts/deploy_hf.py",
+   "lines": [
+    32,
+    32
+   ],
+   "doc": "",
+   "parent": null
+  },
+  {
+   "id": "sym:scripts/deploy_hf.py#IGNORE",
+   "name": "IGNORE",
+   "kind": "constant",
+   "file": "scripts/deploy_hf.py",
+   "lines": [
+    34,
+    43
+   ],
+   "doc": "",
+   "parent": null
+  },
+  {
+   "id": "sym:scripts/deploy_hf.py#VARIABLES",
+   "name": "VARIABLES",
+   "kind": "constant",
+   "file": "scripts/deploy_hf.py",
+   "lines": [
+    47,
+    51
+   ],
+   "doc": "",
+   "parent": null
+  },
+  {
+   "id": "sym:scripts/deploy_hf.py#space_readme",
+   "name": "space_readme",
+   "kind": "function",
+   "file": "scripts/deploy_hf.py",
+   "lines": [
+    54,
+    73
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "space_readme(github_url)",
+   "decorators": []
+  },
+  {
+   "id": "sym:scripts/deploy_hf.py#read_env_value",
+   "name": "read_env_value",
+   "kind": "function",
+   "file": "scripts/deploy_hf.py",
+   "lines": [
+    76,
+    84
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "read_env_value(key)",
+   "decorators": []
+  },
+  {
+   "id": "sym:scripts/deploy_hf.py#files_to_upload",
+   "name": "files_to_upload",
+   "kind": "function",
+   "file": "scripts/deploy_hf.py",
+   "lines": [
+    87,
+    98
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "files_to_upload()",
+   "decorators": []
+  },
+  {
+   "id": "sym:scripts/deploy_hf.py#main",
+   "name": "main",
+   "kind": "function",
+   "file": "scripts/deploy_hf.py",
+   "lines": [
+    101,
+    160
+   ],
+   "doc": "",
+   "parent": null,
+   "signature": "main()",
+   "decorators": []
   }
  ],
  "edges": [
@@ -11860,6 +12948,13 @@ window.ATLAS = {
    "status": "verified"
   },
   {
+   "id": "contains:backend/app/config.py->sym:backend/app/config.py#Settings.collection_name",
+   "type": "contains",
+   "source": "file:backend/app/config.py",
+   "target": "sym:backend/app/config.py#Settings.collection_name",
+   "status": "verified"
+  },
+  {
    "id": "contains:backend/app/config.py->sym:backend/app/config.py#Settings.uploads_dir",
    "type": "contains",
    "source": "file:backend/app/config.py",
@@ -12023,12 +13118,29 @@ window.ATLAS = {
     {
      "file": "backend/app/embeddings.py",
      "lines": [
-      20,
-      20
+      28,
+      28
      ]
     }
    ],
    "label": "Settings"
+  },
+  {
+   "id": "imports:backend/app/embeddings.py->backend/app/llm.py",
+   "type": "imports",
+   "source": "file:backend/app/embeddings.py",
+   "target": "file:backend/app/llm.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/app/embeddings.py",
+     "lines": [
+      148,
+      148
+     ]
+    }
+   ],
+   "label": "LLMError"
   },
   {
    "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#SparseVector",
@@ -12105,6 +13217,125 @@ window.ATLAS = {
    "type": "contains",
    "source": "file:backend/app/embeddings.py",
    "target": "sym:backend/app/embeddings.py#Embedder.rerank",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder.__init__",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder.__init__",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder._wait_for_quota",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder._wait_for_quota",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder.client",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder.client",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder._sparse",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder._sparse",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder.dense_size",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder.dense_size",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder.warm_up",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder.warm_up",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder.embed_documents",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_documents",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder.embed_query",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_query",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#GeminiEmbedder.rerank",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder.rerank",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#precomputed_path",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#precomputed_path",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#precomputed_key",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#precomputed_key",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#load_precomputed",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#load_precomputed",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#build_embedder",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#build_embedder",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#_normalize",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#_normalize",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/embeddings.py->sym:backend/app/embeddings.py#cosine",
+   "type": "contains",
+   "source": "file:backend/app/embeddings.py",
+   "target": "sym:backend/app/embeddings.py#cosine",
    "status": "verified"
   },
   {
@@ -13053,6 +14284,23 @@ window.ATLAS = {
    "label": "Settings"
   },
   {
+   "id": "imports:backend/app/retrieval.py->backend/app/embeddings.py",
+   "type": "imports",
+   "source": "file:backend/app/retrieval.py",
+   "target": "file:backend/app/embeddings.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/app/retrieval.py",
+     "lines": [
+      23,
+      23
+     ]
+    }
+   ],
+   "label": "cosine"
+  },
+  {
    "id": "imports:backend/app/retrieval.py->backend/app/indexer.py",
    "type": "imports",
    "source": "file:backend/app/retrieval.py",
@@ -13062,8 +14310,8 @@ window.ATLAS = {
     {
      "file": "backend/app/retrieval.py",
      "lines": [
-      23,
-      23
+      24,
+      24
      ]
     }
    ],
@@ -13079,8 +14327,8 @@ window.ATLAS = {
     {
      "file": "backend/app/retrieval.py",
      "lines": [
-      24,
-      24
+      25,
+      25
      ]
     }
    ],
@@ -13096,8 +14344,8 @@ window.ATLAS = {
     {
      "file": "backend/app/retrieval.py",
      "lines": [
-      25,
-      25
+      26,
+      26
      ]
     }
    ],
@@ -13113,8 +14361,8 @@ window.ATLAS = {
     {
      "file": "backend/app/retrieval.py",
      "lines": [
-      26,
-      26
+      27,
+      27
      ]
     }
    ],
@@ -13167,6 +14415,13 @@ window.ATLAS = {
    "type": "contains",
    "source": "file:backend/app/retrieval.py",
    "target": "sym:backend/app/retrieval.py#Retriever._follow_references",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/app/retrieval.py->sym:backend/app/retrieval.py#Retriever._similarity_ranked",
+   "type": "contains",
+   "source": "file:backend/app/retrieval.py",
+   "target": "sym:backend/app/retrieval.py#Retriever._similarity_ranked",
    "status": "verified"
   },
   {
@@ -13417,7 +14672,7 @@ window.ATLAS = {
      ]
     }
    ],
-   "label": "Embedder"
+   "label": "build_embedder"
   },
   {
    "id": "imports:backend/app/services.py->backend/app/indexer.py",
@@ -13693,6 +14948,13 @@ window.ATLAS = {
    "status": "verified"
   },
   {
+   "id": "contains:backend/app/vectorstore.py->sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors",
+   "type": "contains",
+   "source": "file:backend/app/vectorstore.py",
+   "target": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors",
+   "status": "verified"
+  },
+  {
    "id": "imports:backend/app/verification.py->backend/app/retrieval.py",
    "type": "imports",
    "source": "file:backend/app/verification.py",
@@ -13800,7 +15062,7 @@ window.ATLAS = {
      ]
     }
    ],
-   "label": "Embedder"
+   "label": "build_embedder"
   },
   {
    "id": "imports:backend/eval/common.py->backend/app/indexer.py",
@@ -14234,6 +15496,122 @@ window.ATLAS = {
    "type": "contains",
    "source": "file:backend/scripts/make_sample_policy.py",
    "target": "sym:backend/scripts/make_sample_policy.py#build",
+   "status": "verified"
+  },
+  {
+   "id": "imports:backend/scripts/precompute_embeddings.py->backend/app/config.py",
+   "type": "imports",
+   "source": "file:backend/scripts/precompute_embeddings.py",
+   "target": "file:backend/app/config.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/scripts/precompute_embeddings.py",
+     "lines": [
+      23,
+      23
+     ]
+    }
+   ],
+   "label": "Settings"
+  },
+  {
+   "id": "imports:backend/scripts/precompute_embeddings.py->backend/app/embeddings.py",
+   "type": "imports",
+   "source": "file:backend/scripts/precompute_embeddings.py",
+   "target": "file:backend/app/embeddings.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/scripts/precompute_embeddings.py",
+     "lines": [
+      24,
+      24
+     ]
+    }
+   ],
+   "label": "GeminiEmbedder, precomputed_key, precomputed_path"
+  },
+  {
+   "id": "imports:backend/scripts/precompute_embeddings.py->backend/app/ingest/chunker.py",
+   "type": "imports",
+   "source": "file:backend/scripts/precompute_embeddings.py",
+   "target": "file:backend/app/ingest/chunker.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/scripts/precompute_embeddings.py",
+     "lines": [
+      25,
+      25
+     ]
+    }
+   ],
+   "label": "chunk_pages"
+  },
+  {
+   "id": "imports:backend/scripts/precompute_embeddings.py->backend/app/ingest/markdown.py",
+   "type": "imports",
+   "source": "file:backend/scripts/precompute_embeddings.py",
+   "target": "file:backend/app/ingest/markdown.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/scripts/precompute_embeddings.py",
+     "lines": [
+      26,
+      26
+     ]
+    }
+   ],
+   "label": "load_federal_corpus"
+  },
+  {
+   "id": "imports:backend/scripts/precompute_embeddings.py->backend/app/indexer.py",
+   "type": "imports",
+   "source": "file:backend/scripts/precompute_embeddings.py",
+   "target": "file:backend/app/indexer.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/scripts/precompute_embeddings.py",
+     "lines": [
+      27,
+      27
+     ]
+    }
+   ],
+   "label": "load_policy_pages"
+  },
+  {
+   "id": "imports:backend/scripts/precompute_embeddings.py->backend/app/services.py",
+   "type": "imports",
+   "source": "file:backend/scripts/precompute_embeddings.py",
+   "target": "file:backend/app/services.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/scripts/precompute_embeddings.py",
+     "lines": [
+      28,
+      28
+     ]
+    }
+   ],
+   "label": "SAMPLE_DOC_ID, SAMPLE_PDF_NAME, SAMPLE_TITLE"
+  },
+  {
+   "id": "contains:backend/scripts/precompute_embeddings.py->sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+   "type": "contains",
+   "source": "file:backend/scripts/precompute_embeddings.py",
+   "target": "sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/scripts/precompute_embeddings.py->sym:backend/scripts/precompute_embeddings.py#main",
+   "type": "contains",
+   "source": "file:backend/scripts/precompute_embeddings.py",
+   "target": "sym:backend/scripts/precompute_embeddings.py#main",
    "status": "verified"
   },
   {
@@ -15101,6 +16479,203 @@ window.ATLAS = {
    "type": "contains",
    "source": "file:backend/tests/test_documents.py",
    "target": "sym:backend/tests/test_documents.py#test_expired_skips_samples_and_fresh_uploads",
+   "status": "verified"
+  },
+  {
+   "id": "imports:backend/tests/test_gemini_embedder.py->backend/app/config.py",
+   "type": "imports",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "file:backend/app/config.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/tests/test_gemini_embedder.py",
+     "lines": [
+      9,
+      9
+     ]
+    }
+   ],
+   "label": "Settings"
+  },
+  {
+   "id": "imports:backend/tests/test_gemini_embedder.py->backend/app/embeddings.py",
+   "type": "imports",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "file:backend/app/embeddings.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/tests/test_gemini_embedder.py",
+     "lines": [
+      10,
+      10
+     ]
+    }
+   ],
+   "label": "GeminiEmbedder, precomputed_key"
+  },
+  {
+   "id": "imports:backend/tests/test_gemini_embedder.py->backend/app/llm.py",
+   "type": "imports",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "file:backend/app/llm.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/tests/test_gemini_embedder.py",
+     "lines": [
+      11,
+      11
+     ]
+    }
+   ],
+   "label": "LLMError"
+  },
+  {
+   "id": "imports:backend/tests/test_gemini_embedder.py->backend/app/models.py",
+   "type": "imports",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "file:backend/app/models.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/tests/test_gemini_embedder.py",
+     "lines": [
+      12,
+      12
+     ]
+    }
+   ],
+   "label": "Chunk"
+  },
+  {
+   "id": "imports:backend/tests/test_gemini_embedder.py->backend/app/retrieval.py",
+   "type": "imports",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "file:backend/app/retrieval.py",
+   "status": "verified",
+   "evidence": [
+    {
+     "file": "backend/tests/test_gemini_embedder.py",
+     "lines": [
+      13,
+      13
+     ]
+    }
+   ],
+   "label": "Retriever"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#FakeClient.__init__",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#FakeClient.__init__",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#FakeClient.embed_content",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#FakeClient.embed_content",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#Clock",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#Clock",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#Clock.__init__",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#Clock.__init__",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#Clock.now",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#Clock.now",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#Clock.sleep",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#Clock.sleep",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#make",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#make",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#test_collection_name_differs_per_provider",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#test_collection_name_differs_per_provider",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#_chunk",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#_chunk",
+   "status": "verified"
+  },
+  {
+   "id": "contains:backend/tests/test_gemini_embedder.py->sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity",
+   "type": "contains",
+   "source": "file:backend/tests/test_gemini_embedder.py",
+   "target": "sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity",
    "status": "verified"
   },
   {
@@ -17043,6 +18618,55 @@ window.ATLAS = {
    "status": "verified"
   },
   {
+   "id": "contains:scripts/deploy_hf.py->sym:scripts/deploy_hf.py#ROOT",
+   "type": "contains",
+   "source": "file:scripts/deploy_hf.py",
+   "target": "sym:scripts/deploy_hf.py#ROOT",
+   "status": "verified"
+  },
+  {
+   "id": "contains:scripts/deploy_hf.py->sym:scripts/deploy_hf.py#IGNORE",
+   "type": "contains",
+   "source": "file:scripts/deploy_hf.py",
+   "target": "sym:scripts/deploy_hf.py#IGNORE",
+   "status": "verified"
+  },
+  {
+   "id": "contains:scripts/deploy_hf.py->sym:scripts/deploy_hf.py#VARIABLES",
+   "type": "contains",
+   "source": "file:scripts/deploy_hf.py",
+   "target": "sym:scripts/deploy_hf.py#VARIABLES",
+   "status": "verified"
+  },
+  {
+   "id": "contains:scripts/deploy_hf.py->sym:scripts/deploy_hf.py#space_readme",
+   "type": "contains",
+   "source": "file:scripts/deploy_hf.py",
+   "target": "sym:scripts/deploy_hf.py#space_readme",
+   "status": "verified"
+  },
+  {
+   "id": "contains:scripts/deploy_hf.py->sym:scripts/deploy_hf.py#read_env_value",
+   "type": "contains",
+   "source": "file:scripts/deploy_hf.py",
+   "target": "sym:scripts/deploy_hf.py#read_env_value",
+   "status": "verified"
+  },
+  {
+   "id": "contains:scripts/deploy_hf.py->sym:scripts/deploy_hf.py#files_to_upload",
+   "type": "contains",
+   "source": "file:scripts/deploy_hf.py",
+   "target": "sym:scripts/deploy_hf.py#files_to_upload",
+   "status": "verified"
+  },
+  {
+   "id": "contains:scripts/deploy_hf.py->sym:scripts/deploy_hf.py#main",
+   "type": "contains",
+   "source": "file:scripts/deploy_hf.py",
+   "target": "sym:scripts/deploy_hf.py#main",
+   "status": "verified"
+  },
+  {
    "id": "calls:sym:backend/app/answering.py#fallback_answer->sym:backend/app/schemas.py#Answer",
    "type": "calls",
    "source": "sym:backend/app/answering.py#fallback_answer",
@@ -17483,6 +19107,110 @@ window.ATLAS = {
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
   {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder.__init__->sym:backend/app/embeddings.py#load_precomputed",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder.__init__",
+   "target": "sym:backend/app/embeddings.py#load_precomputed",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder._embed->sym:backend/app/embeddings.py#GeminiEmbedder._wait_for_quota",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder._wait_for_quota",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder._embed->sym:backend/app/embeddings.py#_normalize",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "target": "sym:backend/app/embeddings.py#_normalize",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder._embed->sym:backend/app/embeddings.py#precomputed_key",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "target": "sym:backend/app/embeddings.py#precomputed_key",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder._embed->sym:backend/app/llm.py#LLMError",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "target": "sym:backend/app/llm.py#LLMError",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder.warm_up->sym:backend/app/embeddings.py#GeminiEmbedder.embed_query",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder.warm_up",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_query",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder.embed_documents->sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_documents",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder.embed_documents->sym:backend/app/embeddings.py#_to_sparse",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_documents",
+   "target": "sym:backend/app/embeddings.py#_to_sparse",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder.embed_query->sym:backend/app/embeddings.py#_to_sparse",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_query",
+   "target": "sym:backend/app/embeddings.py#_to_sparse",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#GeminiEmbedder.embed_query->sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#GeminiEmbedder.embed_query",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder._embed",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#load_precomputed->sym:backend/app/embeddings.py#precomputed_path",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#load_precomputed",
+   "target": "sym:backend/app/embeddings.py#precomputed_path",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#build_embedder->sym:backend/app/embeddings.py#Embedder",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#build_embedder",
+   "target": "sym:backend/app/embeddings.py#Embedder",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/embeddings.py#build_embedder->sym:backend/app/embeddings.py#GeminiEmbedder",
+   "type": "calls",
+   "source": "sym:backend/app/embeddings.py#build_embedder",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
    "id": "calls:sym:backend/app/embeddings.py#_to_sparse->sym:backend/app/embeddings.py#_Sparse",
    "type": "calls",
    "source": "sym:backend/app/embeddings.py#_to_sparse",
@@ -17859,10 +19587,34 @@ window.ATLAS = {
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
   {
+   "id": "calls:sym:backend/app/retrieval.py#Retriever._similarity_ranked->sym:backend/app/retrieval.py#ScoredChunk",
+   "type": "calls",
+   "source": "sym:backend/app/retrieval.py#Retriever._similarity_ranked",
+   "target": "sym:backend/app/retrieval.py#ScoredChunk",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/retrieval.py#Retriever._similarity_ranked->sym:backend/app/embeddings.py#cosine",
+   "type": "calls",
+   "source": "sym:backend/app/retrieval.py#Retriever._similarity_ranked",
+   "target": "sym:backend/app/embeddings.py#cosine",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
    "id": "calls:sym:backend/app/retrieval.py#Retriever.retrieve->sym:backend/app/query_expansion.py#expand_query",
    "type": "calls",
    "source": "sym:backend/app/retrieval.py#Retriever.retrieve",
    "target": "sym:backend/app/query_expansion.py#expand_query",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/retrieval.py#Retriever.retrieve->sym:backend/app/retrieval.py#RetrievalResult",
+   "type": "calls",
+   "source": "sym:backend/app/retrieval.py#Retriever.retrieve",
+   "target": "sym:backend/app/retrieval.py#RetrievalResult",
    "status": "inferred",
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
@@ -17875,10 +19627,10 @@ window.ATLAS = {
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
   {
-   "id": "calls:sym:backend/app/retrieval.py#Retriever.retrieve->sym:backend/app/retrieval.py#RetrievalResult",
+   "id": "calls:sym:backend/app/retrieval.py#Retriever.retrieve->sym:backend/app/retrieval.py#Retriever._similarity_ranked",
    "type": "calls",
    "source": "sym:backend/app/retrieval.py#Retriever.retrieve",
-   "target": "sym:backend/app/retrieval.py#RetrievalResult",
+   "target": "sym:backend/app/retrieval.py#Retriever._similarity_ranked",
    "status": "inferred",
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
@@ -17995,10 +19747,10 @@ window.ATLAS = {
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
   {
-   "id": "calls:sym:backend/app/services.py#build_services->sym:backend/app/embeddings.py#Embedder",
+   "id": "calls:sym:backend/app/services.py#build_services->sym:backend/app/embeddings.py#build_embedder",
    "type": "calls",
    "source": "sym:backend/app/services.py#build_services",
-   "target": "sym:backend/app/embeddings.py#Embedder",
+   "target": "sym:backend/app/embeddings.py#build_embedder",
    "status": "inferred",
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
@@ -18067,17 +19819,25 @@ window.ATLAS = {
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
   {
-   "id": "calls:sym:backend/app/vectorstore.py#VectorStore.hybrid_search->sym:backend/app/vectorstore.py#_filter",
+   "id": "calls:sym:backend/app/vectorstore.py#VectorStore.hybrid_search->sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors",
    "type": "calls",
    "source": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search",
+   "target": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors->sym:backend/app/vectorstore.py#_filter",
+   "type": "calls",
+   "source": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors",
    "target": "sym:backend/app/vectorstore.py#_filter",
    "status": "inferred",
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
   {
-   "id": "calls:sym:backend/app/vectorstore.py#VectorStore.hybrid_search->sym:backend/app/models.py#Chunk.from_payload",
+   "id": "calls:sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors->sym:backend/app/models.py#Chunk.from_payload",
    "type": "calls",
-   "source": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search",
+   "source": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search_with_vectors",
    "target": "sym:backend/app/models.py#Chunk.from_payload",
    "status": "inferred",
    "note": "static name resolution (method calls on injected objects are not resolved)"
@@ -18123,10 +19883,10 @@ window.ATLAS = {
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
   {
-   "id": "calls:sym:backend/eval/common.py#build_retriever->sym:backend/app/embeddings.py#Embedder",
+   "id": "calls:sym:backend/eval/common.py#build_retriever->sym:backend/app/embeddings.py#build_embedder",
    "type": "calls",
    "source": "sym:backend/eval/common.py#build_retriever",
-   "target": "sym:backend/app/embeddings.py#Embedder",
+   "target": "sym:backend/app/embeddings.py#build_embedder",
    "status": "inferred",
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
@@ -18279,6 +20039,70 @@ window.ATLAS = {
    "type": "calls",
    "source": "sym:backend/redteam/run_redteam.py#main",
    "target": "sym:backend/redteam/run_redteam.py#ask",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/scripts/precompute_embeddings.py#bundled_texts->sym:backend/app/ingest/markdown.py#load_federal_corpus",
+   "type": "calls",
+   "source": "sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+   "target": "sym:backend/app/ingest/markdown.py#load_federal_corpus",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/scripts/precompute_embeddings.py#bundled_texts->sym:backend/app/indexer.py#load_policy_pages",
+   "type": "calls",
+   "source": "sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+   "target": "sym:backend/app/indexer.py#load_policy_pages",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/scripts/precompute_embeddings.py#bundled_texts->sym:backend/app/ingest/chunker.py#chunk_pages",
+   "type": "calls",
+   "source": "sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+   "target": "sym:backend/app/ingest/chunker.py#chunk_pages",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/scripts/precompute_embeddings.py#main->sym:backend/app/config.py#Settings",
+   "type": "calls",
+   "source": "sym:backend/scripts/precompute_embeddings.py#main",
+   "target": "sym:backend/app/config.py#Settings",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/scripts/precompute_embeddings.py#main->sym:backend/app/embeddings.py#GeminiEmbedder",
+   "type": "calls",
+   "source": "sym:backend/scripts/precompute_embeddings.py#main",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/scripts/precompute_embeddings.py#main->sym:backend/app/embeddings.py#precomputed_path",
+   "type": "calls",
+   "source": "sym:backend/scripts/precompute_embeddings.py#main",
+   "target": "sym:backend/app/embeddings.py#precomputed_path",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/scripts/precompute_embeddings.py#main->sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+   "type": "calls",
+   "source": "sym:backend/scripts/precompute_embeddings.py#main",
+   "target": "sym:backend/scripts/precompute_embeddings.py#bundled_texts",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/scripts/precompute_embeddings.py#main->sym:backend/app/embeddings.py#precomputed_key",
+   "type": "calls",
+   "source": "sym:backend/scripts/precompute_embeddings.py#main",
+   "target": "sym:backend/app/embeddings.py#precomputed_key",
    "status": "inferred",
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
@@ -19239,6 +21063,158 @@ window.ATLAS = {
    "type": "calls",
    "source": "sym:backend/tests/test_documents.py#test_expired_skips_samples_and_fresh_uploads",
    "target": "sym:backend/tests/test_documents.py#_record",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#make->sym:backend/tests/test_gemini_embedder.py#Clock",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#make",
+   "target": "sym:backend/tests/test_gemini_embedder.py#Clock",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#make->sym:backend/app/config.py#Settings",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#make",
+   "target": "sym:backend/app/config.py#Settings",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#make->sym:backend/app/embeddings.py#GeminiEmbedder",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#make",
+   "target": "sym:backend/app/embeddings.py#GeminiEmbedder",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched->sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched",
+   "target": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched->sym:backend/tests/test_gemini_embedder.py#make",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_vectors_are_normalized_and_batched",
+   "target": "sym:backend/tests/test_gemini_embedder.py#make",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api->sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api",
+   "target": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api->sym:backend/tests/test_gemini_embedder.py#make",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api",
+   "target": "sym:backend/tests/test_gemini_embedder.py#make",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api->sym:backend/app/embeddings.py#precomputed_key",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_precomputed_vectors_skip_the_api",
+   "target": "sym:backend/app/embeddings.py#precomputed_key",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing->sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing",
+   "target": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing->sym:backend/tests/test_gemini_embedder.py#make",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_free_tier_throttle_waits_instead_of_failing",
+   "target": "sym:backend/tests/test_gemini_embedder.py#make",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached->sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached",
+   "target": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached->sym:backend/tests/test_gemini_embedder.py#make",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_query_embeddings_are_cached",
+   "target": "sym:backend/tests/test_gemini_embedder.py#make",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors->sym:backend/tests/test_gemini_embedder.py#make",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors",
+   "target": "sym:backend/tests/test_gemini_embedder.py#make",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors->sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_api_errors_become_user_safe_errors",
+   "target": "sym:backend/tests/test_gemini_embedder.py#FakeClient",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_collection_name_differs_per_provider->sym:backend/app/config.py#Settings",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_collection_name_differs_per_provider",
+   "target": "sym:backend/app/config.py#Settings",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#_chunk->sym:backend/app/models.py#Chunk",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#_chunk",
+   "target": "sym:backend/app/models.py#Chunk",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity->sym:backend/app/retrieval.py#Retriever",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity",
+   "target": "sym:backend/app/retrieval.py#Retriever",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity->sym:backend/app/config.py#Settings",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity",
+   "target": "sym:backend/app/config.py#Settings",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity->sym:backend/tests/test_gemini_embedder.py#_chunk",
+   "type": "calls",
+   "source": "sym:backend/tests/test_gemini_embedder.py#test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity",
+   "target": "sym:backend/tests/test_gemini_embedder.py#_chunk",
    "status": "inferred",
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
@@ -20275,6 +22251,30 @@ window.ATLAS = {
    "note": "static name resolution (method calls on injected objects are not resolved)"
   },
   {
+   "id": "calls:sym:scripts/deploy_hf.py#main->sym:scripts/deploy_hf.py#files_to_upload",
+   "type": "calls",
+   "source": "sym:scripts/deploy_hf.py#main",
+   "target": "sym:scripts/deploy_hf.py#files_to_upload",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:scripts/deploy_hf.py#main->sym:scripts/deploy_hf.py#read_env_value",
+   "type": "calls",
+   "source": "sym:scripts/deploy_hf.py#main",
+   "target": "sym:scripts/deploy_hf.py#read_env_value",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
+   "id": "calls:sym:scripts/deploy_hf.py#main->sym:scripts/deploy_hf.py#space_readme",
+   "type": "calls",
+   "source": "sym:scripts/deploy_hf.py#main",
+   "target": "sym:scripts/deploy_hf.py#space_readme",
+   "status": "inferred",
+   "note": "static name resolution (method calls on injected objects are not resolved)"
+  },
+  {
    "id": "renders:sym:frontend/src/App.tsx#App->sym:frontend/src/components/Chat.tsx#Chat",
    "type": "renders",
    "source": "sym:frontend/src/App.tsx#App",
@@ -20303,10 +22303,10 @@ window.ATLAS = {
    "status": "verified"
   },
   {
-   "id": "calls:sym:frontend/src/App.tsx#App->sym:frontend/src/api.ts#fetchDocument",
+   "id": "calls:sym:frontend/src/App.tsx#App->sym:frontend/src/App.tsx#readSavedDocId",
    "type": "calls",
    "source": "sym:frontend/src/App.tsx#App",
-   "target": "sym:frontend/src/api.ts#fetchDocument",
+   "target": "sym:frontend/src/App.tsx#readSavedDocId",
    "status": "inferred",
    "note": "regex call detection"
   },
@@ -20319,18 +22319,18 @@ window.ATLAS = {
    "note": "regex call detection"
   },
   {
-   "id": "calls:sym:frontend/src/App.tsx#App->sym:frontend/src/App.tsx#readSavedDocId",
-   "type": "calls",
-   "source": "sym:frontend/src/App.tsx#App",
-   "target": "sym:frontend/src/App.tsx#readSavedDocId",
-   "status": "inferred",
-   "note": "regex call detection"
-  },
-  {
    "id": "calls:sym:frontend/src/App.tsx#App->sym:frontend/src/api.ts#fetchHealth",
    "type": "calls",
    "source": "sym:frontend/src/App.tsx#App",
    "target": "sym:frontend/src/api.ts#fetchHealth",
+   "status": "inferred",
+   "note": "regex call detection"
+  },
+  {
+   "id": "calls:sym:frontend/src/App.tsx#App->sym:frontend/src/api.ts#fetchDocument",
+   "type": "calls",
+   "source": "sym:frontend/src/App.tsx#App",
+   "target": "sym:frontend/src/api.ts#fetchDocument",
    "status": "inferred",
    "note": "regex call detection"
   },
@@ -20758,6 +22758,46 @@ window.ATLAS = {
    "type": "tested_by",
    "source": "file:backend/app/documents.py",
    "target": "file:backend/tests/test_documents.py",
+   "status": "verified",
+   "note": "test file imports this module"
+  },
+  {
+   "id": "tested_by:backend/app/config.py->backend/tests/test_gemini_embedder.py",
+   "type": "tested_by",
+   "source": "file:backend/app/config.py",
+   "target": "file:backend/tests/test_gemini_embedder.py",
+   "status": "verified",
+   "note": "test file imports this module"
+  },
+  {
+   "id": "tested_by:backend/app/embeddings.py->backend/tests/test_gemini_embedder.py",
+   "type": "tested_by",
+   "source": "file:backend/app/embeddings.py",
+   "target": "file:backend/tests/test_gemini_embedder.py",
+   "status": "verified",
+   "note": "test file imports this module"
+  },
+  {
+   "id": "tested_by:backend/app/llm.py->backend/tests/test_gemini_embedder.py",
+   "type": "tested_by",
+   "source": "file:backend/app/llm.py",
+   "target": "file:backend/tests/test_gemini_embedder.py",
+   "status": "verified",
+   "note": "test file imports this module"
+  },
+  {
+   "id": "tested_by:backend/app/models.py->backend/tests/test_gemini_embedder.py",
+   "type": "tested_by",
+   "source": "file:backend/app/models.py",
+   "target": "file:backend/tests/test_gemini_embedder.py",
+   "status": "verified",
+   "note": "test file imports this module"
+  },
+  {
+   "id": "tested_by:backend/app/retrieval.py->backend/tests/test_gemini_embedder.py",
+   "type": "tested_by",
+   "source": "file:backend/app/retrieval.py",
+   "target": "file:backend/tests/test_gemini_embedder.py",
    "status": "verified",
    "note": "test file imports this module"
   },
@@ -21240,6 +23280,62 @@ window.ATLAS = {
    "file": "backend/app/config.py"
   },
   {
+   "id": "env:EMBEDDING_PROVIDER",
+   "name": "EMBEDDING_PROVIDER",
+   "field": "embedding_provider",
+   "type": "str",
+   "default": "'local'",
+   "secret": false,
+   "comment": "",
+   "lines": [
+    47,
+    47
+   ],
+   "file": "backend/app/config.py"
+  },
+  {
+   "id": "env:GEMINI_EMBEDDING_MODEL",
+   "name": "GEMINI_EMBEDDING_MODEL",
+   "field": "gemini_embedding_model",
+   "type": "str",
+   "default": "'gemini-embedding-001'",
+   "secret": false,
+   "comment": "",
+   "lines": [
+    48,
+    48
+   ],
+   "file": "backend/app/config.py"
+  },
+  {
+   "id": "env:EMBEDDING_DIMENSIONS",
+   "name": "EMBEDDING_DIMENSIONS",
+   "field": "embedding_dimensions",
+   "type": "int",
+   "default": "768",
+   "secret": false,
+   "comment": "gemini mode only (local bge-small is 384)",
+   "lines": [
+    49,
+    49
+   ],
+   "file": "backend/app/config.py"
+  },
+  {
+   "id": "env:EMBEDDING_TEXTS_PER_MINUTE",
+   "name": "EMBEDDING_TEXTS_PER_MINUTE",
+   "field": "embedding_texts_per_minute",
+   "type": "int",
+   "default": "90",
+   "secret": false,
+   "comment": "",
+   "lines": [
+    51,
+    51
+   ],
+   "file": "backend/app/config.py"
+  },
+  {
    "id": "env:DENSE_MODEL",
    "name": "DENSE_MODEL",
    "field": "dense_model",
@@ -21248,8 +23344,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    44,
-    44
+    52,
+    52
    ],
    "file": "backend/app/config.py"
   },
@@ -21262,8 +23358,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    45,
-    45
+    53,
+    53
    ],
    "file": "backend/app/config.py"
   },
@@ -21276,8 +23372,22 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    46,
-    46
+    54,
+    54
+   ],
+   "file": "backend/app/config.py"
+  },
+  {
+   "id": "env:EMBED_BATCH_SIZE",
+   "name": "EMBED_BATCH_SIZE",
+   "field": "embed_batch_size",
+   "type": "int",
+   "default": "32",
+   "secret": false,
+   "comment": "",
+   "lines": [
+    58,
+    58
    ],
    "file": "backend/app/config.py"
   },
@@ -21290,8 +23400,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    49,
-    49
+    61,
+    61
    ],
    "file": "backend/app/config.py"
   },
@@ -21304,8 +23414,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    50,
-    50
+    62,
+    62
    ],
    "file": "backend/app/config.py"
   },
@@ -21318,8 +23428,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    55,
-    55
+    67,
+    67
    ],
    "file": "backend/app/config.py"
   },
@@ -21332,8 +23442,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    56,
-    56
+    68,
+    68
    ],
    "file": "backend/app/config.py"
   },
@@ -21346,8 +23456,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    57,
-    57
+    69,
+    69
    ],
    "file": "backend/app/config.py"
   },
@@ -21360,8 +23470,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "best chunk below this -> off-topic, skip the LLM",
    "lines": [
-    60,
-    60
+    72,
+    72
    ],
    "file": "backend/app/config.py"
   },
@@ -21374,8 +23484,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "federal chunks must clear this to be attached",
    "lines": [
-    61,
-    61
+    73,
+    73
    ],
    "file": "backend/app/config.py"
   },
@@ -21388,8 +23498,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    63,
-    63
+    75,
+    75
    ],
    "file": "backend/app/config.py"
   },
@@ -21402,8 +23512,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    64,
-    64
+    76,
+    76
    ],
    "file": "backend/app/config.py"
   },
@@ -21416,8 +23526,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    67,
-    67
+    79,
+    79
    ],
    "file": "backend/app/config.py"
   },
@@ -21430,8 +23540,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    68,
-    68
+    80,
+    80
    ],
    "file": "backend/app/config.py"
   },
@@ -21444,8 +23554,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "~600 dense pages; guards against text bombs",
    "lines": [
-    69,
-    69
+    81,
+    81
    ],
    "file": "backend/app/config.py"
   },
@@ -21458,8 +23568,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    70,
-    70
+    82,
+    82
    ],
    "file": "backend/app/config.py"
   },
@@ -21472,8 +23582,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    73,
-    73
+    85,
+    85
    ],
    "file": "backend/app/config.py"
   },
@@ -21486,8 +23596,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    74,
-    74
+    86,
+    86
    ],
    "file": "backend/app/config.py"
   },
@@ -21500,8 +23610,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    75,
-    75
+    87,
+    87
    ],
    "file": "backend/app/config.py"
   },
@@ -21514,8 +23624,8 @@ window.ATLAS = {
    "secret": false,
    "comment": "set true behind a reverse proxy",
    "lines": [
-    76,
-    76
+    88,
+    88
    ],
    "file": "backend/app/config.py"
   },
@@ -21528,8 +23638,36 @@ window.ATLAS = {
    "secret": false,
    "comment": "",
    "lines": [
-    78,
-    78
+    90,
+    90
+   ],
+   "file": "backend/app/config.py"
+  },
+  {
+   "id": "env:GATE_SIMILARITY",
+   "name": "GATE_SIMILARITY",
+   "field": "gate_similarity",
+   "type": "float",
+   "default": "0.62",
+   "secret": false,
+   "comment": "",
+   "lines": [
+    94,
+    94
+   ],
+   "file": "backend/app/config.py"
+  },
+  {
+   "id": "env:FEDERAL_MIN_SIMILARITY",
+   "name": "FEDERAL_MIN_SIMILARITY",
+   "field": "federal_min_similarity",
+   "type": "float",
+   "default": "0.65",
+   "secret": false,
+   "comment": "",
+   "lines": [
+    95,
+    95
    ],
    "file": "backend/app/config.py"
   }
@@ -21651,6 +23789,27 @@ window.ATLAS = {
    ],
    "covers": [
     "backend/app/documents.py"
+   ]
+  },
+  {
+   "id": "test:backend/tests/test_gemini_embedder.py",
+   "file": "backend/tests/test_gemini_embedder.py",
+   "test_functions": 7,
+   "names": [
+    "test_vectors_are_normalized_and_batched",
+    "test_precomputed_vectors_skip_the_api",
+    "test_free_tier_throttle_waits_instead_of_failing",
+    "test_query_embeddings_are_cached",
+    "test_api_errors_become_user_safe_errors",
+    "test_collection_name_differs_per_provider",
+    "test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity"
+   ],
+   "covers": [
+    "backend/app/config.py",
+    "backend/app/embeddings.py",
+    "backend/app/llm.py",
+    "backend/app/models.py",
+    "backend/app/retrieval.py"
    ]
   },
   {
@@ -21950,8 +24109,8 @@ window.ATLAS = {
      "symbol": "ask",
      "symbol_id": "sym:backend/app/api.py#ask",
      "lines": [
-      162,
-      236
+      168,
+      242
      ]
     },
     {
@@ -21995,7 +24154,7 @@ window.ATLAS = {
      "symbol_id": "sym:backend/app/config.py#Settings",
      "lines": [
       15,
-      86
+      110
      ]
     }
    ]
@@ -22061,8 +24220,8 @@ window.ATLAS = {
      "symbol": "Retriever.retrieve",
      "symbol_id": "sym:backend/app/retrieval.py#Retriever.retrieve",
      "lines": [
-      81,
-      110
+      88,
+      129
      ]
     },
     {
@@ -22071,7 +24230,7 @@ window.ATLAS = {
      "symbol_id": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search",
      "lines": [
       91,
-      111
+      94
      ]
     }
    ]
@@ -22222,8 +24381,8 @@ window.ATLAS = {
      "symbol": "Settings.uploads_dir",
      "symbol_id": "sym:backend/app/config.py#Settings.uploads_dir",
      "lines": [
-      81,
-      82
+      105,
+      106
      ]
     }
    ]
@@ -22281,8 +24440,8 @@ window.ATLAS = {
      "symbol": "Embedder",
      "symbol_id": "sym:backend/app/embeddings.py#Embedder",
      "lines": [
-      28,
-      70
+      36,
+      81
      ]
     },
     {
@@ -22418,8 +24577,8 @@ window.ATLAS = {
      "symbol": "Embedder._sparse",
      "symbol_id": "sym:backend/app/embeddings.py#Embedder._sparse",
      "lines": [
-      39,
-      40
+      49,
+      50
      ]
     }
    ]
@@ -22593,8 +24752,8 @@ window.ATLAS = {
      "file": "Dockerfile",
      "match": "^CMD",
      "lines": [
-      35,
-      35
+      43,
+      43
      ]
     }
    ]
@@ -22660,8 +24819,8 @@ window.ATLAS = {
      "file": "backend/app/api.py",
      "match": "svc\\.retriever\\.retrieve",
      "lines": [
-      196,
-      196
+      202,
+      202
      ]
     }
    ]
@@ -22678,16 +24837,16 @@ window.ATLAS = {
      "file": "backend/app/api.py",
      "match": "svc\\.answers\\.answer",
      "lines": [
-      212,
-      212
+      218,
+      218
      ]
     },
     {
      "file": "backend/app/api.py",
      "match": "extract_plan_facts\\(svc\\.llm",
      "lines": [
-      122,
-      122
+      128,
+      128
      ]
     }
    ]
@@ -22704,8 +24863,8 @@ window.ATLAS = {
      "file": "backend/app/api.py",
      "match": "index_policy_pdf\\(svc\\.store",
      "lines": [
-      114,
-      114
+      120,
+      120
      ]
     }
    ]
@@ -22722,16 +24881,16 @@ window.ATLAS = {
      "file": "backend/app/api.py",
      "match": "question_limiter\\.check",
      "lines": [
-      170,
-      170
+      176,
+      176
      ]
     },
     {
      "file": "backend/app/api.py",
      "match": "daily_budget\\.try_spend",
      "lines": [
-      121,
-      121
+      127,
+      127
      ]
     }
    ]
@@ -22757,8 +24916,8 @@ window.ATLAS = {
      "file": "backend/app/api.py",
      "match": "svc\\.registry\\.save",
      "lines": [
-      135,
-      135
+      141,
+      141
      ]
     }
    ]
@@ -22900,7 +25059,7 @@ window.ATLAS = {
      "symbol_id": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search",
      "lines": [
       91,
-      111
+      94
      ]
     },
     {
@@ -22927,8 +25086,8 @@ window.ATLAS = {
      "symbol": "Retriever._rerank",
      "symbol_id": "sym:backend/app/retrieval.py#Retriever._rerank",
      "lines": [
-      62,
-      65
+      63,
+      66
      ]
     },
     {
@@ -22936,8 +25095,8 @@ window.ATLAS = {
      "symbol": "Embedder.embed_query",
      "symbol_id": "sym:backend/app/embeddings.py#Embedder.embed_query",
      "lines": [
-      60,
-      64
+      71,
+      75
      ]
     }
    ]
@@ -23064,8 +25223,8 @@ window.ATLAS = {
      "symbol": "Embedder._dense",
      "symbol_id": "sym:backend/app/embeddings.py#Embedder._dense",
      "lines": [
-      35,
-      36
+      45,
+      46
      ]
     }
    ]
@@ -23175,8 +25334,8 @@ window.ATLAS = {
      "file": "Dockerfile",
      "match": "^CMD",
      "lines": [
-      35,
-      35
+      43,
+      43
      ]
     }
    ]
@@ -23408,8 +25567,8 @@ window.ATLAS = {
        "symbol": "Embedder.warm_up",
        "symbol_id": "sym:backend/app/embeddings.py#Embedder.warm_up",
        "lines": [
-        50,
-        53
+        60,
+        63
        ]
       }
      ]
@@ -23531,8 +25690,8 @@ window.ATLAS = {
        "symbol": "ask",
        "symbol_id": "sym:backend/app/api.py#ask",
        "lines": [
-        162,
-        236
+        168,
+        242
        ]
       },
       {
@@ -23556,8 +25715,8 @@ window.ATLAS = {
        "file": "backend/app/api.py",
        "match": "Searching your policy",
        "lines": [
-        195,
-        195
+        201,
+        201
        ]
       }
      ]
@@ -23573,8 +25732,8 @@ window.ATLAS = {
        "symbol": "Retriever.retrieve",
        "symbol_id": "sym:backend/app/retrieval.py#Retriever.retrieve",
        "lines": [
-        81,
-        110
+        88,
+        129
        ]
       },
       {
@@ -23599,8 +25758,8 @@ window.ATLAS = {
        "symbol": "Embedder.embed_query",
        "symbol_id": "sym:backend/app/embeddings.py#Embedder.embed_query",
        "lines": [
-        60,
-        64
+        71,
+        75
        ]
       }
      ]
@@ -23617,7 +25776,7 @@ window.ATLAS = {
        "symbol_id": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search",
        "lines": [
         91,
-        111
+        94
        ]
       }
      ]
@@ -23633,8 +25792,8 @@ window.ATLAS = {
        "symbol": "Retriever._rerank",
        "symbol_id": "sym:backend/app/retrieval.py#Retriever._rerank",
        "lines": [
-        62,
-        65
+        63,
+        66
        ]
       },
       {
@@ -23642,8 +25801,8 @@ window.ATLAS = {
        "symbol": "Embedder.rerank",
        "symbol_id": "sym:backend/app/embeddings.py#Embedder.rerank",
        "lines": [
-        66,
-        70
+        77,
+        81
        ]
       }
      ]
@@ -23658,8 +25817,8 @@ window.ATLAS = {
        "file": "backend/app/retrieval.py",
        "match": "if best < gate",
        "lines": [
-        101,
-        101
+        120,
+        120
        ]
       }
      ]
@@ -23675,8 +25834,8 @@ window.ATLAS = {
        "symbol": "Retriever._follow_references",
        "symbol_id": "sym:backend/app/retrieval.py#Retriever._follow_references",
        "lines": [
-        67,
-        79
+        68,
+        80
        ]
       },
       {
@@ -23701,8 +25860,8 @@ window.ATLAS = {
        "symbol": "_source_previews",
        "symbol_id": "sym:backend/app/api.py#_source_previews",
        "lines": [
-        144,
-        158
+        150,
+        164
        ]
       }
      ]
@@ -23717,8 +25876,8 @@ window.ATLAS = {
        "file": "backend/app/api.py",
        "match": "if not svc\\.daily_budget\\.try_spend\\(\\):\\n\\s+yield",
        "lines": [
-        208,
-        209
+        214,
+        215
        ]
       }
      ]
@@ -23835,16 +25994,16 @@ window.ATLAS = {
        "file": "backend/app/api.py",
        "match": "yield sse\\(\"answer\", answer\\.model_dump\\(\\)\\)\\n\\n",
        "lines": [
-        219,
-        221
+        225,
+        227
        ]
       },
       {
        "file": "backend/app/api.py",
        "match": "yield sse\\(\"done\"",
        "lines": [
-        230,
-        230
+        236,
+        236
        ]
       }
      ]
@@ -23912,8 +26071,8 @@ window.ATLAS = {
        "symbol": "Retriever.retrieve",
        "symbol_id": "sym:backend/app/retrieval.py#Retriever.retrieve",
        "lines": [
-        81,
-        110
+        88,
+        129
        ]
       }
      ]
@@ -23928,8 +26087,8 @@ window.ATLAS = {
        "file": "backend/app/retrieval.py",
        "match": "return result  # off-topic",
        "lines": [
-        102,
-        102
+        121,
+        121
        ]
       }
      ]
@@ -23944,8 +26103,8 @@ window.ATLAS = {
        "file": "backend/app/api.py",
        "match": "fallback_answer\\(\\)  # relevance gate",
        "lines": [
-        201,
-        201
+        207,
+        207
        ]
       }
      ]
@@ -24006,8 +26165,8 @@ window.ATLAS = {
        "file": "frontend/src/components/DocumentPanel.tsx",
        "match": "async function handleFile",
        "lines": [
-        50,
-        50
+        51,
+        51
        ]
       },
       {
@@ -24031,8 +26190,8 @@ window.ATLAS = {
        "file": "backend/app/api.py",
        "match": "data\\.startswith\\(b\"%PDF-\"\\)",
        "lines": [
-        104,
-        104
+        110,
+        110
        ]
       }
      ]
@@ -24047,8 +26206,8 @@ window.ATLAS = {
        "file": "backend/app/api.py",
        "match": "pdf_path\\.write_bytes\\(data\\)",
        "lines": [
-        110,
-        110
+        116,
+        116
        ]
       }
      ]
@@ -24074,7 +26233,7 @@ window.ATLAS = {
        "symbol_id": "sym:backend/app/ingest/pdf.py#load_pdf",
        "lines": [
         46,
-        62
+        66
        ]
       }
      ]
@@ -24149,8 +26308,8 @@ window.ATLAS = {
        "file": "backend/app/api.py",
        "match": "svc\\.llm is not None and svc\\.daily_budget\\.try_spend\\(\\)",
        "lines": [
-        121,
-        121
+        127,
+        127
        ]
       }
      ]
@@ -24269,8 +26428,8 @@ window.ATLAS = {
        "symbol": "get_document_file",
        "symbol_id": "sym:backend/app/api.py#get_document_file",
        "lines": [
-        76,
-        83
+        82,
+        89
        ]
       }
      ]
@@ -24364,8 +26523,8 @@ window.ATLAS = {
        "file": "backend/app/api.py",
        "match": "except AnswerError as exc",
        "lines": [
-        224,
-        224
+        230,
+        230
        ]
       }
      ]
@@ -25014,7 +27173,7 @@ window.ATLAS = {
      "symbol_id": "sym:frontend/src/App.tsx#App",
      "lines": [
       25,
-      98
+      101
      ]
     }
    ]
@@ -25073,8 +27232,8 @@ window.ATLAS = {
      "file": "Dockerfile",
      "match": "^CMD",
      "lines": [
-      35,
-      35
+      43,
+      43
      ]
     }
    ]
@@ -25090,8 +27249,8 @@ window.ATLAS = {
      "file": "docs/DEPLOY.md",
      "match": "Hugging Face Spaces",
      "lines": [
-      7,
-      7
+      26,
+      26
      ]
     }
    ]
@@ -25125,16 +27284,16 @@ window.ATLAS = {
      "symbol": "Settings.qdrant_path",
      "symbol_id": "sym:backend/app/config.py#Settings.qdrant_path",
      "lines": [
-      85,
-      86
+      109,
+      110
      ]
     },
     {
      "file": "docs/DEPLOY.md",
      "match": "Keeping uploads across restarts",
      "lines": [
-      52,
-      52
+      50,
+      50
      ]
     }
    ]
@@ -25252,8 +27411,8 @@ window.ATLAS = {
      "file": "backend/app/api.py",
      "match": "doc_id = uuid\\.uuid4\\(\\)\\.hex",
      "lines": [
-      108,
-      108
+      114,
+      114
      ]
     }
    ]
@@ -25273,8 +27432,8 @@ window.ATLAS = {
      "file": "Dockerfile",
      "match": "forwarded-allow-ips",
      "lines": [
-      35,
-      35
+      43,
+      43
      ]
     },
     {
@@ -25386,8 +27545,8 @@ window.ATLAS = {
      "symbol": "test_injected_lines_are_removed_at_upload_and_flagged_in_answers",
      "symbol_id": "sym:backend/tests/test_api.py#test_injected_lines_are_removed_at_upload_and_flagged_in_answers",
      "lines": [
-      206,
-      212
+      208,
+      214
      ]
     },
     {
@@ -25416,8 +27575,8 @@ window.ATLAS = {
      "file": "backend/app/api.py",
      "match": "except PdfLoadError as exc:\\n\\s+pdf_path\\.unlink",
      "lines": [
-      115,
-      116
+      121,
+      122
      ]
     }
    ]
@@ -25437,8 +27596,8 @@ window.ATLAS = {
      "file": "backend/app/config.py",
      "match": "retrieval_candidates: int = 12",
      "lines": [
-      55,
-      55
+      67,
+      67
      ]
     },
     {
@@ -25446,8 +27605,8 @@ window.ATLAS = {
      "symbol": "Embedder.rerank",
      "symbol_id": "sym:backend/app/embeddings.py#Embedder.rerank",
      "lines": [
-      66,
-      70
+      77,
+      81
      ]
     }
    ]
@@ -25468,8 +27627,8 @@ window.ATLAS = {
      "symbol": "upload_document",
      "symbol_id": "sym:backend/app/api.py#upload_document",
      "lines": [
-      94,
-      137
+      100,
+      143
      ]
     }
    ]
@@ -25551,8 +27710,8 @@ window.ATLAS = {
      "file": "backend/app/api.py",
      "match": "svc\\.delete_expired_uploads\\(\\)",
      "lines": [
-      107,
-      107
+      113,
+      113
      ]
     }
    ]
@@ -25689,8 +27848,8 @@ window.ATLAS = {
      "symbol": "Embedder",
      "symbol_id": "sym:backend/app/embeddings.py#Embedder",
      "lines": [
-      28,
-      70
+      36,
+      81
      ]
     }
    ]
@@ -25708,7 +27867,7 @@ window.ATLAS = {
      "symbol_id": "sym:backend/app/vectorstore.py#VectorStore.hybrid_search",
      "lines": [
       91,
-      111
+      94
      ]
     }
    ]
@@ -25724,8 +27883,8 @@ window.ATLAS = {
      "file": "backend/app/config.py",
      "match": "gate_threshold: float = -6\\.0",
      "lines": [
-      60,
-      60
+      72,
+      72
      ]
     },
     {
@@ -25734,7 +27893,7 @@ window.ATLAS = {
      "symbol_id": "sym:backend/eval/run_retrieval_eval.py#main",
      "lines": [
       15,
-      61
+      63
      ]
     }
    ]
@@ -25850,8 +28009,8 @@ window.ATLAS = {
      "symbol": "sse",
      "symbol_id": "sym:backend/app/api.py#sse",
      "lines": [
-      140,
-      141
+      146,
+      147
      ]
     },
     {
@@ -25986,7 +28145,7 @@ window.ATLAS = {
    "id": "report:03-module-and-file-catalog",
    "file": "docs/architecture-atlas/reports/03-module-and-file-catalog.md",
    "title": "03-module-and-file-catalog",
-   "markdown": "# 03 · Module and file catalog\n\n_Generated by `tools/build_atlas.py` from the source code. Do not edit by hand._\n\n103 files analysed · 453 symbols · commit `997a1fb` (working tree had uncommitted changes)\n\n## backend\n\n### `backend/app/__init__.py` (0 lines)\n\n## backend · answering\n\n### `backend/app/answering.py` (142 lines)\nGenerate a grounded answer: retrieval result + question -> verified Answer.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `fallback_answer` | function | 25-40 | fallback_answer() |\n| `plan_costs_from_facts` | function | 43-49 | plan_costs_from_facts(facts) |\n| `compute_cost` | function | 52-67 | compute_cost(rule, facts) |\n| `AnswerService` | class | 70-142 |  |\n| `AnswerService.__init__` | method | 71-73 | __init__(llm, settings) |\n| `AnswerService._call_llm` | method | 75-83 | _call_llm(question, retrieval, plan_facts, meta) |\n| `AnswerService.answer` | method | 85-142 | answer(question, retrieval, plan_facts) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/costs.py`, `backend/app/llm.py`, `backend/app/prompts.py`, `backend/app/retrieval.py`, `backend/app/schemas.py`, `backend/app/security.py`, `backend/app/verification.py`\n**Used by:** `backend/app/api.py`, `backend/app/services.py`, `backend/eval/run_answer_eval.py`, `backend/tests/test_answering.py`\n**Tested by:** `backend/tests/test_answering.py`\n\n### `backend/app/costs.py` (124 lines)\nDeterministic out-of-pocket cost estimate.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `CostRule` | class | 18-24 | How the policy says this specific service is cost-shared. |\n| `PlanCosts` | class | 28-30 |  |\n| `CostEstimate` | class | 34-42 |  |\n| `CostEstimate.to_dict` | method | 41-42 | to_dict() |\n| `_money` | function | 45-46 | _money(x) |\n| `estimate_cost` | function | 49-124 | estimate_cost(billed_amount, rule, plan, deductible_met, out_of_pocket_met) |\n**Used by:** `backend/app/answering.py`, `backend/tests/test_costs.py`\n**Tested by:** `backend/tests/test_costs.py`\n\n### `backend/app/llm.py` (215 lines)\nLLM providers behind one tiny interface.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `T` | constant | 24-24 |  |\n| `ANTHROPIC_FALLBACK_BETA` | constant | 26-26 |  |\n| `LLMError` | class | 29-30 | Something went wrong talking to the LLM. The message is safe to show users. |\n| `StructuredLLM` | class | 33-40 |  |\n| `StructuredLLM.generate` | method | 36-40 | meta, if given, is filled with {\"model\", \"input_tokens\", \"output_tokens\"} for tracing. |\n| `GeminiLLM` | class | 48-124 | Tries each model in order; moves on when one is overloaded or out of quota. |\n| `GeminiLLM.__init__` | method | 57-60 | __init__(client, models) |\n| `GeminiLLM.generate` | method | 62-106 | generate(system, user, schema, max_tokens, effort, meta) |\n| `GeminiLLM._parse` | method | 108-124 | _parse(response, schema, model) |\n| `AnthropicLLM` | class | 132-177 |  |\n| `AnthropicLLM.__init__` | method | 133-136 | __init__(client, model) |\n| `AnthropicLLM.generate` | method | 138-177 | generate(system, user, schema, max_tokens, effort, meta) |\n| `resolve_provider` | function | 183-191 | Explicit LLM_PROVIDER wins; otherwise use whichever API key is present. |\n| `build_llm` | function | 194-215 | build_llm(settings) |\n\n**Imports (repo):** `backend/app/config.py`\n**Used by:** `backend/app/answering.py`, `backend/app/plan_facts.py`, `backend/app/services.py`, `backend/eval/run_answer_eval.py`, `backend/tests/test_answering.py`, `backend/tests/test_llm.py`, `backend/tests/test_plan_facts.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_llm.py`, `backend/tests/test_plan_facts.py`\n\n### `backend/app/plan_facts.py` (66 lines)\nExtract key plan numbers (deductible, out-of-pocket max, copays) from an upload.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `MAX_CHARS` | constant | 17-17 |  |\n| `EXTRACTION_PROMPT` | constant | 19-23 |  |\n| `PlanFacts` | class | 26-39 |  |\n| `document_head` | function | 42-51 | document_head(pages, max_chars) |\n| `extract_plan_facts` | function | 54-66 | extract_plan_facts(llm, pages) |\n\n**Imports (repo):** `backend/app/ingest/pdf.py`, `backend/app/llm.py`\n**Used by:** `backend/app/api.py`, `backend/tests/test_api.py`, `backend/tests/test_plan_facts.py`\n**Tested by:** `backend/tests/test_api.py`, `backend/tests/test_plan_facts.py`\n\n### `backend/app/prompts.py` (102 lines)\nPrompt construction.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SYSTEM_PROMPT` | constant | 13-60 |  |\n| `CLOSING_REMINDER` | constant | 64-67 |  |\n| `_excerpt` | function | 70-79 | _excerpt(source_id, sc, referenced_by) |\n| `source_ids` | function | 82-85 | source_ids(retrieval) |\n| `build_user_message` | function | 88-102 | build_user_message(question, retrieval, plan_facts) |\n\n**Imports (repo):** `backend/app/retrieval.py`\n**Used by:** `backend/app/answering.py`, `backend/app/api.py`, `backend/tests/test_prompts.py`\n**Tested by:** `backend/tests/test_prompts.py`\n\n### `backend/app/verification.py` (88 lines)\nCheck the LLM's answer against the sources before anyone sees it.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `EVIDENCE_REQUIRED` | constant | 19-19 |  |\n| `FUZZY_MIN_RATIO` | constant | 20-20 |  |\n| `_TRANSLATE` | constant | 22-22 |  |\n| `normalize` | function | 25-28 | normalize(text) |\n| `quote_matches` | function | 31-47 | quote_matches(quote, source_text) |\n| `verify_citations` | function | 50-88 | Returns (verdict, verified_citations, federal_refs, warnings). |\n\n**Imports (repo):** `backend/app/retrieval.py`, `backend/app/schemas.py`\n**Used by:** `backend/app/answering.py`, `backend/tests/test_verification.py`\n**Tested by:** `backend/tests/test_verification.py`\n\n## backend · composition root\n\n### `backend/app/services.py` (103 lines)\nBuilds and holds every long-lived object the API needs.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SAMPLE_DOC_ID` | constant | 26-26 |  |\n| `SAMPLE_PDF_NAME` | constant | 27-27 |  |\n| `SAMPLE_TITLE` | constant | 28-28 |  |\n| `Services` | class | 32-83 |  |\n| `Services.__post_init__` | method | 43-47 | __post_init__() |\n| `Services.llm_configured` | method | 50-51 | llm_configured() |\n| `Services.startup` | method | 53-58 | Make sure the knowledge base and the sample policy are indexed. |\n| `Services._register_sample` | method | 60-77 | _register_sample() |\n| `Services.delete_expired_uploads` | method | 79-83 | delete_expired_uploads() |\n| `build_services` | function | 86-103 | build_services(settings, qdrant, embedder, llm) |\n\n**Imports (repo):** `backend/app/answering.py`, `backend/app/config.py`, `backend/app/documents.py`, `backend/app/embeddings.py`, `backend/app/indexer.py`, `backend/app/llm.py`, `backend/app/ratelimit.py`, `backend/app/retrieval.py`, `backend/app/vectorstore.py`\n**Used by:** `backend/app/api.py`, `backend/app/main.py`, `backend/redteam/run_redteam.py`, `backend/tests/test_api.py`\n**Tested by:** `backend/tests/test_api.py`\n\n## backend · configuration\n\n### `backend/app/config.py` (91 lines)\nApplication settings, read from environment variables (or backend/.env).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `BACKEND_DIR` | constant | 12-12 |  |\n| `Settings` | class | 15-86 |  |\n| `Settings.uploads_dir` | method | 81-82 | uploads_dir() |\n| `Settings.qdrant_path` | method | 85-86 | qdrant_path() |\n| `get_settings` | function | 90-91 | get_settings() |\n**Used by:** `backend/app/answering.py`, `backend/app/embeddings.py`, `backend/app/indexer.py`, `backend/app/llm.py`, `backend/app/main.py`, `backend/app/retrieval.py`, `backend/app/services.py`, `backend/app/vectorstore.py`, `backend/eval/common.py`, `backend/eval/run_answer_eval.py`, `backend/redteam/run_redteam.py`, `backend/tests/test_answering.py`, `backend/tests/test_api.py`, `backend/tests/test_indexer.py`, `backend/tests/test_llm.py`, `backend/tests/test_retrieval.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_api.py`, `backend/tests/test_indexer.py`, `backend/tests/test_llm.py`, `backend/tests/test_retrieval.py`\n\n## backend · domain & state\n\n### `backend/app/documents.py` (88 lines)\nA tiny on-disk registry of documents the app knows about.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `DOC_ID_PATTERN` | constant | 19-19 |  |\n| `InvalidDocumentId` | class | 22-23 |  |\n| `validate_doc_id` | function | 26-30 | validate_doc_id(doc_id) |\n| `DocumentRecord` | class | 34-51 |  |\n| `DocumentRecord.public` | method | 47-51 | What the API returns (never the server-side file path). |\n| `DocumentRegistry` | class | 54-88 |  |\n| `DocumentRegistry.__init__` | method | 55-57 | __init__(root) |\n| `DocumentRegistry.pdf_path` | method | 59-60 | pdf_path(doc_id) |\n| `DocumentRegistry._meta_path` | method | 62-63 | _meta_path(doc_id) |\n| `DocumentRegistry.save` | method | 65-66 | save(record) |\n| `DocumentRegistry.get` | method | 68-75 | get(doc_id) |\n| `DocumentRegistry.delete` | method | 77-79 | delete(doc_id) |\n| `DocumentRegistry.expired` | method | 81-88 | expired(ttl_hours, now) |\n**Used by:** `backend/app/api.py`, `backend/app/services.py`, `backend/tests/test_documents.py`\n**Tested by:** `backend/tests/test_documents.py`\n\n### `backend/app/models.py` (54 lines)\nCore data types shared across ingestion, retrieval and answering.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Chunk` | class | 10-54 | One retrievable piece of a document, plus where it came from. |\n| `Chunk.embedding_text` | method | 28-32 | Text that gets embedded: the section header is prepended so a chunk that |\n| `Chunk.to_payload` | method | 34-46 | to_payload() |\n| `Chunk.from_payload` | method | 49-54 | from_payload(payload) |\n**Used by:** `backend/app/graph.py`, `backend/app/indexer.py`, `backend/app/ingest/chunker.py`, `backend/app/ingest/markdown.py`, `backend/app/retrieval.py`, `backend/app/vectorstore.py`, `backend/tests/test_answering.py`, `backend/tests/test_graph.py`, `backend/tests/test_prompts.py`, `backend/tests/test_retrieval.py`, `backend/tests/test_vectorstore.py`, `backend/tests/test_verification.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_graph.py`, `backend/tests/test_prompts.py`, `backend/tests/test_retrieval.py`, `backend/tests/test_vectorstore.py`, `backend/tests/test_verification.py`\n\n### `backend/app/ratelimit.py` (53 lines)\nIn-memory rate limits that protect the public demo (and the API bill).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SlidingWindowLimiter` | class | 18-36 |  |\n| `SlidingWindowLimiter.__init__` | method | 19-24 | __init__(limit, window_seconds, clock) |\n| `SlidingWindowLimiter.check` | method | 26-36 | Record a hit for key. Returns (allowed, retry_after_seconds). |\n| `DailyBudget` | class | 39-53 |  |\n| `DailyBudget.__init__` | method | 40-44 | __init__(limit, today) |\n| `DailyBudget.try_spend` | method | 46-53 | try_spend() |\n**Used by:** `backend/app/services.py`, `backend/tests/test_ratelimit.py`\n**Tested by:** `backend/tests/test_ratelimit.py`\n\n### `backend/app/schemas.py` (120 lines)\nPydantic models for (1) what the LLM must return and (2) what the API returns.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `LLMPolicyCitation` | class | 27-29 |  |\n| `LLMFederalNote` | class | 32-34 |  |\n| `LLMCostRule` | class | 37-43 |  |\n| `LLMAnswer` | class | 46-58 |  |\n| `Citation` | class | 66-70 |  |\n| `FederalReference` | class | 73-77 |  |\n| `CostEstimateOut` | class | 80-85 |  |\n| `Answer` | class | 88-101 |  |\n| `SourcePreview` | class | 104-115 | A retrieved chunk, sent to the UI before the answer is ready. |\n| `AskRequest` | class | 118-120 |  |\n**Used by:** `backend/app/answering.py`, `backend/app/api.py`, `backend/app/verification.py`, `backend/tests/test_answering.py`, `backend/tests/test_api.py`, `backend/tests/test_verification.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_api.py`, `backend/tests/test_verification.py`\n\n## backend · entrypoint\n\n### `backend/app/main.py` (50 lines)\nFastAPI application entry point.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FRONTEND_DIST` | constant | 21-21 |  |\n| `create_app` | function | 26-47 | create_app(services, warm_up) |\n\n**Imports (repo):** `backend/app/api.py`, `backend/app/config.py`, `backend/app/services.py`\n**Used by:** `backend/redteam/run_redteam.py`, `backend/tests/test_api.py`\n**Tested by:** `backend/tests/test_api.py`\n\n## backend · http\n\n### `backend/app/api.py` (236 lines)\nHTTP endpoints.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `services` | function | 36-37 | services(request) |\n| `client_ip` | function | 40-45 | client_ip(request) |\n| `_rate_limited` | function | 48-53 | _rate_limited(retry_after, what) |\n| `_get_document` | function | 56-60 | _get_document(svc, doc_id) |\n| `health` | function | 64-67 | health(request) |\n| `get_document` | function | 71-72 | get_document(doc_id, request) |\n| `get_document_file` | function | 76-83 | get_document_file(doc_id, request) |\n| `_safe_title` | function | 86-90 | _safe_title(filename) |\n| `upload_document` | function | 94-137 | upload_document(request, file) |\n| `sse` | function | 140-141 | sse(event, data) |\n| `_source_previews` | function | 144-158 | _source_previews(retrieval) |\n| `ask` | function | 162-236 | ask(body, request) |\n\n**Imports (repo):** `backend/app/answering.py`, `backend/app/documents.py`, `backend/app/indexer.py`, `backend/app/ingest/pdf.py`, `backend/app/plan_facts.py`, `backend/app/prompts.py`, `backend/app/retrieval.py`, `backend/app/schemas.py`, `backend/app/security.py`, `backend/app/services.py`\n**Used by:** `backend/app/main.py`\n\n## backend · ingestion\n\n### `backend/app/graph.py` (86 lines)\nA clause graph built from the policy's own cross-references.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `REFERENCE` | constant | 30-33 |  |\n| `CLAUSE_NUMBER` | constant | 35-35 |  |\n| `MAJOR_NUMBER` | constant | 36-36 |  |\n| `MAX_REFS_PER_CHUNK` | constant | 38-38 |  |\n| `CHUNKS_PER_TARGET` | constant | 39-39 |  |\n| `clause_key` | function | 42-51 | 'SECTION 7 - EXCLUSIONS › 7.3 Dental and Vision' -> '7.3';  'SECTION 4 - PRIOR AUTH' -> '4'. |\n| `references` | function | 54-59 | references(text) |\n| `link_chunks` | function | 62-86 | Fill chunk.extra['refs'] with the chunk ids each chunk points to. Returns the edge count. |\n\n**Imports (repo):** `backend/app/models.py`\n**Used by:** `backend/app/indexer.py`, `backend/eval/run_graph_eval.py`, `backend/tests/test_graph.py`\n**Tested by:** `backend/tests/test_graph.py`\n\n### `backend/app/indexer.py` (111 lines)\nIngestion pipeline: file -> pages -> chunks -> vectors in Qdrant.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FEDERAL_DOC_ID` | constant | 24-24 |  |\n| `PIPELINE_VERSION` | constant | 27-27 |  |\n| `content_hash` | function | 30-35 | content_hash(paths) |\n| `_stamp` | function | 38-41 | _stamp(chunks, version) |\n| `_replace` | function | 44-46 | _replace(store, doc_id, chunks) |\n| `index_federal_corpus` | function | 49-58 | index_federal_corpus(store, settings) |\n| `IndexedPolicy` | class | 62-66 |  |\n| `load_policy_pages` | function | 69-88 | Load a policy PDF and remove instruction-like text aimed at AI systems. |\n| `index_policy_pdf` | function | 91-111 | index_policy_pdf(store, path, doc_id, title, settings, skip_if_current) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/graph.py`, `backend/app/ingest/chunker.py`, `backend/app/ingest/markdown.py`, `backend/app/ingest/pdf.py`, `backend/app/models.py`, `backend/app/security.py`, `backend/app/vectorstore.py`\n**Used by:** `backend/app/api.py`, `backend/app/retrieval.py`, `backend/app/services.py`, `backend/eval/common.py`, `backend/tests/test_indexer.py`, `backend/tests/test_retrieval.py`\n**Tested by:** `backend/tests/test_indexer.py`, `backend/tests/test_retrieval.py`\n\n### `backend/app/ingest/__init__.py` (0 lines)\n\n### `backend/app/ingest/chunker.py` (163 lines)\nSplit document pages into section-aware chunks.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `MAJOR_HEADING` | constant | 23-25 |  |\n| `HEADING_CONTINUATION` | constant | 27-27 |  |\n| `MINOR_HEADING` | constant | 29-29 |  |\n| `SENTENCE_END` | constant | 30-30 |  |\n| `MIN_CHUNK_CHARS` | constant | 32-32 |  |\n| `SectionTracker` | class | 35-59 | Remembers the current major + minor heading while we walk the document. |\n| `SectionTracker.__init__` | method | 38-40 | __init__() |\n| `SectionTracker.classify` | method | 43-48 | classify(line) |\n| `SectionTracker.update` | method | 50-54 | update(line, level) |\n| `SectionTracker.label` | method | 57-59 | label() |\n| `_split_long_line` | function | 62-78 | Break a line that alone exceeds max_chars at sentence ends (or hard-wrap). |\n| `_overlap_tail` | function | 81-89 | The last few lines of a chunk, up to overlap_chars, to repeat in the next one. |\n| `make_chunk_id` | function | 92-94 | make_chunk_id(doc_id, position) |\n| `chunk_pages` | function | 97-163 | chunk_pages(pages, doc_id, source_title, kind, max_chars, overlap_chars) |\n\n**Imports (repo):** `backend/app/ingest/pdf.py`, `backend/app/models.py`\n**Used by:** `backend/app/indexer.py`, `backend/app/ingest/markdown.py`, `backend/tests/test_chunker.py`, `backend/tests/test_graph.py`\n**Tested by:** `backend/tests/test_chunker.py`, `backend/tests/test_graph.py`\n\n### `backend/app/ingest/markdown.py` (82 lines)\nLoad the curated federal-rules knowledge base (Markdown files) into chunks.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FRONT_MATTER` | constant | 19-19 |  |\n| `parse_front_matter` | function | 22-30 | parse_front_matter(raw) |\n| `_pack` | function | 33-44 | _pack(paragraphs, max_chars) |\n| `chunk_markdown` | function | 47-73 | chunk_markdown(path, doc_id, start_position, max_chars) |\n| `load_federal_corpus` | function | 76-82 | load_federal_corpus(directory, doc_id, max_chars) |\n\n**Imports (repo):** `backend/app/ingest/chunker.py`, `backend/app/models.py`\n**Used by:** `backend/app/indexer.py`, `backend/tests/test_markdown.py`\n**Tested by:** `backend/tests/test_markdown.py`\n\n### `backend/app/ingest/pdf.py` (62 lines)\nTurn a PDF into clean per-page text.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `MIN_TOTAL_CHARS` | constant | 17-17 |  |\n| `PAGE_NUMBER_LINE` | constant | 22-22 |  |\n| `PdfLoadError` | class | 25-26 | Raised with a user-friendly message when a PDF can't be used. |\n| `Page` | class | 30-32 |  |\n| `clean_text` | function | 35-43 | clean_text(text) |\n| `load_pdf` | function | 46-62 | load_pdf(path, max_pages) |\n**Used by:** `backend/app/api.py`, `backend/app/indexer.py`, `backend/app/ingest/chunker.py`, `backend/app/plan_facts.py`, `backend/tests/test_chunker.py`, `backend/tests/test_graph.py`, `backend/tests/test_plan_facts.py`, `backend/tests/test_security.py`\n**Tested by:** `backend/tests/test_chunker.py`, `backend/tests/test_graph.py`, `backend/tests/test_plan_facts.py`, `backend/tests/test_security.py`\n\n## backend · retrieval\n\n### `backend/app/embeddings.py` (79 lines)\nLocal embedding and reranking models (via fastembed / ONNX, no API key needed).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SparseVector` | class | 23-25 |  |\n| `Embedder` | class | 28-70 |  |\n| `Embedder.__init__` | method | 29-32 | __init__(settings) |\n| `Embedder._dense` | method | 35-36 | _dense() |\n| `Embedder._sparse` | method | 39-40 | _sparse() |\n| `Embedder._reranker` | method | 43-44 | _reranker() |\n| `Embedder.dense_size` | method | 47-48 | dense_size() |\n| `Embedder.warm_up` | method | 50-53 | Load all models now (at startup) rather than on the first user request. |\n| `Embedder.embed_documents` | method | 55-58 | embed_documents(texts) |\n| `Embedder.embed_query` | method | 60-64 | embed_query(text) |\n| `Embedder.rerank` | method | 66-70 | rerank(query, texts) |\n| `_Sparse` | class | 73-75 |  |\n| `_Sparse.__init__` | method | 74-75 | __init__(indices, values) |\n| `_to_sparse` | function | 78-79 | _to_sparse(embedding) |\n\n**Imports (repo):** `backend/app/config.py`\n**Used by:** `backend/app/services.py`, `backend/eval/common.py`\n\n### `backend/app/query_expansion.py` (58 lines)\nBridge the vocabulary gap between how people talk and how policies are written.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `LAY_TERMS` | constant | 15-45 |  |\n| `_COMPILED` | constant | 47-47 |  |\n| `expand_query` | function | 50-58 | expand_query(question) |\n**Used by:** `backend/app/retrieval.py`, `backend/tests/test_query_expansion.py`\n**Tested by:** `backend/tests/test_query_expansion.py`\n\n### `backend/app/retrieval.py` (110 lines)\nTwo-stage retrieval: cheap-and-wide, then expensive-and-precise.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `ScoredChunk` | class | 30-33 |  |\n| `RetrievalResult` | class | 37-53 |  |\n| `RetrievalResult.found_anything` | method | 52-53 | found_anything() |\n| `Retriever` | class | 56-110 |  |\n| `Retriever.__init__` | method | 57-60 | __init__(store, embedder, settings) |\n| `Retriever._rerank` | method | 62-65 | _rerank(question, candidates) |\n| `Retriever._follow_references` | method | 67-79 | One hop through the clause graph: add clauses the top chunks point at (\"see 7.5\"). |\n| `Retriever.retrieve` | method | 81-110 | retrieve(question, doc_id, gate_threshold) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/indexer.py`, `backend/app/models.py`, `backend/app/query_expansion.py`, `backend/app/vectorstore.py`\n**Used by:** `backend/app/answering.py`, `backend/app/api.py`, `backend/app/prompts.py`, `backend/app/services.py`, `backend/app/verification.py`, `backend/eval/common.py`, `backend/tests/test_answering.py`, `backend/tests/test_prompts.py`, `backend/tests/test_retrieval.py`, `backend/tests/test_verification.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_prompts.py`, `backend/tests/test_retrieval.py`, `backend/tests/test_verification.py`\n\n### `backend/app/vectorstore.py` (111 lines)\nQdrant wrapper: store chunks with two vectors each and run hybrid search.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `DENSE` | constant | 16-16 |  |\n| `SPARSE` | constant | 17-17 |  |\n| `create_client` | function | 20-24 | create_client(settings) |\n| `_filter` | function | 27-33 | _filter(doc_id, kind, version) |\n| `VectorStore` | class | 36-111 |  |\n| `VectorStore.__init__` | method | 37-40 | __init__(client, collection, embedder) |\n| `VectorStore.ensure_collection` | method | 42-56 | ensure_collection() |\n| `VectorStore.upsert` | method | 58-75 | upsert(chunks, batch_size) |\n| `VectorStore.delete_document` | method | 77-78 | delete_document(doc_id) |\n| `VectorStore.count` | method | 80-81 | count(doc_id, kind, version) |\n| `VectorStore.get_chunks` | method | 83-89 | Fetch chunks by id - used to follow graph edges (no vector search needed). |\n| `VectorStore.hybrid_search` | method | 91-111 | hybrid_search(query, doc_id, kind, limit) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/models.py`\n**Used by:** `backend/app/indexer.py`, `backend/app/retrieval.py`, `backend/app/services.py`, `backend/eval/common.py`, `backend/tests/conftest.py`\n**Tested by:** `backend/tests/conftest.py`\n\n## backend · security\n\n### `backend/app/security.py` (150 lines)\nModel-independent defenses against hostile documents and hostile output.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `INJECTION_PATTERNS` | constant | 22-31 |  |\n| `_COMPILED` | constant | 32-32 |  |\n| `InjectionFinding` | class | 36-38 |  |\n| `scan_for_injection` | function | 41-48 | scan_for_injection(text) |\n| `strip_injection` | function | 51-59 | Remove flagged lines. Lines are the unit because PDF text is line-based |\n| `URL_RE` | constant | 66-66 |  |\n| `PHONE_RE` | constant | 67-67 |  |\n| `_digits` | function | 70-71 | _digits(s) |\n| `redact_unsupported_contacts` | function | 74-96 | Replace phone numbers / URLs that don't appear in the source excerpts. |\n| `TAG_RE` | constant | 105-105 |  |\n| `strip_markup` | function | 108-110 | strip_markup(text) |\n| `MONEY_FIELDS` | constant | 117-120 |  |\n| `PERCENT_FIELDS` | constant | 121-121 |  |\n| `_money_in_text` | function | 124-127 | _money_in_text(value, text) |\n| `ground_plan_facts` | function | 130-150 | Null out numbers that don't appear in the document; drop inconsistent pairs. |\n**Used by:** `backend/app/answering.py`, `backend/app/api.py`, `backend/app/indexer.py`, `backend/tests/test_security.py`, `backend/tests/test_security.py`, `backend/tests/test_security.py`\n**Tested by:** `backend/tests/test_security.py`\n\n## ci\n\n### `.github/workflows/ci.yml` (39 lines)\n\n## config\n\n### `.gitattributes` (2 lines)\n\n### `.gitignore` (15 lines)\n\n### `backend/.env.example` (23 lines)\n\n### `backend/pytest.ini` (3 lines)\n\n### `backend/requirements-dev.txt` (4 lines)\n\n### `backend/requirements.txt` (14 lines)\n\n## data\n\n### `backend/data/samples/evergreen-silver-3000-ppo.facts.json` (15 lines)\n\n## deployment\n\n### `.dockerignore` (10 lines)\n\n### `Dockerfile` (35 lines)\n\n## documentation\n\n### `README.md` (142 lines)\nAm I Covered?\n\n### `SECURITY.md` (148 lines)\nSecurity audit\n\n### `docs/DEPLOY.md` (61 lines)\nDeploying Am I Covered?\n\n### `docs/HOW_IT_WORKS.md` (203 lines)\nHow Am I Covered? works\n\n## evaluation\n\n### `backend/eval/common.py` (34 lines)\nShared helpers for the evaluation scripts.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `BACKEND_DIR` | constant | 7-7 |  |\n| `SAMPLE_PDF` | constant | 18-18 |  |\n| `EVAL_DOC_ID` | constant | 19-19 |  |\n| `load_questions` | function | 22-23 | load_questions() |\n| `build_retriever` | function | 26-34 | Index the sample + federal corpus into a throwaway in-memory Qdrant. |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/embeddings.py`, `backend/app/indexer.py`, `backend/app/retrieval.py`, `backend/app/vectorstore.py`\n**Used by:** `backend/eval/run_answer_eval.py`, `backend/eval/run_graph_eval.py`, `backend/eval/run_retrieval_eval.py`\n\n### `backend/eval/multihop.json` (13 lines)\n\n### `backend/eval/questions.json` (40 lines)\n\n### `backend/eval/run_answer_eval.py` (117 lines)\nEnd-to-end answer evaluation: retrieval + Claude + verification, scored\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `GROUPS` | constant | 31-38 |  |\n| `main` | function | 41-113 | main() |\n\n**Imports (repo):** `backend/app/answering.py`, `backend/app/config.py`, `backend/app/llm.py`, `backend/eval/common.py`\n\n### `backend/eval/run_graph_eval.py` (53 lines)\nDoes the clause graph help? Retrieval-only, free to run (local models, no LLM).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `context_clauses` | function | 20-21 | context_clauses(result) |\n| `main` | function | 24-49 | main() |\n\n**Imports (repo):** `backend/app/graph.py`, `backend/eval/common.py`\n\n### `backend/eval/run_retrieval_eval.py` (65 lines)\nMeasure retrieval quality on the sample policy - no LLM, no API key, free to run.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `main` | function | 15-61 | main() |\n\n**Imports (repo):** `backend/eval/common.py`\n\n## frontend\n\n### `frontend/src/App.tsx` (98 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `STORAGE_KEY` | const | 7-8 |  |\n| `readSavedDocId` | function | 9-16 |  |\n| `saveDocId` | function | 17-24 |  |\n| `App` | component | 25-98 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/components/Chat.tsx`, `frontend/src/components/DocumentPanel.tsx`, `frontend/src/types.ts`\n**Used by:** `frontend/src/main.tsx`\n\n### `frontend/src/api.ts` (97 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SAMPLE_DOC_ID` | const | 3-4 |  |\n| `ApiError` | class | 5-6 |  |\n| `errorMessage` | function | 7-17 |  |\n| `getJson` | function | 18-23 |  |\n| `fetchHealth` | const | 24-24 |  |\n| `fetchDocument` | const | 25-25 |  |\n| `documentFileUrl` | const | 26-28 |  |\n| `uploadDocument` | function | 29-36 |  |\n| `AskHandlers` | type | 37-50 |  |\n| `askQuestion` | function | 51-74 |  |\n| `dispatch` | function | 75-97 |  |\n\n**Imports (repo):** `frontend/src/types.ts`\n**Used by:** `frontend/src/App.tsx`, `frontend/src/components/AnswerCard.tsx`, `frontend/src/components/Chat.tsx`, `frontend/src/components/DocumentPanel.tsx`, `frontend/src/components/SourcesList.tsx`\n\n### `frontend/src/format.ts` (18 lines)\n$1,800 for whole dollars, $1,234.56 otherwise.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `formatMoney` | function | 2-13 |  |\n| `shortSection` | function | 14-18 |  |\n**Used by:** `frontend/src/components/AnswerCard.tsx`, `frontend/src/components/CostBreakdown.tsx`, `frontend/src/components/DocumentPanel.tsx`, `frontend/src/components/SourcesList.tsx`\n\n### `frontend/src/index.css` (717 lines)\n\n### `frontend/src/main.tsx` (10 lines)\n\n**Imports (repo):** `frontend/src/App.tsx`\n\n### `frontend/src/types.ts` (109 lines)\nMirrors backend/app/schemas.py. Keep the two in sync.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Verdict` | type | 3-10 |  |\n| `Citation` | type | 11-17 |  |\n| `FederalReference` | type | 18-24 |  |\n| `CostEstimate` | type | 25-32 |  |\n| `Answer` | type | 33-47 |  |\n| `SourcePreview` | type | 48-59 |  |\n| `PlanFacts` | type | 60-74 |  |\n| `DocumentInfo` | type | 75-85 |  |\n| `Health` | type | 86-91 |  |\n| `Trace` | type | 92-109 |  |\n**Used by:** `frontend/src/App.tsx`, `frontend/src/api.ts`, `frontend/src/components/AnswerCard.tsx`, `frontend/src/components/Chat.tsx`, `frontend/src/components/CostBreakdown.tsx`, `frontend/src/components/DocumentPanel.tsx`, `frontend/src/components/SourcesList.tsx`, `frontend/src/components/TracePanel.tsx`, `frontend/src/components/VerdictBadge.tsx`\n\n### `frontend/src/vite-env.d.ts` (1 lines)\n/ <reference types=\"vite/client\" />\n\n## frontend · components\n\n### `frontend/src/components/AnswerCard.tsx` (93 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Props` | type | 9-14 |  |\n| `List` | component | 15-28 |  |\n| `AnswerCard` | component | 29-93 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/components/CostBreakdown.tsx`, `frontend/src/components/SourcesList.tsx`, `frontend/src/components/TracePanel.tsx`, `frontend/src/components/VerdictBadge.tsx`, `frontend/src/format.ts`, `frontend/src/types.ts`\n**Used by:** `frontend/src/components/Chat.tsx`\n\n### `frontend/src/components/Chat.tsx` (193 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Turn` | type | 6-15 |  |\n| `SAMPLE_SUGGESTIONS` | const | 16-24 |  |\n| `UPLOAD_SUGGESTIONS` | const | 25-33 |  |\n| `Chat` | component | 34-193 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/components/AnswerCard.tsx`, `frontend/src/types.ts`\n**Used by:** `frontend/src/App.tsx`\n\n### `frontend/src/components/CostBreakdown.tsx` (31 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `CostBreakdown` | component | 5-31 |  |\n\n**Imports (repo):** `frontend/src/format.ts`, `frontend/src/types.ts`\n**Used by:** `frontend/src/components/AnswerCard.tsx`\n\n### `frontend/src/components/DocumentPanel.tsx` (138 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Props` | type | 6-14 |  |\n| `FACTS` | const | 15-23 |  |\n| `FactsGrid` | component | 24-41 |  |\n| `PROVIDER_NAMES` | const | 42-43 |  |\n| `DocumentPanel` | component | 44-138 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/format.ts`, `frontend/src/types.ts`\n**Used by:** `frontend/src/App.tsx`\n\n### `frontend/src/components/SourcesList.tsx` (37 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SourcesList` | component | 6-37 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/format.ts`, `frontend/src/types.ts`\n**Used by:** `frontend/src/components/AnswerCard.tsx`\n\n### `frontend/src/components/TracePanel.tsx` (90 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `TracePanel` | component | 7-90 |  |\n\n**Imports (repo):** `frontend/src/types.ts`\n**Used by:** `frontend/src/components/AnswerCard.tsx`\n\n### `frontend/src/components/VerdictBadge.tsx` (28 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `LABELS` | const | 3-11 |  |\n| `ICONS` | const | 12-20 |  |\n| `VerdictBadge` | component | 21-28 |  |\n\n**Imports (repo):** `frontend/src/types.ts`\n**Used by:** `frontend/src/components/AnswerCard.tsx`\n\n## frontend · tooling\n\n### `frontend/.gitignore` (24 lines)\n\n### `frontend/eslint.config.js` (28 lines)\n\n### `frontend/index.html` (23 lines)\n\n### `frontend/package.json` (29 lines)\n\n### `frontend/tsconfig.app.json` (27 lines)\n\n### `frontend/tsconfig.json` (7 lines)\n\n### `frontend/tsconfig.node.json` (25 lines)\n\n### `frontend/vite.config.ts` (14 lines)\n\n## knowledge base\n\n### `backend/data/federal/README.md` (14 lines)\nFederal rules knowledge base\n\n### `backend/data/federal/appeals.md` (20 lines)\nYour right to appeal a denied claim\n\n### `backend/data/federal/eligibility-protections.md` (16 lines)\nPre-existing conditions\n\n### `backend/data/federal/emergency-care.md` (20 lines)\nEmergency care is an essential health benefit\n\n### `backend/data/federal/essential-health-benefits.md` (20 lines)\nThe ten essential health benefits\n\n### `backend/data/federal/glossary.md` (36 lines)\nDeductible\n\n### `backend/data/federal/mental-health-parity.md` (16 lines)\nWhat parity means\n\n### `backend/data/federal/no-surprises-act.md` (24 lines)\nWhat the No Surprises Act protects you from\n\n### `backend/data/federal/out-of-pocket-maximum.md` (20 lines)\nWhat the out-of-pocket maximum is\n\n### `backend/data/federal/plan-types-and-documents.md` (16 lines)\nHMO, PPO, EPO and POS plans\n\n### `backend/data/federal/preventive-care.md` (20 lines)\nPreventive care must be covered at no cost\n\n### `backend/data/federal/prior-authorization.md` (20 lines)\nWhat prior authorization is\n\n## scratch\n\n### `backend/scratch/01_hello_llm.py` (19 lines)\n\n## security testing\n\n### `backend/redteam/__init__.py` (0 lines)\n\n### `backend/redteam/attacks.py` (222 lines)\nAttack cases for the red-team suite (OWASP Top 10 for LLM Applications).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SYSTEM_PROMPT_MARKERS` | constant | 18-18 |  |\n| `POLICY_LINES` | constant | 20-34 |  |\n| `COST_LINES` | constant | 36-42 |  |\n| `make_pdf` | function | 45-62 | pages -> list of (style, text) lines. style: 'normal' \\| 'hidden' (white, 1pt). |\n| `_normal` | function | 65-66 | _normal(lines) |\n| `_with_injection` | function | 69-75 | _with_injection(after_line, injection, style) |\n| `Attack` | class | 79-90 |  |\n| `_leaked` | function | 93-95 | _leaked(answer) |\n| `ATTACKS` | constant | 98-222 |  |\n**Used by:** `backend/redteam/run_redteam.py`\n\n### `backend/redteam/run_redteam.py` (99 lines)\nRun the red-team attack suite against the real pipeline and real LLM.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `BACKEND` | constant | 20-20 |  |\n| `ask` | function | 32-40 | ask(client, question, doc_id) |\n| `main` | function | 43-95 | main() |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/main.py`, `backend/app/services.py`, `backend/redteam/attacks.py`\n\n## tests\n\n### `backend/tests/conftest.py` (74 lines)\nShared test fixtures.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `DIM` | constant | 17-17 |  |\n| `_tokens` | function | 20-21 | _tokens(text) |\n| `_bucket` | function | 24-25 | _bucket(token, size) |\n| `_Sparse` | class | 28-30 |  |\n| `_Sparse.__init__` | method | 29-30 | __init__(indices, values) |\n| `FakeEmbedder` | class | 33-62 |  |\n| `FakeEmbedder._dense` | method | 36-41 | _dense(text) |\n| `FakeEmbedder._sparse` | method | 43-48 | _sparse(text) |\n| `FakeEmbedder.embed_documents` | method | 50-51 | embed_documents(texts) |\n| `FakeEmbedder.embed_query` | method | 53-54 | embed_query(text) |\n| `FakeEmbedder.rerank` | method | 56-59 | rerank(query, texts) |\n| `FakeEmbedder.warm_up` | method | 61-62 | warm_up() |\n| `embedder` | function | 66-67 | embedder() |\n| `store` | function | 71-74 | store(embedder) |\n\n**Imports (repo):** `backend/app/vectorstore.py`\n\n### `backend/tests/test_answering.py` (109 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FACTS` | constant | 10-10 |  |\n| `MRI_TEXT` | constant | 11-11 |  |\n| `_retrieval` | function | 14-16 | _retrieval() |\n| `_llm_answer` | function | 19-27 | _llm_answer() |\n| `FakeLLM` | class | 30-43 | Implements the StructuredLLM interface: records calls, returns a canned answer or raises. |\n| `FakeLLM.__init__` | method | 35-37 | __init__(parsed, error) |\n| `FakeLLM.generate` | method | 39-43 | generate() |\n| `_service` | function | 46-47 | _service(llm) |\n| `test_no_retrieval_returns_fallback_without_calling_llm` | function | 50-55 | test_no_retrieval_returns_fallback_without_calling_llm() |\n| `test_happy_path_returns_verified_answer` | function | 58-66 | test_happy_path_returns_verified_answer() |\n| `test_cost_estimate_is_computed_in_python` | function | 69-73 | test_cost_estimate_is_computed_in_python() |\n| `test_cost_skipped_without_amount_or_plan_facts` | function | 76-80 | test_cost_skipped_without_amount_or_plan_facts() |\n| `test_llm_errors_propagate_as_answer_errors` | function | 83-86 | test_llm_errors_propagate_as_answer_errors() |\n| `test_conflicting_provisions_downgrade_verdict_and_warn` | function | 89-93 | test_conflicting_provisions_downgrade_verdict_and_warn() |\n| `test_contact_details_not_in_sources_are_redacted` | function | 96-103 | test_contact_details_not_in_sources_are_redacted() |\n| `test_markup_in_model_output_is_stripped` | function | 106-109 | test_markup_in_model_output_is_stripped() |\n\n**Imports (repo):** `backend/app/answering.py`, `backend/app/config.py`, `backend/app/llm.py`, `backend/app/models.py`, `backend/app/retrieval.py`, `backend/app/schemas.py`\n\n### `backend/tests/test_api.py` (221 lines)\nEnd-to-end API tests: real FastAPI app, real indexing pipeline and Qdrant\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `BACKEND` | constant | 19-19 |  |\n| `FakeLLM` | class | 22-40 | StructuredLLM stand-in: answers by quoting the first policy excerpt it was given. |\n| `FakeLLM.__init__` | method | 27-28 | __init__() |\n| `FakeLLM.generate` | method | 30-40 | generate(schema, user) |\n| `make_client` | function | 43-48 | make_client(tmp_path, embedder, llm) |\n| `client` | function | 52-55 | client(tmp_path, embedder) |\n| `parse_sse` | function | 58-63 | parse_sse(text) |\n| `pdf_bytes` | function | 66-76 | pdf_bytes(text) |\n| `POLICY_TEXT` | constant | 79-82 |  |\n| `test_health` | function | 85-86 | test_health(client) |\n| `test_sample_document_is_registered_with_facts` | function | 89-93 | test_sample_document_is_registered_with_facts(client) |\n| `test_sample_pdf_is_served_inline` | function | 96-100 | test_sample_pdf_is_served_inline(client) |\n| `test_unknown_documents_404` | function | 104-105 | test_unknown_documents_404(client, doc_id) |\n| `test_ask_streams_status_sources_answer_done` | function | 108-121 | test_ask_streams_status_sources_answer_done(client) |\n| `test_off_topic_question_skips_llm` | function | 124-132 | test_off_topic_question_skips_llm(tmp_path, embedder) |\n| `test_ask_without_api_key_reports_error_but_still_shows_sources` | function | 135-140 | test_ask_without_api_key_reports_error_but_still_shows_sources(tmp_path, embedder) |\n| `test_ask_validation` | function | 143-145 | test_ask_validation(client) |\n| `test_question_rate_limit` | function | 148-154 | test_question_rate_limit(tmp_path, embedder) |\n| `test_daily_budget` | function | 157-161 | test_daily_budget(tmp_path, embedder) |\n| `test_upload_then_ask_about_it` | function | 164-174 | test_upload_then_ask_about_it(client) |\n| `test_upload_rejects_non_pdf` | function | 177-179 | test_upload_rejects_non_pdf(client) |\n| `test_upload_rejects_pdf_without_text` | function | 182-185 | test_upload_rejects_pdf_without_text(client) |\n| `test_upload_size_limit` | function | 188-192 | test_upload_size_limit(tmp_path, embedder) |\n| `test_upload_rate_limit` | function | 195-200 | test_upload_rate_limit(tmp_path, embedder) |\n| `INJECTED_POLICY` | constant | 203-203 |  |\n| `test_injected_lines_are_removed_at_upload_and_flagged_in_answers` | function | 206-212 | test_injected_lines_are_removed_at_upload_and_flagged_in_answers(client) |\n| `test_upload_fact_extraction_spends_the_daily_budget` | function | 215-221 | test_upload_fact_extraction_spends_the_daily_budget(tmp_path, embedder) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/main.py`, `backend/app/plan_facts.py`, `backend/app/schemas.py`, `backend/app/services.py`\n\n### `backend/tests/test_chunker.py` (98 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_chunks` | function | 5-6 | _chunks(pages) |\n| `test_heading_classification` | function | 9-19 | test_heading_classification() |\n| `test_new_heading_starts_new_chunk_with_section_label` | function | 22-34 | test_new_heading_starts_new_chunk_with_section_label() |\n| `test_wrapped_major_heading_is_rejoined` | function | 37-46 | test_wrapped_major_heading_is_rejoined() |\n| `test_section_carries_across_pages_but_chunks_do_not` | function | 49-56 | test_section_carries_across_pages_but_chunks_do_not() |\n| `test_long_section_is_split_with_overlap` | function | 59-66 | test_long_section_is_split_with_overlap() |\n| `test_tiny_fragments_are_dropped` | function | 69-70 | test_tiny_fragments_are_dropped() |\n| `test_heading_without_body_is_not_a_chunk` | function | 73-77 | test_heading_without_body_is_not_a_chunk() |\n| `test_chunk_ids_are_deterministic` | function | 80-82 | test_chunk_ids_are_deterministic() |\n| `test_embedding_text_includes_section_header` | function | 85-88 | test_embedding_text_includes_section_header() |\n| `test_clean_text_rejoins_hyphenated_words` | function | 91-92 | test_clean_text_rejoins_hyphenated_words() |\n| `test_clean_text_drops_page_number_lines` | function | 95-98 | test_clean_text_drops_page_number_lines() |\n\n**Imports (repo):** `backend/app/ingest/chunker.py`, `backend/app/ingest/pdf.py`\n\n### `backend/tests/test_costs.py` (58 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `PLAN` | constant | 5-5 |  |\n| `COINSURANCE_30` | constant | 6-6 |  |\n| `test_mri_before_deductible_is_paid_in_full` | function | 9-13 | test_mri_before_deductible_is_paid_in_full() |\n| `test_having_a_baby_matches_policy_coverage_example` | function | 16-20 | test_having_a_baby_matches_policy_coverage_example() |\n| `test_partially_met_deductible` | function | 23-26 | test_partially_met_deductible() |\n| `test_copay_without_deductible` | function | 29-32 | test_copay_without_deductible() |\n| `test_copay_never_exceeds_the_bill` | function | 35-36 | test_copay_never_exceeds_the_bill() |\n| `test_out_of_pocket_max_caps_the_total` | function | 39-42 | test_out_of_pocket_max_caps_the_total() |\n| `test_not_covered_means_you_pay_everything` | function | 45-48 | test_not_covered_means_you_pay_everything() |\n| `test_free_preventive_service` | function | 51-53 | test_free_preventive_service() |\n| `test_negative_amount_is_rejected` | function | 56-58 | test_negative_amount_is_rejected() |\n\n**Imports (repo):** `backend/app/costs.py`\n\n### `backend/tests/test_documents.py` (40 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_record` | function | 8-13 | _record(doc_id, hours_old, is_sample) |\n| `test_rejects_unsafe_ids` | function | 17-19 | test_rejects_unsafe_ids(bad) |\n| `test_save_get_delete` | function | 22-28 | test_save_get_delete(tmp_path) |\n| `test_get_with_bad_id_returns_none` | function | 31-32 | test_get_with_bad_id_returns_none(tmp_path) |\n| `test_expired_skips_samples_and_fresh_uploads` | function | 35-40 | test_expired_skips_samples_and_fresh_uploads(tmp_path) |\n\n**Imports (repo):** `backend/app/documents.py`\n\n### `backend/tests/test_graph.py` (59 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SAMPLE` | constant | 8-8 |  |\n| `test_clause_key` | function | 11-15 | test_clause_key() |\n| `test_reference_extraction` | function | 18-23 | test_reference_extraction() |\n| `_chunk` | function | 26-27 | _chunk(cid, section, text) |\n| `test_link_chunks_builds_edges_and_skips_self_references` | function | 30-41 | test_link_chunks_builds_edges_and_skips_self_references() |\n| `test_sample_policy_graph_contains_the_known_cross_references` | function | 44-59 | test_sample_policy_graph_contains_the_known_cross_references() |\n\n**Imports (repo):** `backend/app/graph.py`, `backend/app/ingest/chunker.py`, `backend/app/ingest/pdf.py`, `backend/app/models.py`\n\n### `backend/tests/test_indexer.py` (29 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SAMPLE` | constant | 6-6 |  |\n| `test_federal_corpus_indexes_once` | function | 9-20 | test_federal_corpus_indexes_once(store) |\n| `test_sample_policy_indexes_with_pages_and_sections` | function | 23-29 | test_sample_policy_indexes_with_pages_and_sections(store) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/indexer.py`\n\n### `backend/tests/test_llm.py` (181 lines)\nProvider adapters: success path and the translation of every failure mode\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Out` | class | 16-18 |  |\n| `ARGS` | constant | 21-21 |  |\n| `_gemini` | function | 27-45 | _gemini(text, finish, error, candidates, models, fail_models) |\n| `test_gemini_returns_validated_object_and_sends_json_schema` | function | 48-55 | test_gemini_returns_validated_object_and_sends_json_schema() |\n| `test_gemini_client_errors` | function | 62-65 | test_gemini_client_errors(code, match) |\n| `test_gemini_server_error_on_every_model` | function | 68-73 | test_gemini_server_error_on_every_model() |\n| `test_gemini_falls_back_to_next_model_when_overloaded` | function | 76-79 | test_gemini_falls_back_to_next_model_when_overloaded() |\n| `test_gemini_timeout_falls_back` | function | 82-95 | test_gemini_timeout_falls_back() |\n| `test_gemini_non_retryable_error_does_not_try_other_models` | function | 98-103 | test_gemini_non_retryable_error_does_not_try_other_models() |\n| `test_gemini_bad_finish_reasons` | function | 107-110 | test_gemini_bad_finish_reasons(finish, match) |\n| `test_gemini_blocked_prompt_has_no_candidates` | function | 113-116 | test_gemini_blocked_prompt_has_no_candidates() |\n| `test_gemini_json_that_breaks_the_schema` | function | 119-122 | test_gemini_json_that_breaks_the_schema() |\n| `_anthropic` | function | 128-139 | _anthropic(parsed, stop, error) |\n| `test_anthropic_success_uses_structured_output_and_fallbacks` | function | 142-146 | test_anthropic_success_uses_structured_output_and_fallbacks() |\n| `test_anthropic_bad_stop_reasons` | function | 150-153 | test_anthropic_bad_stop_reasons(stop, match) |\n| `test_anthropic_rate_limit` | function | 156-160 | test_anthropic_rate_limit() |\n| `test_provider_resolution` | function | 166-170 | test_provider_resolution() |\n| `test_build_llm_without_keys_returns_none` | function | 173-174 | test_build_llm_without_keys_returns_none() |\n| `test_build_llm_gemini` | function | 177-181 | test_build_llm_gemini() |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/llm.py`\n\n### `backend/tests/test_markdown.py` (48 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `DOC` | constant | 3-15 |  |\n| `test_front_matter_is_parsed_and_removed` | function | 18-21 | test_front_matter_is_parsed_and_removed() |\n| `test_each_heading_becomes_a_federal_chunk_with_source` | function | 24-30 | test_each_heading_becomes_a_federal_chunk_with_source(tmp_path) |\n| `test_corpus_skips_readme_and_numbers_positions_globally` | function | 33-40 | test_corpus_skips_readme_and_numbers_positions_globally(tmp_path) |\n| `test_real_corpus_has_sources_for_every_chunk` | function | 43-48 | test_real_corpus_has_sources_for_every_chunk() |\n\n**Imports (repo):** `backend/app/ingest/markdown.py`\n\n### `backend/tests/test_plan_facts.py` (37 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `test_document_head_truncates_and_labels_pages` | function | 6-11 | test_document_head_truncates_and_labels_pages() |\n| `FakeLLM` | class | 14-24 |  |\n| `FakeLLM.__init__` | method | 17-18 | __init__(result, error) |\n| `FakeLLM.generate` | method | 20-24 | generate() |\n| `test_extract_returns_dict` | function | 27-33 | test_extract_returns_dict() |\n| `test_extract_failure_is_non_fatal` | function | 36-37 | test_extract_failure_is_non_fatal() |\n\n**Imports (repo):** `backend/app/ingest/pdf.py`, `backend/app/llm.py`, `backend/app/plan_facts.py`\n\n### `backend/tests/test_prompts.py` (43 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_sc` | function | 6-8 | _sc(kind, text, page, section) |\n| `_retrieval` | function | 11-15 | _retrieval() |\n| `test_source_ids_are_stable_and_prefixed` | function | 18-21 | test_source_ids_are_stable_and_prefixed() |\n| `test_message_contains_tagged_excerpts_facts_and_question` | function | 24-31 | test_message_contains_tagged_excerpts_facts_and_question() |\n| `test_document_text_cannot_break_out_of_its_tag` | function | 34-38 | test_document_text_cannot_break_out_of_its_tag() |\n| `test_no_federal_block_when_nothing_federal_retrieved` | function | 41-43 | test_no_federal_block_when_nothing_federal_retrieved() |\n\n**Imports (repo):** `backend/app/models.py`, `backend/app/prompts.py`, `backend/app/retrieval.py`\n\n### `backend/tests/test_query_expansion.py` (26 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `test_unmatched_question_is_unchanged` | function | 4-5 | test_unmatched_question_is_unchanged() |\n| `test_original_question_is_preserved_and_terms_appended` | function | 8-11 | test_original_question_is_preserved_and_terms_appended() |\n| `test_brand_drug_names_map_to_generic_class` | function | 14-15 | test_brand_drug_names_map_to_generic_class() |\n| `test_multiple_matches_are_all_added_once` | function | 18-21 | test_multiple_matches_are_all_added_once() |\n| `test_word_boundaries_avoid_false_matches` | function | 24-26 | test_word_boundaries_avoid_false_matches() |\n\n**Imports (repo):** `backend/app/query_expansion.py`\n\n### `backend/tests/test_ratelimit.py` (42 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Clock` | class | 4-9 |  |\n| `Clock.__init__` | method | 5-6 | __init__() |\n| `Clock.__call__` | method | 8-9 | __call__() |\n| `test_allows_up_to_limit_then_blocks_with_retry_after` | function | 12-18 | test_allows_up_to_limit_then_blocks_with_retry_after() |\n| `test_window_slides` | function | 21-26 | test_window_slides() |\n| `test_keys_are_independent` | function | 29-33 | test_keys_are_independent() |\n| `test_daily_budget_resets_on_new_day` | function | 36-42 | test_daily_budget_resets_on_new_day() |\n\n**Imports (repo):** `backend/app/ratelimit.py`\n\n### `backend/tests/test_retrieval.py` (58 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_chunk` | function | 7-11 | _chunk(doc_id, i, text, kind) |\n| `_setup` | function | 14-20 | _setup(store) |\n| `test_policy_and_federal_are_retrieved_separately` | function | 23-28 | test_policy_and_federal_are_retrieved_separately(store, embedder) |\n| `test_threshold_filters_irrelevant_chunks` | function | 31-35 | test_threshold_filters_irrelevant_chunks(store, embedder) |\n| `test_results_are_sorted_by_rerank_score` | function | 38-43 | test_results_are_sorted_by_rerank_score(store, embedder) |\n| `test_graph_expansion_follows_cross_references` | function | 46-58 | test_graph_expansion_follows_cross_references(store, embedder) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/indexer.py`, `backend/app/models.py`, `backend/app/retrieval.py`\n\n### `backend/tests/test_security.py` (124 lines)\nModel-independent defenses. These run offline in CI on every push.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `INJECTIONS` | constant | 12-19 |  |\n| `REAL_POLICY_LINES` | constant | 21-30 |  |\n| `test_injection_lines_are_flagged` | function | 34-35 | test_injection_lines_are_flagged(line) |\n| `test_real_policy_text_is_not_flagged` | function | 39-40 | test_real_policy_text_is_not_flagged(line) |\n| `test_the_whole_sample_policy_has_no_false_positives` | function | 43-50 | test_the_whole_sample_policy_has_no_false_positives() |\n| `test_strip_injection_removes_only_flagged_lines` | function | 53-57 | test_strip_injection_removes_only_flagged_lines() |\n| `SOURCE` | constant | 62-62 |  |\n| `test_contacts_from_the_source_are_kept` | function | 65-67 | test_contacts_from_the_source_are_kept() |\n| `test_phone_formats_are_compared_by_digits` | function | 70-71 | test_phone_formats_are_compared_by_digits() |\n| `test_invented_phone_and_link_are_removed` | function | 74-80 | test_invented_phone_and_link_are_removed() |\n| `test_plain_numbers_are_not_mistaken_for_phones` | function | 83-85 | test_plain_numbers_are_not_mistaken_for_phones() |\n| `DOC` | constant | 90-90 |  |\n| `test_grounded_facts_are_kept` | function | 93-96 | test_grounded_facts_are_kept() |\n| `test_numbers_not_in_the_document_are_dropped` | function | 99-102 | test_numbers_not_in_the_document_are_dropped() |\n| `test_inconsistent_deductible_above_oop_max_is_dropped` | function | 105-108 | test_inconsistent_deductible_above_oop_max_is_dropped() |\n| `test_html_and_script_tags_are_stripped` | function | 113-118 | test_html_and_script_tags_are_stripped() |\n| `test_comparisons_in_plain_text_survive` | function | 121-124 | test_comparisons_in_plain_text_survive() |\n\n**Imports (repo):** `backend/app/ingest/pdf.py`, `backend/app/security.py`\n\n### `backend/tests/test_vectorstore.py` (51 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_chunk` | function | 4-14 | _chunk(doc_id, position, text, kind, version) |\n| `test_upsert_count_and_delete` | function | 17-25 | test_upsert_count_and_delete(store) |\n| `test_hybrid_search_is_scoped_to_one_document` | function | 28-32 | test_hybrid_search_is_scoped_to_one_document(store) |\n| `test_hybrid_search_ranks_keyword_match_first` | function | 35-45 | test_hybrid_search_ranks_keyword_match_first(store) |\n| `test_search_by_kind` | function | 48-51 | test_search_by_kind(store) |\n\n**Imports (repo):** `backend/app/models.py`\n\n### `backend/tests/test_verification.py` (80 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `POLICY_TEXT` | constant | 6-9 |  |\n| `_sources` | function | 12-15 | _sources() |\n| `_answer` | function | 18-24 | _answer(verdict, citations, federal) |\n| `test_exact_quote_matches` | function | 27-28 | test_exact_quote_matches() |\n| `test_quote_across_pdf_line_break_and_curly_quotes_matches` | function | 31-33 | test_quote_across_pdf_line_break_and_curly_quotes_matches() |\n| `test_small_typo_still_matches_but_invented_text_does_not` | function | 36-38 | test_small_typo_still_matches_but_invented_text_does_not() |\n| `test_too_short_quotes_are_rejected` | function | 41-42 | test_too_short_quotes_are_rejected() |\n| `test_verified_citation_gets_page_and_section` | function | 45-54 | test_verified_citation_gets_page_and_section() |\n| `test_fabricated_citation_is_dropped_and_verdict_downgraded` | function | 57-64 | test_fabricated_citation_is_dropped_and_verdict_downgraded() |\n| `test_unknown_source_ids_are_ignored` | function | 67-73 | test_unknown_source_ids_are_ignored() |\n| `test_duplicate_citations_are_collapsed` | function | 76-80 | test_duplicate_citations_are_collapsed() |\n\n**Imports (repo):** `backend/app/models.py`, `backend/app/retrieval.py`, `backend/app/schemas.py`, `backend/app/verification.py`\n\n## tooling\n\n### `backend/scripts/make_sample_policy.py` (361 lines)\nGenerate the fictional sample policy PDF used by the live demo.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `OUT_DIR` | constant | 21-21 |  |\n| `PDF_PATH` | constant | 22-22 |  |\n| `FACTS_PATH` | constant | 23-23 |  |\n| `PLAN_FACTS` | constant | 25-39 |  |\n| `CONTENT` | constant | 42-323 |  |\n| `build` | function | 326-357 | build() |\n\n"
+   "markdown": "# 03 · Module and file catalog\n\n_Generated by `tools/build_atlas.py` from the source code. Do not edit by hand._\n\n109 files analysed · 498 symbols · commit `1a00025` (working tree had uncommitted changes)\n\n## backend\n\n### `backend/app/__init__.py` (0 lines)\n\n## backend · answering\n\n### `backend/app/answering.py` (142 lines)\nGenerate a grounded answer: retrieval result + question -> verified Answer.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `fallback_answer` | function | 25-40 | fallback_answer() |\n| `plan_costs_from_facts` | function | 43-49 | plan_costs_from_facts(facts) |\n| `compute_cost` | function | 52-67 | compute_cost(rule, facts) |\n| `AnswerService` | class | 70-142 |  |\n| `AnswerService.__init__` | method | 71-73 | __init__(llm, settings) |\n| `AnswerService._call_llm` | method | 75-83 | _call_llm(question, retrieval, plan_facts, meta) |\n| `AnswerService.answer` | method | 85-142 | answer(question, retrieval, plan_facts) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/costs.py`, `backend/app/llm.py`, `backend/app/prompts.py`, `backend/app/retrieval.py`, `backend/app/schemas.py`, `backend/app/security.py`, `backend/app/verification.py`\n**Used by:** `backend/app/api.py`, `backend/app/services.py`, `backend/eval/run_answer_eval.py`, `backend/tests/test_answering.py`\n**Tested by:** `backend/tests/test_answering.py`\n\n### `backend/app/costs.py` (124 lines)\nDeterministic out-of-pocket cost estimate.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `CostRule` | class | 18-24 | How the policy says this specific service is cost-shared. |\n| `PlanCosts` | class | 28-30 |  |\n| `CostEstimate` | class | 34-42 |  |\n| `CostEstimate.to_dict` | method | 41-42 | to_dict() |\n| `_money` | function | 45-46 | _money(x) |\n| `estimate_cost` | function | 49-124 | estimate_cost(billed_amount, rule, plan, deductible_met, out_of_pocket_met) |\n**Used by:** `backend/app/answering.py`, `backend/tests/test_costs.py`\n**Tested by:** `backend/tests/test_costs.py`\n\n### `backend/app/llm.py` (215 lines)\nLLM providers behind one tiny interface.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `T` | constant | 24-24 |  |\n| `ANTHROPIC_FALLBACK_BETA` | constant | 26-26 |  |\n| `LLMError` | class | 29-30 | Something went wrong talking to the LLM. The message is safe to show users. |\n| `StructuredLLM` | class | 33-40 |  |\n| `StructuredLLM.generate` | method | 36-40 | meta, if given, is filled with {\"model\", \"input_tokens\", \"output_tokens\"} for tracing. |\n| `GeminiLLM` | class | 48-124 | Tries each model in order; moves on when one is overloaded or out of quota. |\n| `GeminiLLM.__init__` | method | 57-60 | __init__(client, models) |\n| `GeminiLLM.generate` | method | 62-106 | generate(system, user, schema, max_tokens, effort, meta) |\n| `GeminiLLM._parse` | method | 108-124 | _parse(response, schema, model) |\n| `AnthropicLLM` | class | 132-177 |  |\n| `AnthropicLLM.__init__` | method | 133-136 | __init__(client, model) |\n| `AnthropicLLM.generate` | method | 138-177 | generate(system, user, schema, max_tokens, effort, meta) |\n| `resolve_provider` | function | 183-191 | Explicit LLM_PROVIDER wins; otherwise use whichever API key is present. |\n| `build_llm` | function | 194-215 | build_llm(settings) |\n\n**Imports (repo):** `backend/app/config.py`\n**Used by:** `backend/app/answering.py`, `backend/app/embeddings.py`, `backend/app/plan_facts.py`, `backend/app/services.py`, `backend/eval/run_answer_eval.py`, `backend/tests/test_answering.py`, `backend/tests/test_gemini_embedder.py`, `backend/tests/test_llm.py`, `backend/tests/test_plan_facts.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_gemini_embedder.py`, `backend/tests/test_llm.py`, `backend/tests/test_plan_facts.py`\n\n### `backend/app/plan_facts.py` (66 lines)\nExtract key plan numbers (deductible, out-of-pocket max, copays) from an upload.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `MAX_CHARS` | constant | 17-17 |  |\n| `EXTRACTION_PROMPT` | constant | 19-23 |  |\n| `PlanFacts` | class | 26-39 |  |\n| `document_head` | function | 42-51 | document_head(pages, max_chars) |\n| `extract_plan_facts` | function | 54-66 | extract_plan_facts(llm, pages) |\n\n**Imports (repo):** `backend/app/ingest/pdf.py`, `backend/app/llm.py`\n**Used by:** `backend/app/api.py`, `backend/tests/test_api.py`, `backend/tests/test_plan_facts.py`\n**Tested by:** `backend/tests/test_api.py`, `backend/tests/test_plan_facts.py`\n\n### `backend/app/prompts.py` (102 lines)\nPrompt construction.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SYSTEM_PROMPT` | constant | 13-60 |  |\n| `CLOSING_REMINDER` | constant | 64-67 |  |\n| `_excerpt` | function | 70-79 | _excerpt(source_id, sc, referenced_by) |\n| `source_ids` | function | 82-85 | source_ids(retrieval) |\n| `build_user_message` | function | 88-102 | build_user_message(question, retrieval, plan_facts) |\n\n**Imports (repo):** `backend/app/retrieval.py`\n**Used by:** `backend/app/answering.py`, `backend/app/api.py`, `backend/tests/test_prompts.py`\n**Tested by:** `backend/tests/test_prompts.py`\n\n### `backend/app/verification.py` (88 lines)\nCheck the LLM's answer against the sources before anyone sees it.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `EVIDENCE_REQUIRED` | constant | 19-19 |  |\n| `FUZZY_MIN_RATIO` | constant | 20-20 |  |\n| `_TRANSLATE` | constant | 22-22 |  |\n| `normalize` | function | 25-28 | normalize(text) |\n| `quote_matches` | function | 31-47 | quote_matches(quote, source_text) |\n| `verify_citations` | function | 50-88 | Returns (verdict, verified_citations, federal_refs, warnings). |\n\n**Imports (repo):** `backend/app/retrieval.py`, `backend/app/schemas.py`\n**Used by:** `backend/app/answering.py`, `backend/tests/test_verification.py`\n**Tested by:** `backend/tests/test_verification.py`\n\n## backend · composition root\n\n### `backend/app/services.py` (103 lines)\nBuilds and holds every long-lived object the API needs.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SAMPLE_DOC_ID` | constant | 26-26 |  |\n| `SAMPLE_PDF_NAME` | constant | 27-27 |  |\n| `SAMPLE_TITLE` | constant | 28-28 |  |\n| `Services` | class | 32-83 |  |\n| `Services.__post_init__` | method | 43-47 | __post_init__() |\n| `Services.llm_configured` | method | 50-51 | llm_configured() |\n| `Services.startup` | method | 53-58 | Make sure the knowledge base and the sample policy are indexed. |\n| `Services._register_sample` | method | 60-77 | _register_sample() |\n| `Services.delete_expired_uploads` | method | 79-83 | delete_expired_uploads() |\n| `build_services` | function | 86-103 | build_services(settings, qdrant, embedder, llm) |\n\n**Imports (repo):** `backend/app/answering.py`, `backend/app/config.py`, `backend/app/documents.py`, `backend/app/embeddings.py`, `backend/app/indexer.py`, `backend/app/llm.py`, `backend/app/ratelimit.py`, `backend/app/retrieval.py`, `backend/app/vectorstore.py`\n**Used by:** `backend/app/api.py`, `backend/app/main.py`, `backend/redteam/run_redteam.py`, `backend/scripts/precompute_embeddings.py`, `backend/tests/test_api.py`\n**Tested by:** `backend/tests/test_api.py`\n\n## backend · configuration\n\n### `backend/app/config.py` (115 lines)\nApplication settings, read from environment variables (or backend/.env).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `BACKEND_DIR` | constant | 12-12 |  |\n| `Settings` | class | 15-110 |  |\n| `Settings.collection_name` | method | 98-102 | Vector sizes differ per provider, so each provider gets its own collection. |\n| `Settings.uploads_dir` | method | 105-106 | uploads_dir() |\n| `Settings.qdrant_path` | method | 109-110 | qdrant_path() |\n| `get_settings` | function | 114-115 | get_settings() |\n**Used by:** `backend/app/answering.py`, `backend/app/embeddings.py`, `backend/app/indexer.py`, `backend/app/llm.py`, `backend/app/main.py`, `backend/app/retrieval.py`, `backend/app/services.py`, `backend/app/vectorstore.py`, `backend/eval/common.py`, `backend/eval/run_answer_eval.py`, `backend/redteam/run_redteam.py`, `backend/scripts/precompute_embeddings.py`, `backend/tests/test_answering.py`, `backend/tests/test_api.py`, `backend/tests/test_gemini_embedder.py`, `backend/tests/test_indexer.py`, `backend/tests/test_llm.py`, `backend/tests/test_retrieval.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_api.py`, `backend/tests/test_gemini_embedder.py`, `backend/tests/test_indexer.py`, `backend/tests/test_llm.py`, `backend/tests/test_retrieval.py`\n\n## backend · domain & state\n\n### `backend/app/documents.py` (88 lines)\nA tiny on-disk registry of documents the app knows about.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `DOC_ID_PATTERN` | constant | 19-19 |  |\n| `InvalidDocumentId` | class | 22-23 |  |\n| `validate_doc_id` | function | 26-30 | validate_doc_id(doc_id) |\n| `DocumentRecord` | class | 34-51 |  |\n| `DocumentRecord.public` | method | 47-51 | What the API returns (never the server-side file path). |\n| `DocumentRegistry` | class | 54-88 |  |\n| `DocumentRegistry.__init__` | method | 55-57 | __init__(root) |\n| `DocumentRegistry.pdf_path` | method | 59-60 | pdf_path(doc_id) |\n| `DocumentRegistry._meta_path` | method | 62-63 | _meta_path(doc_id) |\n| `DocumentRegistry.save` | method | 65-66 | save(record) |\n| `DocumentRegistry.get` | method | 68-75 | get(doc_id) |\n| `DocumentRegistry.delete` | method | 77-79 | delete(doc_id) |\n| `DocumentRegistry.expired` | method | 81-88 | expired(ttl_hours, now) |\n**Used by:** `backend/app/api.py`, `backend/app/services.py`, `backend/tests/test_documents.py`\n**Tested by:** `backend/tests/test_documents.py`\n\n### `backend/app/models.py` (54 lines)\nCore data types shared across ingestion, retrieval and answering.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Chunk` | class | 10-54 | One retrievable piece of a document, plus where it came from. |\n| `Chunk.embedding_text` | method | 28-32 | Text that gets embedded: the section header is prepended so a chunk that |\n| `Chunk.to_payload` | method | 34-46 | to_payload() |\n| `Chunk.from_payload` | method | 49-54 | from_payload(payload) |\n**Used by:** `backend/app/graph.py`, `backend/app/indexer.py`, `backend/app/ingest/chunker.py`, `backend/app/ingest/markdown.py`, `backend/app/retrieval.py`, `backend/app/vectorstore.py`, `backend/tests/test_answering.py`, `backend/tests/test_gemini_embedder.py`, `backend/tests/test_graph.py`, `backend/tests/test_prompts.py`, `backend/tests/test_retrieval.py`, `backend/tests/test_vectorstore.py`, `backend/tests/test_verification.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_gemini_embedder.py`, `backend/tests/test_graph.py`, `backend/tests/test_prompts.py`, `backend/tests/test_retrieval.py`, `backend/tests/test_vectorstore.py`, `backend/tests/test_verification.py`\n\n### `backend/app/ratelimit.py` (53 lines)\nIn-memory rate limits that protect the public demo (and the API bill).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SlidingWindowLimiter` | class | 18-36 |  |\n| `SlidingWindowLimiter.__init__` | method | 19-24 | __init__(limit, window_seconds, clock) |\n| `SlidingWindowLimiter.check` | method | 26-36 | Record a hit for key. Returns (allowed, retry_after_seconds). |\n| `DailyBudget` | class | 39-53 |  |\n| `DailyBudget.__init__` | method | 40-44 | __init__(limit, today) |\n| `DailyBudget.try_spend` | method | 46-53 | try_spend() |\n**Used by:** `backend/app/services.py`, `backend/tests/test_ratelimit.py`\n**Tested by:** `backend/tests/test_ratelimit.py`\n\n### `backend/app/schemas.py` (120 lines)\nPydantic models for (1) what the LLM must return and (2) what the API returns.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `LLMPolicyCitation` | class | 27-29 |  |\n| `LLMFederalNote` | class | 32-34 |  |\n| `LLMCostRule` | class | 37-43 |  |\n| `LLMAnswer` | class | 46-58 |  |\n| `Citation` | class | 66-70 |  |\n| `FederalReference` | class | 73-77 |  |\n| `CostEstimateOut` | class | 80-85 |  |\n| `Answer` | class | 88-101 |  |\n| `SourcePreview` | class | 104-115 | A retrieved chunk, sent to the UI before the answer is ready. |\n| `AskRequest` | class | 118-120 |  |\n**Used by:** `backend/app/answering.py`, `backend/app/api.py`, `backend/app/verification.py`, `backend/tests/test_answering.py`, `backend/tests/test_api.py`, `backend/tests/test_verification.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_api.py`, `backend/tests/test_verification.py`\n\n## backend · entrypoint\n\n### `backend/app/main.py` (50 lines)\nFastAPI application entry point.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FRONTEND_DIST` | constant | 21-21 |  |\n| `create_app` | function | 26-47 | create_app(services, warm_up) |\n\n**Imports (repo):** `backend/app/api.py`, `backend/app/config.py`, `backend/app/services.py`\n**Used by:** `backend/redteam/run_redteam.py`, `backend/tests/test_api.py`\n**Tested by:** `backend/tests/test_api.py`\n\n## backend · http\n\n### `backend/app/api.py` (242 lines)\nHTTP endpoints.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `services` | function | 36-37 | services(request) |\n| `client_ip` | function | 40-45 | client_ip(request) |\n| `_rate_limited` | function | 48-53 | _rate_limited(retry_after, what) |\n| `_get_document` | function | 56-60 | _get_document(svc, doc_id) |\n| `health` | function | 64-73 | health(request) |\n| `get_document` | function | 77-78 | get_document(doc_id, request) |\n| `get_document_file` | function | 82-89 | get_document_file(doc_id, request) |\n| `_safe_title` | function | 92-96 | _safe_title(filename) |\n| `upload_document` | function | 100-143 | upload_document(request, file) |\n| `sse` | function | 146-147 | sse(event, data) |\n| `_source_previews` | function | 150-164 | _source_previews(retrieval) |\n| `ask` | function | 168-242 | ask(body, request) |\n\n**Imports (repo):** `backend/app/answering.py`, `backend/app/documents.py`, `backend/app/indexer.py`, `backend/app/ingest/pdf.py`, `backend/app/plan_facts.py`, `backend/app/prompts.py`, `backend/app/retrieval.py`, `backend/app/schemas.py`, `backend/app/security.py`, `backend/app/services.py`\n**Used by:** `backend/app/main.py`\n\n## backend · ingestion\n\n### `backend/app/graph.py` (86 lines)\nA clause graph built from the policy's own cross-references.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `REFERENCE` | constant | 30-33 |  |\n| `CLAUSE_NUMBER` | constant | 35-35 |  |\n| `MAJOR_NUMBER` | constant | 36-36 |  |\n| `MAX_REFS_PER_CHUNK` | constant | 38-38 |  |\n| `CHUNKS_PER_TARGET` | constant | 39-39 |  |\n| `clause_key` | function | 42-51 | 'SECTION 7 - EXCLUSIONS › 7.3 Dental and Vision' -> '7.3';  'SECTION 4 - PRIOR AUTH' -> '4'. |\n| `references` | function | 54-59 | references(text) |\n| `link_chunks` | function | 62-86 | Fill chunk.extra['refs'] with the chunk ids each chunk points to. Returns the edge count. |\n\n**Imports (repo):** `backend/app/models.py`\n**Used by:** `backend/app/indexer.py`, `backend/eval/run_graph_eval.py`, `backend/tests/test_graph.py`\n**Tested by:** `backend/tests/test_graph.py`\n\n### `backend/app/indexer.py` (111 lines)\nIngestion pipeline: file -> pages -> chunks -> vectors in Qdrant.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FEDERAL_DOC_ID` | constant | 24-24 |  |\n| `PIPELINE_VERSION` | constant | 27-27 |  |\n| `content_hash` | function | 30-35 | content_hash(paths) |\n| `_stamp` | function | 38-41 | _stamp(chunks, version) |\n| `_replace` | function | 44-46 | _replace(store, doc_id, chunks) |\n| `index_federal_corpus` | function | 49-58 | index_federal_corpus(store, settings) |\n| `IndexedPolicy` | class | 62-66 |  |\n| `load_policy_pages` | function | 69-88 | Load a policy PDF and remove instruction-like text aimed at AI systems. |\n| `index_policy_pdf` | function | 91-111 | index_policy_pdf(store, path, doc_id, title, settings, skip_if_current) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/graph.py`, `backend/app/ingest/chunker.py`, `backend/app/ingest/markdown.py`, `backend/app/ingest/pdf.py`, `backend/app/models.py`, `backend/app/security.py`, `backend/app/vectorstore.py`\n**Used by:** `backend/app/api.py`, `backend/app/retrieval.py`, `backend/app/services.py`, `backend/eval/common.py`, `backend/scripts/precompute_embeddings.py`, `backend/tests/test_indexer.py`, `backend/tests/test_retrieval.py`\n**Tested by:** `backend/tests/test_indexer.py`, `backend/tests/test_retrieval.py`\n\n### `backend/app/ingest/__init__.py` (0 lines)\n\n### `backend/app/ingest/chunker.py` (163 lines)\nSplit document pages into section-aware chunks.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `MAJOR_HEADING` | constant | 23-25 |  |\n| `HEADING_CONTINUATION` | constant | 27-27 |  |\n| `MINOR_HEADING` | constant | 29-29 |  |\n| `SENTENCE_END` | constant | 30-30 |  |\n| `MIN_CHUNK_CHARS` | constant | 32-32 |  |\n| `SectionTracker` | class | 35-59 | Remembers the current major + minor heading while we walk the document. |\n| `SectionTracker.__init__` | method | 38-40 | __init__() |\n| `SectionTracker.classify` | method | 43-48 | classify(line) |\n| `SectionTracker.update` | method | 50-54 | update(line, level) |\n| `SectionTracker.label` | method | 57-59 | label() |\n| `_split_long_line` | function | 62-78 | Break a line that alone exceeds max_chars at sentence ends (or hard-wrap). |\n| `_overlap_tail` | function | 81-89 | The last few lines of a chunk, up to overlap_chars, to repeat in the next one. |\n| `make_chunk_id` | function | 92-94 | make_chunk_id(doc_id, position) |\n| `chunk_pages` | function | 97-163 | chunk_pages(pages, doc_id, source_title, kind, max_chars, overlap_chars) |\n\n**Imports (repo):** `backend/app/ingest/pdf.py`, `backend/app/models.py`\n**Used by:** `backend/app/indexer.py`, `backend/app/ingest/markdown.py`, `backend/scripts/precompute_embeddings.py`, `backend/tests/test_chunker.py`, `backend/tests/test_graph.py`\n**Tested by:** `backend/tests/test_chunker.py`, `backend/tests/test_graph.py`\n\n### `backend/app/ingest/markdown.py` (82 lines)\nLoad the curated federal-rules knowledge base (Markdown files) into chunks.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FRONT_MATTER` | constant | 19-19 |  |\n| `parse_front_matter` | function | 22-30 | parse_front_matter(raw) |\n| `_pack` | function | 33-44 | _pack(paragraphs, max_chars) |\n| `chunk_markdown` | function | 47-73 | chunk_markdown(path, doc_id, start_position, max_chars) |\n| `load_federal_corpus` | function | 76-82 | load_federal_corpus(directory, doc_id, max_chars) |\n\n**Imports (repo):** `backend/app/ingest/chunker.py`, `backend/app/models.py`\n**Used by:** `backend/app/indexer.py`, `backend/scripts/precompute_embeddings.py`, `backend/tests/test_markdown.py`\n**Tested by:** `backend/tests/test_markdown.py`\n\n### `backend/app/ingest/pdf.py` (66 lines)\nTurn a PDF into clean per-page text.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `MIN_TOTAL_CHARS` | constant | 17-17 |  |\n| `PAGE_NUMBER_LINE` | constant | 22-22 |  |\n| `PdfLoadError` | class | 25-26 | Raised with a user-friendly message when a PDF can't be used. |\n| `Page` | class | 30-32 |  |\n| `clean_text` | function | 35-43 | clean_text(text) |\n| `load_pdf` | function | 46-66 | load_pdf(path, max_pages) |\n**Used by:** `backend/app/api.py`, `backend/app/indexer.py`, `backend/app/ingest/chunker.py`, `backend/app/plan_facts.py`, `backend/tests/test_chunker.py`, `backend/tests/test_graph.py`, `backend/tests/test_plan_facts.py`, `backend/tests/test_security.py`\n**Tested by:** `backend/tests/test_chunker.py`, `backend/tests/test_graph.py`, `backend/tests/test_plan_facts.py`, `backend/tests/test_security.py`\n\n## backend · retrieval\n\n### `backend/app/embeddings.py` (239 lines)\nLocal embedding and reranking models (via fastembed / ONNX, no API key needed).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SparseVector` | class | 31-33 |  |\n| `Embedder` | class | 36-81 |  |\n| `Embedder.__init__` | method | 39-42 | __init__(settings) |\n| `Embedder._dense` | method | 45-46 | _dense() |\n| `Embedder._sparse` | method | 49-50 | _sparse() |\n| `Embedder._reranker` | method | 53-54 | _reranker() |\n| `Embedder.dense_size` | method | 57-58 | dense_size() |\n| `Embedder.warm_up` | method | 60-63 | Load all models now (at startup) rather than on the first user request. |\n| `Embedder.embed_documents` | method | 65-69 | embed_documents(texts) |\n| `Embedder.embed_query` | method | 71-75 | embed_query(text) |\n| `Embedder.rerank` | method | 77-81 | rerank(query, texts) |\n| `GeminiEmbedder` | class | 84-194 | Dense vectors from the Gemini embedding API; BM25 stays local. |\n| `GeminiEmbedder.__init__` | method | 96-105 | __init__(settings, client, clock, sleep) |\n| `GeminiEmbedder._wait_for_quota` | method | 107-120 | Block until sending n more texts keeps us under EMBEDDING_TEXTS_PER_MINUTE. |\n| `GeminiEmbedder.client` | method | 123-135 | client() |\n| `GeminiEmbedder._sparse` | method | 138-139 | _sparse() |\n| `GeminiEmbedder.dense_size` | method | 142-143 | dense_size() |\n| `GeminiEmbedder._embed` | method | 145-172 | _embed(texts, task_type) |\n| `GeminiEmbedder.warm_up` | method | 174-175 | warm_up() |\n| `GeminiEmbedder.embed_documents` | method | 177-180 | embed_documents(texts) |\n| `GeminiEmbedder.embed_query` | method | 182-191 | embed_query(text) |\n| `GeminiEmbedder.rerank` | method | 193-194 | rerank(query, texts) |\n| `precomputed_path` | function | 197-199 | precomputed_path(settings) |\n| `precomputed_key` | function | 202-203 | precomputed_key(task_type, text) |\n| `load_precomputed` | function | 206-213 | {sha256(task + text): unit vector}, written by scripts/precompute_embeddings.py. |\n| `build_embedder` | function | 216-219 | build_embedder(settings) |\n| `_normalize` | function | 222-225 | _normalize(values) |\n| `cosine` | function | 228-230 | Both inputs are unit vectors here, so the dot product is the cosine. |\n| `_Sparse` | class | 233-235 |  |\n| `_Sparse.__init__` | method | 234-235 | __init__(indices, values) |\n| `_to_sparse` | function | 238-239 | _to_sparse(embedding) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/llm.py`\n**Used by:** `backend/app/retrieval.py`, `backend/app/services.py`, `backend/eval/common.py`, `backend/scripts/precompute_embeddings.py`, `backend/tests/test_gemini_embedder.py`\n**Tested by:** `backend/tests/test_gemini_embedder.py`\n\n### `backend/app/query_expansion.py` (58 lines)\nBridge the vocabulary gap between how people talk and how policies are written.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `LAY_TERMS` | constant | 15-45 |  |\n| `_COMPILED` | constant | 47-47 |  |\n| `expand_query` | function | 50-58 | expand_query(question) |\n**Used by:** `backend/app/retrieval.py`, `backend/tests/test_query_expansion.py`\n**Tested by:** `backend/tests/test_query_expansion.py`\n\n### `backend/app/retrieval.py` (129 lines)\nTwo-stage retrieval: cheap-and-wide, then expensive-and-precise.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `ScoredChunk` | class | 31-34 |  |\n| `RetrievalResult` | class | 38-54 |  |\n| `RetrievalResult.found_anything` | method | 53-54 | found_anything() |\n| `Retriever` | class | 57-129 |  |\n| `Retriever.__init__` | method | 58-61 | __init__(store, embedder, settings) |\n| `Retriever._rerank` | method | 63-66 | _rerank(question, candidates) |\n| `Retriever._follow_references` | method | 68-80 | One hop through the clause graph: add clauses the top chunks point at (\"see 7.5\"). |\n| `Retriever._similarity_ranked` | method | 82-86 | No-reranker mode: keep the hybrid (RRF) order, score each hit by dense cosine |\n| `Retriever.retrieve` | method | 88-129 | retrieve(question, doc_id, gate_threshold) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/embeddings.py`, `backend/app/indexer.py`, `backend/app/models.py`, `backend/app/query_expansion.py`, `backend/app/vectorstore.py`\n**Used by:** `backend/app/answering.py`, `backend/app/api.py`, `backend/app/prompts.py`, `backend/app/services.py`, `backend/app/verification.py`, `backend/eval/common.py`, `backend/tests/test_answering.py`, `backend/tests/test_gemini_embedder.py`, `backend/tests/test_prompts.py`, `backend/tests/test_retrieval.py`, `backend/tests/test_verification.py`\n**Tested by:** `backend/tests/test_answering.py`, `backend/tests/test_gemini_embedder.py`, `backend/tests/test_prompts.py`, `backend/tests/test_retrieval.py`, `backend/tests/test_verification.py`\n\n### `backend/app/vectorstore.py` (126 lines)\nQdrant wrapper: store chunks with two vectors each and run hybrid search.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `DENSE` | constant | 16-16 |  |\n| `SPARSE` | constant | 17-17 |  |\n| `create_client` | function | 20-24 | create_client(settings) |\n| `_filter` | function | 27-33 | _filter(doc_id, kind, version) |\n| `VectorStore` | class | 36-126 |  |\n| `VectorStore.__init__` | method | 37-40 | __init__(client, collection, embedder) |\n| `VectorStore.ensure_collection` | method | 42-56 | ensure_collection() |\n| `VectorStore.upsert` | method | 58-75 | upsert(chunks, batch_size) |\n| `VectorStore.delete_document` | method | 77-78 | delete_document(doc_id) |\n| `VectorStore.count` | method | 80-81 | count(doc_id, kind, version) |\n| `VectorStore.get_chunks` | method | 83-89 | Fetch chunks by id - used to follow graph edges (no vector search needed). |\n| `VectorStore.hybrid_search` | method | 91-94 | hybrid_search(query, doc_id, kind, limit) |\n| `VectorStore.hybrid_search_with_vectors` | method | 96-126 | Same search; optionally also returns each hit's dense vector and the query's |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/models.py`\n**Used by:** `backend/app/indexer.py`, `backend/app/retrieval.py`, `backend/app/services.py`, `backend/eval/common.py`, `backend/tests/conftest.py`\n**Tested by:** `backend/tests/conftest.py`\n\n## backend · security\n\n### `backend/app/security.py` (150 lines)\nModel-independent defenses against hostile documents and hostile output.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `INJECTION_PATTERNS` | constant | 22-31 |  |\n| `_COMPILED` | constant | 32-32 |  |\n| `InjectionFinding` | class | 36-38 |  |\n| `scan_for_injection` | function | 41-48 | scan_for_injection(text) |\n| `strip_injection` | function | 51-59 | Remove flagged lines. Lines are the unit because PDF text is line-based |\n| `URL_RE` | constant | 66-66 |  |\n| `PHONE_RE` | constant | 67-67 |  |\n| `_digits` | function | 70-71 | _digits(s) |\n| `redact_unsupported_contacts` | function | 74-96 | Replace phone numbers / URLs that don't appear in the source excerpts. |\n| `TAG_RE` | constant | 105-105 |  |\n| `strip_markup` | function | 108-110 | strip_markup(text) |\n| `MONEY_FIELDS` | constant | 117-120 |  |\n| `PERCENT_FIELDS` | constant | 121-121 |  |\n| `_money_in_text` | function | 124-127 | _money_in_text(value, text) |\n| `ground_plan_facts` | function | 130-150 | Null out numbers that don't appear in the document; drop inconsistent pairs. |\n**Used by:** `backend/app/answering.py`, `backend/app/api.py`, `backend/app/indexer.py`, `backend/tests/test_security.py`, `backend/tests/test_security.py`, `backend/tests/test_security.py`\n**Tested by:** `backend/tests/test_security.py`\n\n## ci\n\n### `.github/workflows/ci.yml` (39 lines)\n\n## config\n\n### `.gcloudignore` (17 lines)\n\n### `.gitattributes` (2 lines)\n\n### `.gitignore` (15 lines)\n\n### `backend/.env.example` (23 lines)\n\n### `backend/pytest.ini` (3 lines)\n\n### `backend/requirements-dev.txt` (4 lines)\n\n### `backend/requirements.txt` (14 lines)\n\n### `render.yaml` (32 lines)\n\n### `scripts/deploy_hf.py` (164 lines)\nDeploy (or update) the app as a Hugging Face Docker Space.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `ROOT` | constant | 32-32 |  |\n| `IGNORE` | constant | 34-43 |  |\n| `VARIABLES` | constant | 47-51 |  |\n| `space_readme` | function | 54-73 | space_readme(github_url) |\n| `read_env_value` | function | 76-84 | read_env_value(key) |\n| `files_to_upload` | function | 87-98 | files_to_upload() |\n| `main` | function | 101-160 | main() |\n\n## data\n\n### `backend/data/embeddings/gemini-embedding-001-768.json` (105 lines)\n\n### `backend/data/samples/evergreen-silver-3000-ppo.facts.json` (15 lines)\n\n## deployment\n\n### `.dockerignore` (10 lines)\n\n### `Dockerfile` (43 lines)\n\n## documentation\n\n### `README.md` (142 lines)\nAm I Covered?\n\n### `SECURITY.md` (148 lines)\nSecurity audit\n\n### `docs/DEPLOY.md` (63 lines)\nDeploying Am I Covered?\n\n### `docs/HOW_IT_WORKS.md` (203 lines)\nHow Am I Covered? works\n\n## evaluation\n\n### `backend/eval/common.py` (34 lines)\nShared helpers for the evaluation scripts.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `BACKEND_DIR` | constant | 7-7 |  |\n| `SAMPLE_PDF` | constant | 18-18 |  |\n| `EVAL_DOC_ID` | constant | 19-19 |  |\n| `load_questions` | function | 22-23 | load_questions() |\n| `build_retriever` | function | 26-34 | Index the sample + federal corpus into a throwaway in-memory Qdrant. |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/embeddings.py`, `backend/app/indexer.py`, `backend/app/retrieval.py`, `backend/app/vectorstore.py`\n**Used by:** `backend/eval/run_answer_eval.py`, `backend/eval/run_graph_eval.py`, `backend/eval/run_retrieval_eval.py`\n\n### `backend/eval/multihop.json` (13 lines)\n\n### `backend/eval/questions.json` (40 lines)\n\n### `backend/eval/run_answer_eval.py` (117 lines)\nEnd-to-end answer evaluation: retrieval + Claude + verification, scored\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `GROUPS` | constant | 31-38 |  |\n| `main` | function | 41-113 | main() |\n\n**Imports (repo):** `backend/app/answering.py`, `backend/app/config.py`, `backend/app/llm.py`, `backend/eval/common.py`\n\n### `backend/eval/run_graph_eval.py` (53 lines)\nDoes the clause graph help? Retrieval-only, free to run (local models, no LLM).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `context_clauses` | function | 20-21 | context_clauses(result) |\n| `main` | function | 24-49 | main() |\n\n**Imports (repo):** `backend/app/graph.py`, `backend/eval/common.py`\n\n### `backend/eval/run_retrieval_eval.py` (67 lines)\nMeasure retrieval quality on the sample policy - no LLM, no API key, free to run.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `main` | function | 15-63 | main() |\n\n**Imports (repo):** `backend/eval/common.py`\n\n## frontend\n\n### `frontend/src/App.tsx` (101 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `STORAGE_KEY` | const | 7-8 |  |\n| `readSavedDocId` | function | 9-16 |  |\n| `saveDocId` | function | 17-24 |  |\n| `App` | component | 25-101 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/components/Chat.tsx`, `frontend/src/components/DocumentPanel.tsx`, `frontend/src/types.ts`\n**Used by:** `frontend/src/main.tsx`\n\n### `frontend/src/api.ts` (97 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SAMPLE_DOC_ID` | const | 3-4 |  |\n| `ApiError` | class | 5-6 |  |\n| `errorMessage` | function | 7-17 |  |\n| `getJson` | function | 18-23 |  |\n| `fetchHealth` | const | 24-24 |  |\n| `fetchDocument` | const | 25-25 |  |\n| `documentFileUrl` | const | 26-28 |  |\n| `uploadDocument` | function | 29-36 |  |\n| `AskHandlers` | type | 37-50 |  |\n| `askQuestion` | function | 51-74 |  |\n| `dispatch` | function | 75-97 |  |\n\n**Imports (repo):** `frontend/src/types.ts`\n**Used by:** `frontend/src/App.tsx`, `frontend/src/components/AnswerCard.tsx`, `frontend/src/components/Chat.tsx`, `frontend/src/components/DocumentPanel.tsx`, `frontend/src/components/SourcesList.tsx`\n\n### `frontend/src/format.ts` (18 lines)\n$1,800 for whole dollars, $1,234.56 otherwise.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `formatMoney` | function | 2-13 |  |\n| `shortSection` | function | 14-18 |  |\n**Used by:** `frontend/src/components/AnswerCard.tsx`, `frontend/src/components/CostBreakdown.tsx`, `frontend/src/components/DocumentPanel.tsx`, `frontend/src/components/SourcesList.tsx`\n\n### `frontend/src/index.css` (717 lines)\n\n### `frontend/src/main.tsx` (10 lines)\n\n**Imports (repo):** `frontend/src/App.tsx`\n\n### `frontend/src/types.ts` (110 lines)\nMirrors backend/app/schemas.py. Keep the two in sync.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Verdict` | type | 3-10 |  |\n| `Citation` | type | 11-17 |  |\n| `FederalReference` | type | 18-24 |  |\n| `CostEstimate` | type | 25-32 |  |\n| `Answer` | type | 33-47 |  |\n| `SourcePreview` | type | 48-59 |  |\n| `PlanFacts` | type | 60-74 |  |\n| `DocumentInfo` | type | 75-85 |  |\n| `Health` | type | 86-92 |  |\n| `Trace` | type | 93-110 |  |\n**Used by:** `frontend/src/App.tsx`, `frontend/src/api.ts`, `frontend/src/components/AnswerCard.tsx`, `frontend/src/components/Chat.tsx`, `frontend/src/components/CostBreakdown.tsx`, `frontend/src/components/DocumentPanel.tsx`, `frontend/src/components/SourcesList.tsx`, `frontend/src/components/TracePanel.tsx`, `frontend/src/components/VerdictBadge.tsx`\n\n### `frontend/src/vite-env.d.ts` (1 lines)\n/ <reference types=\"vite/client\" />\n\n## frontend · components\n\n### `frontend/src/components/AnswerCard.tsx` (93 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Props` | type | 9-14 |  |\n| `List` | component | 15-28 |  |\n| `AnswerCard` | component | 29-93 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/components/CostBreakdown.tsx`, `frontend/src/components/SourcesList.tsx`, `frontend/src/components/TracePanel.tsx`, `frontend/src/components/VerdictBadge.tsx`, `frontend/src/format.ts`, `frontend/src/types.ts`\n**Used by:** `frontend/src/components/Chat.tsx`\n\n### `frontend/src/components/Chat.tsx` (193 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Turn` | type | 6-15 |  |\n| `SAMPLE_SUGGESTIONS` | const | 16-24 |  |\n| `UPLOAD_SUGGESTIONS` | const | 25-33 |  |\n| `Chat` | component | 34-193 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/components/AnswerCard.tsx`, `frontend/src/types.ts`\n**Used by:** `frontend/src/App.tsx`\n\n### `frontend/src/components/CostBreakdown.tsx` (31 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `CostBreakdown` | component | 5-31 |  |\n\n**Imports (repo):** `frontend/src/format.ts`, `frontend/src/types.ts`\n**Used by:** `frontend/src/components/AnswerCard.tsx`\n\n### `frontend/src/components/DocumentPanel.tsx` (142 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Props` | type | 6-15 |  |\n| `FACTS` | const | 16-24 |  |\n| `FactsGrid` | component | 25-42 |  |\n| `PROVIDER_NAMES` | const | 43-44 |  |\n| `DocumentPanel` | component | 45-142 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/format.ts`, `frontend/src/types.ts`\n**Used by:** `frontend/src/App.tsx`\n\n### `frontend/src/components/SourcesList.tsx` (37 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SourcesList` | component | 6-37 |  |\n\n**Imports (repo):** `frontend/src/api.ts`, `frontend/src/format.ts`, `frontend/src/types.ts`\n**Used by:** `frontend/src/components/AnswerCard.tsx`\n\n### `frontend/src/components/TracePanel.tsx` (90 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `TracePanel` | component | 7-90 |  |\n\n**Imports (repo):** `frontend/src/types.ts`\n**Used by:** `frontend/src/components/AnswerCard.tsx`\n\n### `frontend/src/components/VerdictBadge.tsx` (28 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `LABELS` | const | 3-11 |  |\n| `ICONS` | const | 12-20 |  |\n| `VerdictBadge` | component | 21-28 |  |\n\n**Imports (repo):** `frontend/src/types.ts`\n**Used by:** `frontend/src/components/AnswerCard.tsx`\n\n## frontend · tooling\n\n### `frontend/.gitignore` (24 lines)\n\n### `frontend/eslint.config.js` (28 lines)\n\n### `frontend/index.html` (23 lines)\n\n### `frontend/package.json` (29 lines)\n\n### `frontend/tsconfig.app.json` (27 lines)\n\n### `frontend/tsconfig.json` (7 lines)\n\n### `frontend/tsconfig.node.json` (25 lines)\n\n### `frontend/vite.config.ts` (14 lines)\n\n## knowledge base\n\n### `backend/data/federal/README.md` (14 lines)\nFederal rules knowledge base\n\n### `backend/data/federal/appeals.md` (20 lines)\nYour right to appeal a denied claim\n\n### `backend/data/federal/eligibility-protections.md` (16 lines)\nPre-existing conditions\n\n### `backend/data/federal/emergency-care.md` (20 lines)\nEmergency care is an essential health benefit\n\n### `backend/data/federal/essential-health-benefits.md` (20 lines)\nThe ten essential health benefits\n\n### `backend/data/federal/glossary.md` (36 lines)\nDeductible\n\n### `backend/data/federal/mental-health-parity.md` (16 lines)\nWhat parity means\n\n### `backend/data/federal/no-surprises-act.md` (24 lines)\nWhat the No Surprises Act protects you from\n\n### `backend/data/federal/out-of-pocket-maximum.md` (20 lines)\nWhat the out-of-pocket maximum is\n\n### `backend/data/federal/plan-types-and-documents.md` (16 lines)\nHMO, PPO, EPO and POS plans\n\n### `backend/data/federal/preventive-care.md` (20 lines)\nPreventive care must be covered at no cost\n\n### `backend/data/federal/prior-authorization.md` (20 lines)\nWhat prior authorization is\n\n## scratch\n\n### `backend/scratch/01_hello_llm.py` (19 lines)\n\n## security testing\n\n### `backend/redteam/__init__.py` (0 lines)\n\n### `backend/redteam/attacks.py` (222 lines)\nAttack cases for the red-team suite (OWASP Top 10 for LLM Applications).\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SYSTEM_PROMPT_MARKERS` | constant | 18-18 |  |\n| `POLICY_LINES` | constant | 20-34 |  |\n| `COST_LINES` | constant | 36-42 |  |\n| `make_pdf` | function | 45-62 | pages -> list of (style, text) lines. style: 'normal' \\| 'hidden' (white, 1pt). |\n| `_normal` | function | 65-66 | _normal(lines) |\n| `_with_injection` | function | 69-75 | _with_injection(after_line, injection, style) |\n| `Attack` | class | 79-90 |  |\n| `_leaked` | function | 93-95 | _leaked(answer) |\n| `ATTACKS` | constant | 98-222 |  |\n**Used by:** `backend/redteam/run_redteam.py`\n\n### `backend/redteam/run_redteam.py` (99 lines)\nRun the red-team attack suite against the real pipeline and real LLM.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `BACKEND` | constant | 20-20 |  |\n| `ask` | function | 32-40 | ask(client, question, doc_id) |\n| `main` | function | 43-95 | main() |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/main.py`, `backend/app/services.py`, `backend/redteam/attacks.py`\n\n## tests\n\n### `backend/tests/conftest.py` (74 lines)\nShared test fixtures.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `DIM` | constant | 17-17 |  |\n| `_tokens` | function | 20-21 | _tokens(text) |\n| `_bucket` | function | 24-25 | _bucket(token, size) |\n| `_Sparse` | class | 28-30 |  |\n| `_Sparse.__init__` | method | 29-30 | __init__(indices, values) |\n| `FakeEmbedder` | class | 33-62 |  |\n| `FakeEmbedder._dense` | method | 36-41 | _dense(text) |\n| `FakeEmbedder._sparse` | method | 43-48 | _sparse(text) |\n| `FakeEmbedder.embed_documents` | method | 50-51 | embed_documents(texts) |\n| `FakeEmbedder.embed_query` | method | 53-54 | embed_query(text) |\n| `FakeEmbedder.rerank` | method | 56-59 | rerank(query, texts) |\n| `FakeEmbedder.warm_up` | method | 61-62 | warm_up() |\n| `embedder` | function | 66-67 | embedder() |\n| `store` | function | 71-74 | store(embedder) |\n\n**Imports (repo):** `backend/app/vectorstore.py`\n\n### `backend/tests/test_answering.py` (109 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FACTS` | constant | 10-10 |  |\n| `MRI_TEXT` | constant | 11-11 |  |\n| `_retrieval` | function | 14-16 | _retrieval() |\n| `_llm_answer` | function | 19-27 | _llm_answer() |\n| `FakeLLM` | class | 30-43 | Implements the StructuredLLM interface: records calls, returns a canned answer or raises. |\n| `FakeLLM.__init__` | method | 35-37 | __init__(parsed, error) |\n| `FakeLLM.generate` | method | 39-43 | generate() |\n| `_service` | function | 46-47 | _service(llm) |\n| `test_no_retrieval_returns_fallback_without_calling_llm` | function | 50-55 | test_no_retrieval_returns_fallback_without_calling_llm() |\n| `test_happy_path_returns_verified_answer` | function | 58-66 | test_happy_path_returns_verified_answer() |\n| `test_cost_estimate_is_computed_in_python` | function | 69-73 | test_cost_estimate_is_computed_in_python() |\n| `test_cost_skipped_without_amount_or_plan_facts` | function | 76-80 | test_cost_skipped_without_amount_or_plan_facts() |\n| `test_llm_errors_propagate_as_answer_errors` | function | 83-86 | test_llm_errors_propagate_as_answer_errors() |\n| `test_conflicting_provisions_downgrade_verdict_and_warn` | function | 89-93 | test_conflicting_provisions_downgrade_verdict_and_warn() |\n| `test_contact_details_not_in_sources_are_redacted` | function | 96-103 | test_contact_details_not_in_sources_are_redacted() |\n| `test_markup_in_model_output_is_stripped` | function | 106-109 | test_markup_in_model_output_is_stripped() |\n\n**Imports (repo):** `backend/app/answering.py`, `backend/app/config.py`, `backend/app/llm.py`, `backend/app/models.py`, `backend/app/retrieval.py`, `backend/app/schemas.py`\n\n### `backend/tests/test_api.py` (223 lines)\nEnd-to-end API tests: real FastAPI app, real indexing pipeline and Qdrant\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `BACKEND` | constant | 19-19 |  |\n| `FakeLLM` | class | 22-40 | StructuredLLM stand-in: answers by quoting the first policy excerpt it was given. |\n| `FakeLLM.__init__` | method | 27-28 | __init__() |\n| `FakeLLM.generate` | method | 30-40 | generate(schema, user) |\n| `make_client` | function | 43-48 | make_client(tmp_path, embedder, llm) |\n| `client` | function | 52-55 | client(tmp_path, embedder) |\n| `parse_sse` | function | 58-63 | parse_sse(text) |\n| `pdf_bytes` | function | 66-76 | pdf_bytes(text) |\n| `POLICY_TEXT` | constant | 79-82 |  |\n| `test_health` | function | 85-88 | test_health(client) |\n| `test_sample_document_is_registered_with_facts` | function | 91-95 | test_sample_document_is_registered_with_facts(client) |\n| `test_sample_pdf_is_served_inline` | function | 98-102 | test_sample_pdf_is_served_inline(client) |\n| `test_unknown_documents_404` | function | 106-107 | test_unknown_documents_404(client, doc_id) |\n| `test_ask_streams_status_sources_answer_done` | function | 110-123 | test_ask_streams_status_sources_answer_done(client) |\n| `test_off_topic_question_skips_llm` | function | 126-134 | test_off_topic_question_skips_llm(tmp_path, embedder) |\n| `test_ask_without_api_key_reports_error_but_still_shows_sources` | function | 137-142 | test_ask_without_api_key_reports_error_but_still_shows_sources(tmp_path, embedder) |\n| `test_ask_validation` | function | 145-147 | test_ask_validation(client) |\n| `test_question_rate_limit` | function | 150-156 | test_question_rate_limit(tmp_path, embedder) |\n| `test_daily_budget` | function | 159-163 | test_daily_budget(tmp_path, embedder) |\n| `test_upload_then_ask_about_it` | function | 166-176 | test_upload_then_ask_about_it(client) |\n| `test_upload_rejects_non_pdf` | function | 179-181 | test_upload_rejects_non_pdf(client) |\n| `test_upload_rejects_pdf_without_text` | function | 184-187 | test_upload_rejects_pdf_without_text(client) |\n| `test_upload_size_limit` | function | 190-194 | test_upload_size_limit(tmp_path, embedder) |\n| `test_upload_rate_limit` | function | 197-202 | test_upload_rate_limit(tmp_path, embedder) |\n| `INJECTED_POLICY` | constant | 205-205 |  |\n| `test_injected_lines_are_removed_at_upload_and_flagged_in_answers` | function | 208-214 | test_injected_lines_are_removed_at_upload_and_flagged_in_answers(client) |\n| `test_upload_fact_extraction_spends_the_daily_budget` | function | 217-223 | test_upload_fact_extraction_spends_the_daily_budget(tmp_path, embedder) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/main.py`, `backend/app/plan_facts.py`, `backend/app/schemas.py`, `backend/app/services.py`\n\n### `backend/tests/test_chunker.py` (98 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_chunks` | function | 5-6 | _chunks(pages) |\n| `test_heading_classification` | function | 9-19 | test_heading_classification() |\n| `test_new_heading_starts_new_chunk_with_section_label` | function | 22-34 | test_new_heading_starts_new_chunk_with_section_label() |\n| `test_wrapped_major_heading_is_rejoined` | function | 37-46 | test_wrapped_major_heading_is_rejoined() |\n| `test_section_carries_across_pages_but_chunks_do_not` | function | 49-56 | test_section_carries_across_pages_but_chunks_do_not() |\n| `test_long_section_is_split_with_overlap` | function | 59-66 | test_long_section_is_split_with_overlap() |\n| `test_tiny_fragments_are_dropped` | function | 69-70 | test_tiny_fragments_are_dropped() |\n| `test_heading_without_body_is_not_a_chunk` | function | 73-77 | test_heading_without_body_is_not_a_chunk() |\n| `test_chunk_ids_are_deterministic` | function | 80-82 | test_chunk_ids_are_deterministic() |\n| `test_embedding_text_includes_section_header` | function | 85-88 | test_embedding_text_includes_section_header() |\n| `test_clean_text_rejoins_hyphenated_words` | function | 91-92 | test_clean_text_rejoins_hyphenated_words() |\n| `test_clean_text_drops_page_number_lines` | function | 95-98 | test_clean_text_drops_page_number_lines() |\n\n**Imports (repo):** `backend/app/ingest/chunker.py`, `backend/app/ingest/pdf.py`\n\n### `backend/tests/test_costs.py` (58 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `PLAN` | constant | 5-5 |  |\n| `COINSURANCE_30` | constant | 6-6 |  |\n| `test_mri_before_deductible_is_paid_in_full` | function | 9-13 | test_mri_before_deductible_is_paid_in_full() |\n| `test_having_a_baby_matches_policy_coverage_example` | function | 16-20 | test_having_a_baby_matches_policy_coverage_example() |\n| `test_partially_met_deductible` | function | 23-26 | test_partially_met_deductible() |\n| `test_copay_without_deductible` | function | 29-32 | test_copay_without_deductible() |\n| `test_copay_never_exceeds_the_bill` | function | 35-36 | test_copay_never_exceeds_the_bill() |\n| `test_out_of_pocket_max_caps_the_total` | function | 39-42 | test_out_of_pocket_max_caps_the_total() |\n| `test_not_covered_means_you_pay_everything` | function | 45-48 | test_not_covered_means_you_pay_everything() |\n| `test_free_preventive_service` | function | 51-53 | test_free_preventive_service() |\n| `test_negative_amount_is_rejected` | function | 56-58 | test_negative_amount_is_rejected() |\n\n**Imports (repo):** `backend/app/costs.py`\n\n### `backend/tests/test_documents.py` (40 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_record` | function | 8-13 | _record(doc_id, hours_old, is_sample) |\n| `test_rejects_unsafe_ids` | function | 17-19 | test_rejects_unsafe_ids(bad) |\n| `test_save_get_delete` | function | 22-28 | test_save_get_delete(tmp_path) |\n| `test_get_with_bad_id_returns_none` | function | 31-32 | test_get_with_bad_id_returns_none(tmp_path) |\n| `test_expired_skips_samples_and_fresh_uploads` | function | 35-40 | test_expired_skips_samples_and_fresh_uploads(tmp_path) |\n\n**Imports (repo):** `backend/app/documents.py`\n\n### `backend/tests/test_gemini_embedder.py` (120 lines)\nGemini-embedding mode: precomputed cache, free-tier throttle, no-reranker retrieval.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `FakeClient` | class | 16-26 |  |\n| `FakeClient.__init__` | method | 17-20 | __init__(dims, fail) |\n| `FakeClient.embed_content` | method | 22-26 | embed_content(model, contents, config) |\n| `Clock` | class | 29-39 |  |\n| `Clock.__init__` | method | 30-32 | __init__() |\n| `Clock.now` | method | 34-35 | now() |\n| `Clock.sleep` | method | 37-39 | sleep(s) |\n| `make` | function | 42-47 | make(tmp_path, client) |\n| `test_vectors_are_normalized_and_batched` | function | 50-56 | test_vectors_are_normalized_and_batched(tmp_path) |\n| `test_precomputed_vectors_skip_the_api` | function | 59-65 | test_precomputed_vectors_skip_the_api(tmp_path) |\n| `test_free_tier_throttle_waits_instead_of_failing` | function | 68-74 | test_free_tier_throttle_waits_instead_of_failing(tmp_path) |\n| `test_query_embeddings_are_cached` | function | 77-84 | test_query_embeddings_are_cached(tmp_path) |\n| `test_api_errors_become_user_safe_errors` | function | 87-90 | test_api_errors_become_user_safe_errors(tmp_path) |\n| `test_collection_name_differs_per_provider` | function | 93-95 | test_collection_name_differs_per_provider() |\n| `_chunk` | function | 100-102 | _chunk(doc_id, i, text) |\n| `test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity` | function | 105-120 | test_no_rerank_mode_keeps_fused_order_and_gates_on_similarity(store, embedder) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/embeddings.py`, `backend/app/llm.py`, `backend/app/models.py`, `backend/app/retrieval.py`\n\n### `backend/tests/test_graph.py` (59 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SAMPLE` | constant | 8-8 |  |\n| `test_clause_key` | function | 11-15 | test_clause_key() |\n| `test_reference_extraction` | function | 18-23 | test_reference_extraction() |\n| `_chunk` | function | 26-27 | _chunk(cid, section, text) |\n| `test_link_chunks_builds_edges_and_skips_self_references` | function | 30-41 | test_link_chunks_builds_edges_and_skips_self_references() |\n| `test_sample_policy_graph_contains_the_known_cross_references` | function | 44-59 | test_sample_policy_graph_contains_the_known_cross_references() |\n\n**Imports (repo):** `backend/app/graph.py`, `backend/app/ingest/chunker.py`, `backend/app/ingest/pdf.py`, `backend/app/models.py`\n\n### `backend/tests/test_indexer.py` (29 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `SAMPLE` | constant | 6-6 |  |\n| `test_federal_corpus_indexes_once` | function | 9-20 | test_federal_corpus_indexes_once(store) |\n| `test_sample_policy_indexes_with_pages_and_sections` | function | 23-29 | test_sample_policy_indexes_with_pages_and_sections(store) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/indexer.py`\n\n### `backend/tests/test_llm.py` (181 lines)\nProvider adapters: success path and the translation of every failure mode\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Out` | class | 16-18 |  |\n| `ARGS` | constant | 21-21 |  |\n| `_gemini` | function | 27-45 | _gemini(text, finish, error, candidates, models, fail_models) |\n| `test_gemini_returns_validated_object_and_sends_json_schema` | function | 48-55 | test_gemini_returns_validated_object_and_sends_json_schema() |\n| `test_gemini_client_errors` | function | 62-65 | test_gemini_client_errors(code, match) |\n| `test_gemini_server_error_on_every_model` | function | 68-73 | test_gemini_server_error_on_every_model() |\n| `test_gemini_falls_back_to_next_model_when_overloaded` | function | 76-79 | test_gemini_falls_back_to_next_model_when_overloaded() |\n| `test_gemini_timeout_falls_back` | function | 82-95 | test_gemini_timeout_falls_back() |\n| `test_gemini_non_retryable_error_does_not_try_other_models` | function | 98-103 | test_gemini_non_retryable_error_does_not_try_other_models() |\n| `test_gemini_bad_finish_reasons` | function | 107-110 | test_gemini_bad_finish_reasons(finish, match) |\n| `test_gemini_blocked_prompt_has_no_candidates` | function | 113-116 | test_gemini_blocked_prompt_has_no_candidates() |\n| `test_gemini_json_that_breaks_the_schema` | function | 119-122 | test_gemini_json_that_breaks_the_schema() |\n| `_anthropic` | function | 128-139 | _anthropic(parsed, stop, error) |\n| `test_anthropic_success_uses_structured_output_and_fallbacks` | function | 142-146 | test_anthropic_success_uses_structured_output_and_fallbacks() |\n| `test_anthropic_bad_stop_reasons` | function | 150-153 | test_anthropic_bad_stop_reasons(stop, match) |\n| `test_anthropic_rate_limit` | function | 156-160 | test_anthropic_rate_limit() |\n| `test_provider_resolution` | function | 166-170 | test_provider_resolution() |\n| `test_build_llm_without_keys_returns_none` | function | 173-174 | test_build_llm_without_keys_returns_none() |\n| `test_build_llm_gemini` | function | 177-181 | test_build_llm_gemini() |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/llm.py`\n\n### `backend/tests/test_markdown.py` (48 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `DOC` | constant | 3-15 |  |\n| `test_front_matter_is_parsed_and_removed` | function | 18-21 | test_front_matter_is_parsed_and_removed() |\n| `test_each_heading_becomes_a_federal_chunk_with_source` | function | 24-30 | test_each_heading_becomes_a_federal_chunk_with_source(tmp_path) |\n| `test_corpus_skips_readme_and_numbers_positions_globally` | function | 33-40 | test_corpus_skips_readme_and_numbers_positions_globally(tmp_path) |\n| `test_real_corpus_has_sources_for_every_chunk` | function | 43-48 | test_real_corpus_has_sources_for_every_chunk() |\n\n**Imports (repo):** `backend/app/ingest/markdown.py`\n\n### `backend/tests/test_plan_facts.py` (37 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `test_document_head_truncates_and_labels_pages` | function | 6-11 | test_document_head_truncates_and_labels_pages() |\n| `FakeLLM` | class | 14-24 |  |\n| `FakeLLM.__init__` | method | 17-18 | __init__(result, error) |\n| `FakeLLM.generate` | method | 20-24 | generate() |\n| `test_extract_returns_dict` | function | 27-33 | test_extract_returns_dict() |\n| `test_extract_failure_is_non_fatal` | function | 36-37 | test_extract_failure_is_non_fatal() |\n\n**Imports (repo):** `backend/app/ingest/pdf.py`, `backend/app/llm.py`, `backend/app/plan_facts.py`\n\n### `backend/tests/test_prompts.py` (43 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_sc` | function | 6-8 | _sc(kind, text, page, section) |\n| `_retrieval` | function | 11-15 | _retrieval() |\n| `test_source_ids_are_stable_and_prefixed` | function | 18-21 | test_source_ids_are_stable_and_prefixed() |\n| `test_message_contains_tagged_excerpts_facts_and_question` | function | 24-31 | test_message_contains_tagged_excerpts_facts_and_question() |\n| `test_document_text_cannot_break_out_of_its_tag` | function | 34-38 | test_document_text_cannot_break_out_of_its_tag() |\n| `test_no_federal_block_when_nothing_federal_retrieved` | function | 41-43 | test_no_federal_block_when_nothing_federal_retrieved() |\n\n**Imports (repo):** `backend/app/models.py`, `backend/app/prompts.py`, `backend/app/retrieval.py`\n\n### `backend/tests/test_query_expansion.py` (26 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `test_unmatched_question_is_unchanged` | function | 4-5 | test_unmatched_question_is_unchanged() |\n| `test_original_question_is_preserved_and_terms_appended` | function | 8-11 | test_original_question_is_preserved_and_terms_appended() |\n| `test_brand_drug_names_map_to_generic_class` | function | 14-15 | test_brand_drug_names_map_to_generic_class() |\n| `test_multiple_matches_are_all_added_once` | function | 18-21 | test_multiple_matches_are_all_added_once() |\n| `test_word_boundaries_avoid_false_matches` | function | 24-26 | test_word_boundaries_avoid_false_matches() |\n\n**Imports (repo):** `backend/app/query_expansion.py`\n\n### `backend/tests/test_ratelimit.py` (42 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `Clock` | class | 4-9 |  |\n| `Clock.__init__` | method | 5-6 | __init__() |\n| `Clock.__call__` | method | 8-9 | __call__() |\n| `test_allows_up_to_limit_then_blocks_with_retry_after` | function | 12-18 | test_allows_up_to_limit_then_blocks_with_retry_after() |\n| `test_window_slides` | function | 21-26 | test_window_slides() |\n| `test_keys_are_independent` | function | 29-33 | test_keys_are_independent() |\n| `test_daily_budget_resets_on_new_day` | function | 36-42 | test_daily_budget_resets_on_new_day() |\n\n**Imports (repo):** `backend/app/ratelimit.py`\n\n### `backend/tests/test_retrieval.py` (58 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_chunk` | function | 7-11 | _chunk(doc_id, i, text, kind) |\n| `_setup` | function | 14-20 | _setup(store) |\n| `test_policy_and_federal_are_retrieved_separately` | function | 23-28 | test_policy_and_federal_are_retrieved_separately(store, embedder) |\n| `test_threshold_filters_irrelevant_chunks` | function | 31-35 | test_threshold_filters_irrelevant_chunks(store, embedder) |\n| `test_results_are_sorted_by_rerank_score` | function | 38-43 | test_results_are_sorted_by_rerank_score(store, embedder) |\n| `test_graph_expansion_follows_cross_references` | function | 46-58 | test_graph_expansion_follows_cross_references(store, embedder) |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/indexer.py`, `backend/app/models.py`, `backend/app/retrieval.py`\n\n### `backend/tests/test_security.py` (124 lines)\nModel-independent defenses. These run offline in CI on every push.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `INJECTIONS` | constant | 12-19 |  |\n| `REAL_POLICY_LINES` | constant | 21-30 |  |\n| `test_injection_lines_are_flagged` | function | 34-35 | test_injection_lines_are_flagged(line) |\n| `test_real_policy_text_is_not_flagged` | function | 39-40 | test_real_policy_text_is_not_flagged(line) |\n| `test_the_whole_sample_policy_has_no_false_positives` | function | 43-50 | test_the_whole_sample_policy_has_no_false_positives() |\n| `test_strip_injection_removes_only_flagged_lines` | function | 53-57 | test_strip_injection_removes_only_flagged_lines() |\n| `SOURCE` | constant | 62-62 |  |\n| `test_contacts_from_the_source_are_kept` | function | 65-67 | test_contacts_from_the_source_are_kept() |\n| `test_phone_formats_are_compared_by_digits` | function | 70-71 | test_phone_formats_are_compared_by_digits() |\n| `test_invented_phone_and_link_are_removed` | function | 74-80 | test_invented_phone_and_link_are_removed() |\n| `test_plain_numbers_are_not_mistaken_for_phones` | function | 83-85 | test_plain_numbers_are_not_mistaken_for_phones() |\n| `DOC` | constant | 90-90 |  |\n| `test_grounded_facts_are_kept` | function | 93-96 | test_grounded_facts_are_kept() |\n| `test_numbers_not_in_the_document_are_dropped` | function | 99-102 | test_numbers_not_in_the_document_are_dropped() |\n| `test_inconsistent_deductible_above_oop_max_is_dropped` | function | 105-108 | test_inconsistent_deductible_above_oop_max_is_dropped() |\n| `test_html_and_script_tags_are_stripped` | function | 113-118 | test_html_and_script_tags_are_stripped() |\n| `test_comparisons_in_plain_text_survive` | function | 121-124 | test_comparisons_in_plain_text_survive() |\n\n**Imports (repo):** `backend/app/ingest/pdf.py`, `backend/app/security.py`\n\n### `backend/tests/test_vectorstore.py` (51 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `_chunk` | function | 4-14 | _chunk(doc_id, position, text, kind, version) |\n| `test_upsert_count_and_delete` | function | 17-25 | test_upsert_count_and_delete(store) |\n| `test_hybrid_search_is_scoped_to_one_document` | function | 28-32 | test_hybrid_search_is_scoped_to_one_document(store) |\n| `test_hybrid_search_ranks_keyword_match_first` | function | 35-45 | test_hybrid_search_ranks_keyword_match_first(store) |\n| `test_search_by_kind` | function | 48-51 | test_search_by_kind(store) |\n\n**Imports (repo):** `backend/app/models.py`\n\n### `backend/tests/test_verification.py` (80 lines)\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `POLICY_TEXT` | constant | 6-9 |  |\n| `_sources` | function | 12-15 | _sources() |\n| `_answer` | function | 18-24 | _answer(verdict, citations, federal) |\n| `test_exact_quote_matches` | function | 27-28 | test_exact_quote_matches() |\n| `test_quote_across_pdf_line_break_and_curly_quotes_matches` | function | 31-33 | test_quote_across_pdf_line_break_and_curly_quotes_matches() |\n| `test_small_typo_still_matches_but_invented_text_does_not` | function | 36-38 | test_small_typo_still_matches_but_invented_text_does_not() |\n| `test_too_short_quotes_are_rejected` | function | 41-42 | test_too_short_quotes_are_rejected() |\n| `test_verified_citation_gets_page_and_section` | function | 45-54 | test_verified_citation_gets_page_and_section() |\n| `test_fabricated_citation_is_dropped_and_verdict_downgraded` | function | 57-64 | test_fabricated_citation_is_dropped_and_verdict_downgraded() |\n| `test_unknown_source_ids_are_ignored` | function | 67-73 | test_unknown_source_ids_are_ignored() |\n| `test_duplicate_citations_are_collapsed` | function | 76-80 | test_duplicate_citations_are_collapsed() |\n\n**Imports (repo):** `backend/app/models.py`, `backend/app/retrieval.py`, `backend/app/schemas.py`, `backend/app/verification.py`\n\n## tooling\n\n### `backend/scripts/make_sample_policy.py` (361 lines)\nGenerate the fictional sample policy PDF used by the live demo.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `OUT_DIR` | constant | 21-21 |  |\n| `PDF_PATH` | constant | 22-22 |  |\n| `FACTS_PATH` | constant | 23-23 |  |\n| `PLAN_FACTS` | constant | 25-39 |  |\n| `CONTENT` | constant | 42-323 |  |\n| `build` | function | 326-357 | build() |\n\n### `backend/scripts/precompute_embeddings.py` (64 lines)\nPrecompute Gemini embeddings for the bundled documents.\n\n| Symbol | Kind | Lines | Summary |\n|---|---|---|---|\n| `bundled_texts` | function | 31-36 | bundled_texts(settings) |\n| `main` | function | 39-60 | main() |\n\n**Imports (repo):** `backend/app/config.py`, `backend/app/embeddings.py`, `backend/app/indexer.py`, `backend/app/ingest/chunker.py`, `backend/app/ingest/markdown.py`, `backend/app/services.py`\n\n"
   },
   {
    "id": "report:04-execution-and-data-flows",
@@ -26052,7 +28211,7 @@ window.ATLAS = {
    "id": "report:14-coverage-inventory",
    "file": "docs/architecture-atlas/reports/14-coverage-inventory.md",
    "title": "14-coverage-inventory",
-   "markdown": "# 14 · Coverage inventory\n\n_Generated by `tools/build_atlas.py`. Lists every file git knows about (tracked or untracked, not ignored)._\n\n## Analysed\n\n| File | Layer | Lines | Symbols | Imported by | Tests |\n|---|---|---|---|---|---|\n| `.dockerignore` | deployment | 10 | 0 | 0 | 0 |\n| `.gitattributes` | config | 2 | 0 | 0 | 0 |\n| `.github/workflows/ci.yml` | ci | 39 | 0 | 0 | 0 |\n| `.gitignore` | config | 15 | 0 | 0 | 0 |\n| `Dockerfile` | deployment | 35 | 0 | 0 | 0 |\n| `README.md` | documentation | 142 | 0 | 0 | 0 |\n| `SECURITY.md` | documentation | 148 | 0 | 0 | 0 |\n| `backend/.env.example` | config | 23 | 0 | 0 | 0 |\n| `backend/app/__init__.py` | backend | 0 | 0 | 0 | 0 |\n| `backend/app/answering.py` | backend · answering | 142 | 7 | 4 | 1 |\n| `backend/app/api.py` | backend · http | 236 | 12 | 1 | 0 |\n| `backend/app/config.py` | backend · configuration | 91 | 5 | 16 | 5 |\n| `backend/app/costs.py` | backend · answering | 124 | 6 | 2 | 1 |\n| `backend/app/documents.py` | backend · domain & state | 88 | 13 | 3 | 1 |\n| `backend/app/embeddings.py` | backend · retrieval | 79 | 14 | 2 | 0 |\n| `backend/app/graph.py` | backend · ingestion | 86 | 8 | 3 | 1 |\n| `backend/app/indexer.py` | backend · ingestion | 111 | 9 | 6 | 2 |\n| `backend/app/ingest/__init__.py` | backend · ingestion | 0 | 0 | 0 | 0 |\n| `backend/app/ingest/chunker.py` | backend · ingestion | 163 | 14 | 4 | 2 |\n| `backend/app/ingest/markdown.py` | backend · ingestion | 82 | 5 | 2 | 1 |\n| `backend/app/ingest/pdf.py` | backend · ingestion | 62 | 6 | 8 | 4 |\n| `backend/app/llm.py` | backend · answering | 215 | 14 | 7 | 3 |\n| `backend/app/main.py` | backend · entrypoint | 50 | 2 | 2 | 1 |\n| `backend/app/models.py` | backend · domain & state | 54 | 4 | 12 | 6 |\n| `backend/app/plan_facts.py` | backend · answering | 66 | 5 | 3 | 2 |\n| `backend/app/prompts.py` | backend · answering | 102 | 5 | 3 | 1 |\n| `backend/app/query_expansion.py` | backend · retrieval | 58 | 3 | 2 | 1 |\n| `backend/app/ratelimit.py` | backend · domain & state | 53 | 6 | 2 | 1 |\n| `backend/app/retrieval.py` | backend · retrieval | 110 | 8 | 10 | 4 |\n| `backend/app/schemas.py` | backend · domain & state | 120 | 10 | 6 | 3 |\n| `backend/app/security.py` | backend · security | 150 | 15 | 6 | 1 |\n| `backend/app/services.py` | backend · composition root | 103 | 10 | 4 | 1 |\n| `backend/app/vectorstore.py` | backend · retrieval | 111 | 12 | 5 | 1 |\n| `backend/app/verification.py` | backend · answering | 88 | 6 | 2 | 1 |\n| `backend/data/federal/README.md` | knowledge base | 14 | 0 | 0 | 0 |\n| `backend/data/federal/appeals.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/eligibility-protections.md` | knowledge base | 16 | 0 | 0 | 0 |\n| `backend/data/federal/emergency-care.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/essential-health-benefits.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/glossary.md` | knowledge base | 36 | 0 | 0 | 0 |\n| `backend/data/federal/mental-health-parity.md` | knowledge base | 16 | 0 | 0 | 0 |\n| `backend/data/federal/no-surprises-act.md` | knowledge base | 24 | 0 | 0 | 0 |\n| `backend/data/federal/out-of-pocket-maximum.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/plan-types-and-documents.md` | knowledge base | 16 | 0 | 0 | 0 |\n| `backend/data/federal/preventive-care.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/prior-authorization.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/samples/evergreen-silver-3000-ppo.facts.json` | data | 15 | 0 | 0 | 0 |\n| `backend/eval/common.py` | evaluation | 34 | 5 | 3 | 0 |\n| `backend/eval/multihop.json` | evaluation | 13 | 0 | 0 | 0 |\n| `backend/eval/questions.json` | evaluation | 40 | 0 | 0 | 0 |\n| `backend/eval/run_answer_eval.py` | evaluation | 117 | 2 | 0 | 0 |\n| `backend/eval/run_graph_eval.py` | evaluation | 53 | 2 | 0 | 0 |\n| `backend/eval/run_retrieval_eval.py` | evaluation | 65 | 1 | 0 | 0 |\n| `backend/pytest.ini` | config | 3 | 0 | 0 | 0 |\n| `backend/redteam/__init__.py` | security testing | 0 | 0 | 0 | 0 |\n| `backend/redteam/attacks.py` | security testing | 222 | 9 | 1 | 0 |\n| `backend/redteam/run_redteam.py` | security testing | 99 | 3 | 0 | 0 |\n| `backend/requirements-dev.txt` | config | 4 | 0 | 0 | 0 |\n| `backend/requirements.txt` | config | 14 | 0 | 0 | 0 |\n| `backend/scratch/01_hello_llm.py` | scratch | 19 | 0 | 0 | 0 |\n| `backend/scripts/make_sample_policy.py` | tooling | 361 | 6 | 0 | 0 |\n| `backend/tests/conftest.py` | tests | 74 | 14 | 0 | 0 |\n| `backend/tests/test_answering.py` | tests | 109 | 16 | 0 | 0 |\n| `backend/tests/test_api.py` | tests | 221 | 27 | 0 | 0 |\n| `backend/tests/test_chunker.py` | tests | 98 | 12 | 0 | 0 |\n| `backend/tests/test_costs.py` | tests | 58 | 11 | 0 | 0 |\n| `backend/tests/test_documents.py` | tests | 40 | 5 | 0 | 0 |\n| `backend/tests/test_graph.py` | tests | 59 | 6 | 0 | 0 |\n| `backend/tests/test_indexer.py` | tests | 29 | 3 | 0 | 0 |\n| `backend/tests/test_llm.py` | tests | 181 | 19 | 0 | 0 |\n| `backend/tests/test_markdown.py` | tests | 48 | 5 | 0 | 0 |\n| `backend/tests/test_plan_facts.py` | tests | 37 | 6 | 0 | 0 |\n| `backend/tests/test_prompts.py` | tests | 43 | 6 | 0 | 0 |\n| `backend/tests/test_query_expansion.py` | tests | 26 | 5 | 0 | 0 |\n| `backend/tests/test_ratelimit.py` | tests | 42 | 7 | 0 | 0 |\n| `backend/tests/test_retrieval.py` | tests | 58 | 6 | 0 | 0 |\n| `backend/tests/test_security.py` | tests | 124 | 17 | 0 | 0 |\n| `backend/tests/test_vectorstore.py` | tests | 51 | 5 | 0 | 0 |\n| `backend/tests/test_verification.py` | tests | 80 | 11 | 0 | 0 |\n| `docs/DEPLOY.md` | documentation | 61 | 0 | 0 | 0 |\n| `docs/HOW_IT_WORKS.md` | documentation | 203 | 0 | 0 | 0 |\n| `frontend/.gitignore` | frontend · tooling | 24 | 0 | 0 | 0 |\n| `frontend/eslint.config.js` | frontend · tooling | 28 | 0 | 0 | 0 |\n| `frontend/index.html` | frontend · tooling | 23 | 0 | 0 | 0 |\n| `frontend/package.json` | frontend · tooling | 29 | 0 | 0 | 0 |\n| `frontend/src/App.tsx` | frontend | 98 | 4 | 1 | 0 |\n| `frontend/src/api.ts` | frontend | 97 | 11 | 5 | 0 |\n| `frontend/src/components/AnswerCard.tsx` | frontend · components | 93 | 3 | 1 | 0 |\n| `frontend/src/components/Chat.tsx` | frontend · components | 193 | 4 | 1 | 0 |\n| `frontend/src/components/CostBreakdown.tsx` | frontend · components | 31 | 1 | 1 | 0 |\n| `frontend/src/components/DocumentPanel.tsx` | frontend · components | 138 | 5 | 1 | 0 |\n| `frontend/src/components/SourcesList.tsx` | frontend · components | 37 | 1 | 1 | 0 |\n| `frontend/src/components/TracePanel.tsx` | frontend · components | 90 | 1 | 1 | 0 |\n| `frontend/src/components/VerdictBadge.tsx` | frontend · components | 28 | 3 | 1 | 0 |\n| `frontend/src/format.ts` | frontend | 18 | 2 | 4 | 0 |\n| `frontend/src/index.css` | frontend | 717 | 0 | 0 | 0 |\n| `frontend/src/main.tsx` | frontend | 10 | 0 | 0 | 0 |\n| `frontend/src/types.ts` | frontend | 109 | 10 | 9 | 0 |\n| `frontend/src/vite-env.d.ts` | frontend | 1 | 0 | 0 | 0 |\n| `frontend/tsconfig.app.json` | frontend · tooling | 27 | 0 | 0 | 0 |\n| `frontend/tsconfig.json` | frontend · tooling | 7 | 0 | 0 | 0 |\n| `frontend/tsconfig.node.json` | frontend · tooling | 25 | 0 | 0 | 0 |\n| `frontend/vite.config.ts` | frontend · tooling | 14 | 0 | 0 | 0 |\n\n## Excluded from analysis\n\n| File | Reason |\n|---|---|\n| `backend/data/samples/evergreen-silver-3000-ppo.pdf` | binary document (generated by scripts/make_sample_policy.py) |\n| `backend/eval/results/answers-20261025-015740.json` | recorded run output (data, summarised in reports) |\n| `backend/eval/results/answers-20261025-020534.json` | recorded run output (data, summarised in reports) |\n| `backend/eval/results/answers-20261025-042911.json` | recorded run output (data, summarised in reports) |\n| `backend/eval/results/answers-20261025-062139.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-after-20261025-041807.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-after-markup-fix-20261025-042046.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-before-20261025-035816.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-before-round2-20261025-040220.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-final-20261025-062704.json` | recorded run output (data, summarised in reports) |\n| `docs/architecture-atlas/README.md` | the atlas itself |\n| `docs/architecture-atlas/assets/app.js` | the atlas itself |\n| `docs/architecture-atlas/assets/styles.css` | the atlas itself |\n| `docs/architecture-atlas/data/atlas.js` | the atlas itself |\n| `docs/architecture-atlas/data/atlas.json` | the atlas itself |\n| `docs/architecture-atlas/data/curated.json` | the atlas itself |\n| `docs/architecture-atlas/index.html` | the atlas itself |\n| `docs/architecture-atlas/reports/01-system-overview.md` | the atlas itself |\n| `docs/architecture-atlas/reports/02-architecture.md` | the atlas itself |\n| `docs/architecture-atlas/reports/03-module-and-file-catalog.md` | the atlas itself |\n| `docs/architecture-atlas/reports/04-execution-and-data-flows.md` | the atlas itself |\n| `docs/architecture-atlas/reports/05-database-and-data-model.md` | the atlas itself |\n| `docs/architecture-atlas/reports/06-api-and-integrations.md` | the atlas itself |\n| `docs/architecture-atlas/reports/07-security-review.md` | the atlas itself |\n| `docs/architecture-atlas/reports/08-deployment-and-infrastructure.md` | the atlas itself |\n| `docs/architecture-atlas/reports/09-performance-and-scalability.md` | the atlas itself |\n| `docs/architecture-atlas/reports/10-testing-and-quality.md` | the atlas itself |\n| `docs/architecture-atlas/reports/11-architecture-decisions-and-tradeoffs.md` | the atlas itself |\n| `docs/architecture-atlas/reports/12-interview-guide.md` | the atlas itself |\n| `docs/architecture-atlas/reports/13-open-questions-and-uncertainties.md` | the atlas itself |\n| `docs/architecture-atlas/reports/14-coverage-inventory.md` | the atlas itself |\n| `docs/architecture-atlas/tools/build_atlas.py` | the atlas itself |\n| `docs/architecture-atlas/vendor/LICENSES.txt` | the atlas itself |\n| `docs/architecture-atlas/vendor/cytoscape.min.js` | the atlas itself |\n| `docs/architecture-atlas/vendor/marked.min.js` | the atlas itself |\n| `frontend/package-lock.json` | generated lockfile |\n| `frontend/public/favicon.svg` | image asset |\n\n## Backend modules with no test file importing them directly\n\n- `backend/app/api.py`\n- `backend/app/embeddings.py`\n\nNote: a module can still be exercised indirectly (e.g. through `tests/test_api.py`).\n\n## Not analysed by tooling (and why)\n\n- `.env` files are git-ignored and never read by the atlas: secret values are not part of it.\n- `backend/storage/` and `backend/.cache/` are runtime state (git-ignored).\n- `frontend/node_modules/`, `frontend/dist/`, `backend/.venv/` are dependencies/build output.\n"
+   "markdown": "# 14 · Coverage inventory\n\n_Generated by `tools/build_atlas.py`. Lists every file git knows about (tracked or untracked, not ignored)._\n\n## Analysed\n\n| File | Layer | Lines | Symbols | Imported by | Tests |\n|---|---|---|---|---|---|\n| `.dockerignore` | deployment | 10 | 0 | 0 | 0 |\n| `.gcloudignore` | config | 17 | 0 | 0 | 0 |\n| `.gitattributes` | config | 2 | 0 | 0 | 0 |\n| `.github/workflows/ci.yml` | ci | 39 | 0 | 0 | 0 |\n| `.gitignore` | config | 15 | 0 | 0 | 0 |\n| `Dockerfile` | deployment | 43 | 0 | 0 | 0 |\n| `README.md` | documentation | 142 | 0 | 0 | 0 |\n| `SECURITY.md` | documentation | 148 | 0 | 0 | 0 |\n| `backend/.env.example` | config | 23 | 0 | 0 | 0 |\n| `backend/app/__init__.py` | backend | 0 | 0 | 0 | 0 |\n| `backend/app/answering.py` | backend · answering | 142 | 7 | 4 | 1 |\n| `backend/app/api.py` | backend · http | 242 | 12 | 1 | 0 |\n| `backend/app/config.py` | backend · configuration | 115 | 6 | 18 | 6 |\n| `backend/app/costs.py` | backend · answering | 124 | 6 | 2 | 1 |\n| `backend/app/documents.py` | backend · domain & state | 88 | 13 | 3 | 1 |\n| `backend/app/embeddings.py` | backend · retrieval | 239 | 31 | 5 | 1 |\n| `backend/app/graph.py` | backend · ingestion | 86 | 8 | 3 | 1 |\n| `backend/app/indexer.py` | backend · ingestion | 111 | 9 | 7 | 2 |\n| `backend/app/ingest/__init__.py` | backend · ingestion | 0 | 0 | 0 | 0 |\n| `backend/app/ingest/chunker.py` | backend · ingestion | 163 | 14 | 5 | 2 |\n| `backend/app/ingest/markdown.py` | backend · ingestion | 82 | 5 | 3 | 1 |\n| `backend/app/ingest/pdf.py` | backend · ingestion | 66 | 6 | 8 | 4 |\n| `backend/app/llm.py` | backend · answering | 215 | 14 | 9 | 4 |\n| `backend/app/main.py` | backend · entrypoint | 50 | 2 | 2 | 1 |\n| `backend/app/models.py` | backend · domain & state | 54 | 4 | 13 | 7 |\n| `backend/app/plan_facts.py` | backend · answering | 66 | 5 | 3 | 2 |\n| `backend/app/prompts.py` | backend · answering | 102 | 5 | 3 | 1 |\n| `backend/app/query_expansion.py` | backend · retrieval | 58 | 3 | 2 | 1 |\n| `backend/app/ratelimit.py` | backend · domain & state | 53 | 6 | 2 | 1 |\n| `backend/app/retrieval.py` | backend · retrieval | 129 | 9 | 11 | 5 |\n| `backend/app/schemas.py` | backend · domain & state | 120 | 10 | 6 | 3 |\n| `backend/app/security.py` | backend · security | 150 | 15 | 6 | 1 |\n| `backend/app/services.py` | backend · composition root | 103 | 10 | 5 | 1 |\n| `backend/app/vectorstore.py` | backend · retrieval | 126 | 13 | 5 | 1 |\n| `backend/app/verification.py` | backend · answering | 88 | 6 | 2 | 1 |\n| `backend/data/embeddings/gemini-embedding-001-768.json` | data | 105 | 0 | 0 | 0 |\n| `backend/data/federal/README.md` | knowledge base | 14 | 0 | 0 | 0 |\n| `backend/data/federal/appeals.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/eligibility-protections.md` | knowledge base | 16 | 0 | 0 | 0 |\n| `backend/data/federal/emergency-care.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/essential-health-benefits.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/glossary.md` | knowledge base | 36 | 0 | 0 | 0 |\n| `backend/data/federal/mental-health-parity.md` | knowledge base | 16 | 0 | 0 | 0 |\n| `backend/data/federal/no-surprises-act.md` | knowledge base | 24 | 0 | 0 | 0 |\n| `backend/data/federal/out-of-pocket-maximum.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/plan-types-and-documents.md` | knowledge base | 16 | 0 | 0 | 0 |\n| `backend/data/federal/preventive-care.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/federal/prior-authorization.md` | knowledge base | 20 | 0 | 0 | 0 |\n| `backend/data/samples/evergreen-silver-3000-ppo.facts.json` | data | 15 | 0 | 0 | 0 |\n| `backend/eval/common.py` | evaluation | 34 | 5 | 3 | 0 |\n| `backend/eval/multihop.json` | evaluation | 13 | 0 | 0 | 0 |\n| `backend/eval/questions.json` | evaluation | 40 | 0 | 0 | 0 |\n| `backend/eval/run_answer_eval.py` | evaluation | 117 | 2 | 0 | 0 |\n| `backend/eval/run_graph_eval.py` | evaluation | 53 | 2 | 0 | 0 |\n| `backend/eval/run_retrieval_eval.py` | evaluation | 67 | 1 | 0 | 0 |\n| `backend/pytest.ini` | config | 3 | 0 | 0 | 0 |\n| `backend/redteam/__init__.py` | security testing | 0 | 0 | 0 | 0 |\n| `backend/redteam/attacks.py` | security testing | 222 | 9 | 1 | 0 |\n| `backend/redteam/run_redteam.py` | security testing | 99 | 3 | 0 | 0 |\n| `backend/requirements-dev.txt` | config | 4 | 0 | 0 | 0 |\n| `backend/requirements.txt` | config | 14 | 0 | 0 | 0 |\n| `backend/scratch/01_hello_llm.py` | scratch | 19 | 0 | 0 | 0 |\n| `backend/scripts/make_sample_policy.py` | tooling | 361 | 6 | 0 | 0 |\n| `backend/scripts/precompute_embeddings.py` | tooling | 64 | 2 | 0 | 0 |\n| `backend/tests/conftest.py` | tests | 74 | 14 | 0 | 0 |\n| `backend/tests/test_answering.py` | tests | 109 | 16 | 0 | 0 |\n| `backend/tests/test_api.py` | tests | 223 | 27 | 0 | 0 |\n| `backend/tests/test_chunker.py` | tests | 98 | 12 | 0 | 0 |\n| `backend/tests/test_costs.py` | tests | 58 | 11 | 0 | 0 |\n| `backend/tests/test_documents.py` | tests | 40 | 5 | 0 | 0 |\n| `backend/tests/test_gemini_embedder.py` | tests | 120 | 16 | 0 | 0 |\n| `backend/tests/test_graph.py` | tests | 59 | 6 | 0 | 0 |\n| `backend/tests/test_indexer.py` | tests | 29 | 3 | 0 | 0 |\n| `backend/tests/test_llm.py` | tests | 181 | 19 | 0 | 0 |\n| `backend/tests/test_markdown.py` | tests | 48 | 5 | 0 | 0 |\n| `backend/tests/test_plan_facts.py` | tests | 37 | 6 | 0 | 0 |\n| `backend/tests/test_prompts.py` | tests | 43 | 6 | 0 | 0 |\n| `backend/tests/test_query_expansion.py` | tests | 26 | 5 | 0 | 0 |\n| `backend/tests/test_ratelimit.py` | tests | 42 | 7 | 0 | 0 |\n| `backend/tests/test_retrieval.py` | tests | 58 | 6 | 0 | 0 |\n| `backend/tests/test_security.py` | tests | 124 | 17 | 0 | 0 |\n| `backend/tests/test_vectorstore.py` | tests | 51 | 5 | 0 | 0 |\n| `backend/tests/test_verification.py` | tests | 80 | 11 | 0 | 0 |\n| `docs/DEPLOY.md` | documentation | 63 | 0 | 0 | 0 |\n| `docs/HOW_IT_WORKS.md` | documentation | 203 | 0 | 0 | 0 |\n| `frontend/.gitignore` | frontend · tooling | 24 | 0 | 0 | 0 |\n| `frontend/eslint.config.js` | frontend · tooling | 28 | 0 | 0 | 0 |\n| `frontend/index.html` | frontend · tooling | 23 | 0 | 0 | 0 |\n| `frontend/package.json` | frontend · tooling | 29 | 0 | 0 | 0 |\n| `frontend/src/App.tsx` | frontend | 101 | 4 | 1 | 0 |\n| `frontend/src/api.ts` | frontend | 97 | 11 | 5 | 0 |\n| `frontend/src/components/AnswerCard.tsx` | frontend · components | 93 | 3 | 1 | 0 |\n| `frontend/src/components/Chat.tsx` | frontend · components | 193 | 4 | 1 | 0 |\n| `frontend/src/components/CostBreakdown.tsx` | frontend · components | 31 | 1 | 1 | 0 |\n| `frontend/src/components/DocumentPanel.tsx` | frontend · components | 142 | 5 | 1 | 0 |\n| `frontend/src/components/SourcesList.tsx` | frontend · components | 37 | 1 | 1 | 0 |\n| `frontend/src/components/TracePanel.tsx` | frontend · components | 90 | 1 | 1 | 0 |\n| `frontend/src/components/VerdictBadge.tsx` | frontend · components | 28 | 3 | 1 | 0 |\n| `frontend/src/format.ts` | frontend | 18 | 2 | 4 | 0 |\n| `frontend/src/index.css` | frontend | 717 | 0 | 0 | 0 |\n| `frontend/src/main.tsx` | frontend | 10 | 0 | 0 | 0 |\n| `frontend/src/types.ts` | frontend | 110 | 10 | 9 | 0 |\n| `frontend/src/vite-env.d.ts` | frontend | 1 | 0 | 0 | 0 |\n| `frontend/tsconfig.app.json` | frontend · tooling | 27 | 0 | 0 | 0 |\n| `frontend/tsconfig.json` | frontend · tooling | 7 | 0 | 0 | 0 |\n| `frontend/tsconfig.node.json` | frontend · tooling | 25 | 0 | 0 | 0 |\n| `frontend/vite.config.ts` | frontend · tooling | 14 | 0 | 0 | 0 |\n| `render.yaml` | config | 32 | 0 | 0 | 0 |\n| `scripts/deploy_hf.py` | config | 164 | 7 | 0 | 0 |\n\n## Excluded from analysis\n\n| File | Reason |\n|---|---|\n| `backend/data/samples/evergreen-silver-3000-ppo.pdf` | binary document (generated by scripts/make_sample_policy.py) |\n| `backend/eval/results/answers-20261025-015740.json` | recorded run output (data, summarised in reports) |\n| `backend/eval/results/answers-20261025-020534.json` | recorded run output (data, summarised in reports) |\n| `backend/eval/results/answers-20261025-042911.json` | recorded run output (data, summarised in reports) |\n| `backend/eval/results/answers-20261025-062139.json` | recorded run output (data, summarised in reports) |\n| `backend/eval/results/answers-20261025-175003.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-after-20261025-041807.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-after-markup-fix-20261025-042046.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-before-20261025-035816.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-before-round2-20261025-040220.json` | recorded run output (data, summarised in reports) |\n| `backend/redteam/results/redteam-final-20261025-062704.json` | recorded run output (data, summarised in reports) |\n| `docs/architecture-atlas/README.md` | the atlas itself |\n| `docs/architecture-atlas/assets/app.js` | the atlas itself |\n| `docs/architecture-atlas/assets/styles.css` | the atlas itself |\n| `docs/architecture-atlas/data/atlas.js` | the atlas itself |\n| `docs/architecture-atlas/data/atlas.json` | the atlas itself |\n| `docs/architecture-atlas/data/curated.json` | the atlas itself |\n| `docs/architecture-atlas/index.html` | the atlas itself |\n| `docs/architecture-atlas/reports/01-system-overview.md` | the atlas itself |\n| `docs/architecture-atlas/reports/02-architecture.md` | the atlas itself |\n| `docs/architecture-atlas/reports/03-module-and-file-catalog.md` | the atlas itself |\n| `docs/architecture-atlas/reports/04-execution-and-data-flows.md` | the atlas itself |\n| `docs/architecture-atlas/reports/05-database-and-data-model.md` | the atlas itself |\n| `docs/architecture-atlas/reports/06-api-and-integrations.md` | the atlas itself |\n| `docs/architecture-atlas/reports/07-security-review.md` | the atlas itself |\n| `docs/architecture-atlas/reports/08-deployment-and-infrastructure.md` | the atlas itself |\n| `docs/architecture-atlas/reports/09-performance-and-scalability.md` | the atlas itself |\n| `docs/architecture-atlas/reports/10-testing-and-quality.md` | the atlas itself |\n| `docs/architecture-atlas/reports/11-architecture-decisions-and-tradeoffs.md` | the atlas itself |\n| `docs/architecture-atlas/reports/12-interview-guide.md` | the atlas itself |\n| `docs/architecture-atlas/reports/13-open-questions-and-uncertainties.md` | the atlas itself |\n| `docs/architecture-atlas/reports/14-coverage-inventory.md` | the atlas itself |\n| `docs/architecture-atlas/tools/build_atlas.py` | the atlas itself |\n| `docs/architecture-atlas/vendor/LICENSES.txt` | the atlas itself |\n| `docs/architecture-atlas/vendor/cytoscape.min.js` | the atlas itself |\n| `docs/architecture-atlas/vendor/marked.min.js` | the atlas itself |\n| `frontend/package-lock.json` | generated lockfile |\n| `frontend/public/favicon.svg` | image asset |\n\n## Backend modules with no test file importing them directly\n\n- `backend/app/api.py`\n\nNote: a module can still be exercised indirectly (e.g. through `tests/test_api.py`).\n\n## Not analysed by tooling (and why)\n\n- `.env` files are git-ignored and never read by the atlas: secret values are not part of it.\n- `backend/storage/` and `backend/.cache/` are runtime state (git-ignored).\n- `frontend/node_modules/`, `frontend/dist/`, `backend/.venv/` are dependencies/build output.\n"
   }
  ],
  "errors": []

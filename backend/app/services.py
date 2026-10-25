@@ -60,7 +60,7 @@ class Services:
     def _register_sample(self) -> None:
         pdf = self.settings.data_dir / "samples" / SAMPLE_PDF_NAME
         facts_path = pdf.with_suffix(".facts.json")
-        chunks, pages = index_policy_pdf(
+        indexed = index_policy_pdf(
             self.store, pdf, doc_id=SAMPLE_DOC_ID, title=SAMPLE_TITLE, settings=self.settings, skip_if_current=True
         )
         self.registry.save(
@@ -69,8 +69,8 @@ class Services:
                 title=SAMPLE_TITLE,
                 filename=SAMPLE_PDF_NAME,
                 pdf_path=str(pdf),
-                pages=pages,
-                chunks=chunks,
+                pages=len(indexed.pages),
+                chunks=indexed.chunks,
                 is_sample=True,
                 facts=json.loads(facts_path.read_text(encoding="utf-8")) if facts_path.exists() else None,
             )

@@ -61,6 +61,7 @@ class Settings(BaseSettings):
     # --- Uploads -----------------------------------------------------------
     max_upload_mb: int = 10
     max_upload_pages: int = 150
+    max_document_chars: int = 1_500_000  # ~600 dense pages; guards against text bombs
     upload_ttl_hours: int = 24
 
     # --- Abuse protection for the public demo ------------------------------

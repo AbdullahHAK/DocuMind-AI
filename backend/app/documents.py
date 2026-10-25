@@ -40,6 +40,8 @@ class DocumentRecord:
     chunks: int
     is_sample: bool = False
     facts: dict | None = None
+    # lines removed at ingestion because they looked like instructions to an AI
+    security_flags: list[dict] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def public(self) -> dict:

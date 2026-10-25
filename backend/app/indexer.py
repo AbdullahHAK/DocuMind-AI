@@ -7,13 +7,15 @@ content actually changed, so restarts are fast.
 
 import hashlib
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from app.config import Settings
 from app.ingest.chunker import chunk_pages
 from app.ingest.markdown import load_federal_corpus
-from app.ingest.pdf import load_pdf
+from app.ingest.pdf import Page, PdfLoadError, load_pdf
 from app.models import Chunk
+from app.security import InjectionFinding, strip_injection
 from app.vectorstore import VectorStore
 
 log = logging.getLogger(__name__)
@@ -52,9 +54,40 @@ def index_federal_corpus(store: VectorStore, settings: Settings) -> int:
     return len(chunks)
 
 
-def chunk_policy_pdf(path: Path, *, doc_id: str, title: str, settings: Settings) -> tuple[list[Chunk], int]:
-    """Load and chunk a policy PDF. Returns (chunks, page_count). Raises PdfLoadError."""
+@dataclass
+class IndexedPolicy:
+    chunks: int
+    pages: list[Page]  # sanitized text, reused for plan-facts extraction
+    injection_findings: list[InjectionFinding] = field(default_factory=list)
+
+
+def load_policy_pages(path: Path, settings: Settings) -> tuple[list[Page], list[InjectionFinding]]:
+    """Load a policy PDF and remove instruction-like text aimed at AI systems.
+
+    Sanitizing here, at ingestion, means injected lines never reach the vector
+    store - so no later step (answering, plan-facts extraction) can see them.
+    Raises PdfLoadError.
+    """
     pages = load_pdf(path, max_pages=settings.max_upload_pages)
+    total_chars = sum(len(p.text) for p in pages)
+    if total_chars > settings.max_document_chars:  # text bombs: tiny file, huge extracted text
+        raise PdfLoadError(f"This PDF contains too much text to process ({total_chars:,} characters).")
+    findings: list[InjectionFinding] = []
+    clean_pages = []
+    for page in pages:
+        text, page_findings = strip_injection(page.text)
+        findings.extend(page_findings)
+        clean_pages.append(Page(page.number, text))
+    if findings:
+        log.warning("Removed %d instruction-like line(s) from %s", len(findings), path.name)
+    return clean_pages, findings
+
+
+def index_policy_pdf(
+    store: VectorStore, path: Path, *, doc_id: str, title: str, settings: Settings, skip_if_current: bool = False
+) -> IndexedPolicy:
+    version = content_hash([path])
+    pages, findings = load_policy_pages(path, settings)
     chunks = chunk_pages(
         pages,
         doc_id=doc_id,
@@ -63,18 +96,10 @@ def chunk_policy_pdf(path: Path, *, doc_id: str, title: str, settings: Settings)
         max_chars=settings.chunk_max_chars,
         overlap_chars=settings.chunk_overlap_chars,
     )
-    return chunks, len(pages)
-
-
-def index_policy_pdf(
-    store: VectorStore, path: Path, *, doc_id: str, title: str, settings: Settings, skip_if_current: bool = False
-) -> tuple[int, int]:
-    """Index a policy PDF. Returns (chunk_count, page_count)."""
-    version = content_hash([path])
-    chunks, page_count = chunk_policy_pdf(path, doc_id=doc_id, title=title, settings=settings)
+    result = IndexedPolicy(chunks=len(chunks), pages=pages, injection_findings=findings)
     if skip_if_current and store.count(doc_id=doc_id, version=version) == len(chunks):
         log.info("%s up to date (%d chunks)", doc_id, len(chunks))
-        return len(chunks), page_count
-    log.info("Indexing %s: %d pages, %d chunks", doc_id, page_count, len(chunks))
+        return result
+    log.info("Indexing %s: %d pages, %d chunks", doc_id, len(pages), len(chunks))
     _replace(store, doc_id, _stamp(chunks, version))
-    return len(chunks), page_count
+    return result

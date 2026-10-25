@@ -21,8 +21,9 @@ def test_federal_corpus_indexes_once(store):
 
 
 def test_sample_policy_indexes_with_pages_and_sections(store):
-    chunks, pages = index_policy_pdf(store, SAMPLE, doc_id="sample", title="Evergreen", settings=Settings())
-    assert pages == 14
-    assert store.count(doc_id="sample") == chunks
+    indexed = index_policy_pdf(store, SAMPLE, doc_id="sample", title="Evergreen", settings=Settings())
+    assert len(indexed.pages) == 14
+    assert indexed.injection_findings == []
+    assert store.count(doc_id="sample") == indexed.chunks
     hits = store.hybrid_search("7.3 Dental and Vision adult dental", doc_id="sample", limit=5)
     assert any(h.section and "7.3 Dental" in h.section and h.page == 10 for h in hits)

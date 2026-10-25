@@ -83,7 +83,9 @@ POLICY_TEXT = "\n".join(
 
 
 def test_health(client):
-    assert client.get("/api/health").json() == {"status": "ok", "llm_configured": True, "llm_provider": "fake"}
+    health = client.get("/api/health").json()
+    assert health["status"] == "ok" and health["llm_configured"] is True and health["llm_provider"] == "fake"
+    assert health["limits"] == {"max_upload_mb": 10, "max_upload_pages": 150}
 
 
 def test_sample_document_is_registered_with_facts(client):

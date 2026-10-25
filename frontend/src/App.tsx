@@ -27,6 +27,7 @@ export default function App() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [llmReady, setLlmReady] = useState(true)
   const [llmProvider, setLlmProvider] = useState<Health['llm_provider']>(null)
+  const [limits, setLimits] = useState<Health['limits']>(undefined)
 
   const load = useCallback(async (docId: string) => {
     try {
@@ -46,6 +47,7 @@ export default function App() {
       .then((h) => {
         setLlmReady(h.llm_configured)
         setLlmProvider(h.llm_provider)
+        setLimits(h.limits)
       })
       .catch(() => setLlmReady(false))
   }, [load])
@@ -80,6 +82,7 @@ export default function App() {
           doc={doc}
           loadError={loadError}
           llmProvider={llmProvider}
+          limits={limits}
           onUploaded={(uploaded) => {
             setDoc(uploaded)
             saveDocId(uploaded.doc_id)

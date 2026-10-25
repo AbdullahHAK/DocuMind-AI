@@ -64,7 +64,13 @@ def _get_document(svc: Services, doc_id: str) -> DocumentRecord:
 def health(request: Request) -> dict:
     svc = services(request)
     provider = svc.llm.name.split(":", 1)[0] if svc.llm else None  # "gemini" | "anthropic" | None
-    return {"status": "ok", "llm_configured": svc.llm_configured, "llm_provider": provider}
+    return {
+        "status": "ok",
+        "llm_configured": svc.llm_configured,
+        "llm_provider": provider,
+        # shown in the upload box so users know the limits before they try
+        "limits": {"max_upload_mb": svc.settings.max_upload_mb, "max_upload_pages": svc.settings.max_upload_pages},
+    }
 
 
 @router.get("/documents/{doc_id}")

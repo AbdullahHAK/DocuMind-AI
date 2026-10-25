@@ -49,7 +49,11 @@ def load_pdf(path: Path, max_pages: int | None = None) -> list[Page]:
         if reader.is_encrypted:
             raise PdfLoadError("This PDF is password-protected. Please upload an unlocked copy.")
         if max_pages is not None and len(reader.pages) > max_pages:
-            raise PdfLoadError(f"This PDF has {len(reader.pages)} pages; the limit is {max_pages}.")
+            raise PdfLoadError(
+                f"This PDF has {len(reader.pages)} pages; this demo accepts up to {max_pages}. "
+                "Try your plan's Summary of Benefits and Coverage (SBC), which is usually 8 pages or fewer, "
+                "or upload just the sections you care about."
+            )
         pages = [Page(number=i + 1, text=clean_text(p.extract_text() or "")) for i, p in enumerate(reader.pages)]
     except PdfReadError as exc:
         raise PdfLoadError("This file doesn't look like a valid PDF.") from exc

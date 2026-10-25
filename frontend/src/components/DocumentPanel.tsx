@@ -7,6 +7,7 @@ interface Props {
   doc: DocumentInfo | null
   loadError: string | null
   llmProvider: Health['llm_provider']
+  limits: Health['limits']
   onUploaded: (doc: DocumentInfo) => void
   onUseSample: () => void
 }
@@ -41,7 +42,7 @@ function FactsGrid({ facts }: { facts: PlanFacts }) {
 
 const PROVIDER_NAMES = { gemini: 'Google Gemini', anthropic: 'Anthropic Claude' } as const
 
-export function DocumentPanel({ doc, loadError, llmProvider, onUploaded, onUseSample }: Props) {
+export function DocumentPanel({ doc, loadError, llmProvider, limits, onUploaded, onUseSample }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -118,7 +119,10 @@ export function DocumentPanel({ doc, loadError, llmProvider, onUploaded, onUseSa
         ) : (
           <>
             <strong>Upload your own policy</strong>
-            <span>Drop your plan's PDF (Summary of Benefits or Evidence of Coverage), max 10 MB</span>
+            <span>
+              Drop your plan's PDF, up to {limits?.max_upload_pages ?? 150} pages and {limits?.max_upload_mb ?? 10} MB.
+              Tip: your Summary of Benefits and Coverage (SBC) is usually under 10 pages.
+            </span>
           </>
         )}
       </label>

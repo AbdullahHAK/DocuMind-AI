@@ -87,6 +87,7 @@ export interface Health {
   status: string
   llm_configured: boolean
   llm_provider: 'gemini' | 'anthropic' | null
+  limits?: { max_upload_mb: number; max_upload_pages: number }
 }
 
 export interface Trace {

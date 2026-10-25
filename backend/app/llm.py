@@ -33,7 +33,11 @@ class LLMError(Exception):
 class StructuredLLM(Protocol):
     name: str
 
-    def generate(self, *, system: str, user: str, schema: type[T], max_tokens: int, effort: str) -> T: ...
+    def generate(
+        self, *, system: str, user: str, schema: type[T], max_tokens: int, effort: str, meta: dict | None = None
+    ) -> T:
+        """meta, if given, is filled with {"model", "input_tokens", "output_tokens"} for tracing."""
+        ...
 
 
 # ---------------------------------------------------------------------------
@@ -55,7 +59,9 @@ class GeminiLLM:
         self.models = models
         self.name = f"gemini:{models[0]}"
 
-    def generate(self, *, system: str, user: str, schema: type[T], max_tokens: int, effort: str) -> T:
+    def generate(
+        self, *, system: str, user: str, schema: type[T], max_tokens: int, effort: str, meta: dict | None = None
+    ) -> T:
         from google.genai import errors, types
 
         levels = {"low": "LOW", "medium": "MEDIUM", "high": "HIGH", "xhigh": "HIGH", "max": "HIGH"}
@@ -85,6 +91,14 @@ class GeminiLLM:
                 log.warning("Gemini %s request failed (%s), trying next model", model, type(exc).__name__)
                 last_error = exc
                 continue
+            if meta is not None:
+                usage = response.usage_metadata
+                meta.update(
+                    model=f"gemini:{model}",
+                    input_tokens=getattr(usage, "prompt_token_count", None),
+                    output_tokens=getattr(usage, "candidates_token_count", None),
+                    fallbacks_used=self.models.index(model),
+                )
             return self._parse(response, schema, model)
 
         if isinstance(last_error, errors.APIError) and last_error.code == 429:
@@ -121,7 +135,9 @@ class AnthropicLLM:
         self.model = model
         self.name = f"anthropic:{model}"
 
-    def generate(self, *, system: str, user: str, schema: type[T], max_tokens: int, effort: str) -> T:
+    def generate(
+        self, *, system: str, user: str, schema: type[T], max_tokens: int, effort: str, meta: dict | None = None
+    ) -> T:
         import anthropic
 
         try:
@@ -151,6 +167,9 @@ class AnthropicLLM:
             "llm=%s request_id=%s stop=%s in=%s out=%s", self.name, getattr(response, "_request_id", None),
             response.stop_reason, response.usage.input_tokens, response.usage.output_tokens,
         )
+        if meta is not None:
+            meta.update(model=f"anthropic:{response.model}", input_tokens=response.usage.input_tokens,
+                        output_tokens=response.usage.output_tokens, fallbacks_used=0)
         if response.stop_reason == "refusal":
             raise LLMError("I can't help with that question. Try asking about what your policy covers.")
         if response.stop_reason == "max_tokens" or response.parsed_output is None:

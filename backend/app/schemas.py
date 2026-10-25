@@ -97,6 +97,8 @@ class Answer(BaseModel):
     cost_estimate: CostEstimateOut | None = None
     warnings: list[str] = []
     used_llm: bool = True
+    # per-request observability: what each pipeline layer did (shown as "Under the hood")
+    trace: dict = {}
 
 
 class SourcePreview(BaseModel):

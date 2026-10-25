@@ -7,6 +7,8 @@ Pipeline for one question:
   4. if the question is about cost, compute the estimate in Python
 """
 
+import time
+
 from app.config import Settings
 from app.costs import CostRule, PlanCosts, estimate_cost
 from app.llm import LLMError, StructuredLLM
@@ -70,20 +72,24 @@ class AnswerService:
         self.llm = llm
         self.settings = settings
 
-    def _call_llm(self, question: str, retrieval: RetrievalResult, plan_facts: dict | None) -> LLMAnswer:
+    def _call_llm(self, question: str, retrieval: RetrievalResult, plan_facts: dict | None, meta: dict) -> LLMAnswer:
         return self.llm.generate(
             system=SYSTEM_PROMPT,
             user=build_user_message(question, retrieval, plan_facts),
             schema=LLMAnswer,
             max_tokens=self.settings.llm_max_tokens,
             effort=self.settings.llm_effort,
+            meta=meta,
         )
 
     def answer(self, question: str, retrieval: RetrievalResult, plan_facts: dict | None = None) -> Answer:
         if not retrieval.found_anything:
             return fallback_answer()
 
-        llm = self._call_llm(question, retrieval, plan_facts)
+        meta: dict = {}
+        started = time.perf_counter()
+        llm = self._call_llm(question, retrieval, plan_facts, meta)
+        llm_ms = (time.perf_counter() - started) * 1000
         policy_sources, federal_sources = source_ids(retrieval)
         verdict, citations, federal, warnings = verify_citations(llm, policy_sources, federal_sources)
 
@@ -97,11 +103,14 @@ class AnswerService:
         source_text = "\n".join(sc.chunk.text for sc in [*retrieval.policy, *retrieval.federal])
         removed = 0
 
+        tags_removed = 0
+
         def clean(text: str) -> str:
-            nonlocal removed
-            text, _ = strip_markup(text)  # answers are plain text; never pass HTML through
+            nonlocal removed, tags_removed
+            text, tags = strip_markup(text)  # answers are plain text; never pass HTML through
             text, n = redact_unsupported_contacts(text, source_text)
             removed += n
+            tags_removed += tags
             return text
 
         answer = Answer(
@@ -118,4 +127,16 @@ class AnswerService:
         )
         if removed:
             answer.warnings.append(f"Removed {removed} phone number(s) or link(s) that don't appear in your policy.")
+        answer.trace = {
+            "llm": {**meta, "ms": round(llm_ms)},
+            "verification": {
+                "quotes_proposed": len(llm.policy_citations),
+                "quotes_verified": len(citations),
+                "contacts_removed": removed,
+                "markup_removed": tags_removed,
+                "conflict_flagged": bool(llm.conflicting_provisions),
+                "verdict_from_model": llm.verdict,
+                "final_verdict": verdict,
+            },
+        }
         return answer

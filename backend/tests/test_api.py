@@ -115,6 +115,9 @@ def test_ask_streams_status_sources_answer_done(client):
     assert sources[0]["source_id"] == "P1" and sources[0]["page"]
     answer = dict(events)["answer"]
     assert answer["verdict"] == "not_covered"
+    trace = answer["trace"]
+    assert trace["gate"]["passed"] is True and trace["retrieval"]["candidates"] > 0
+    assert trace["verification"]["quotes_verified"] == 1 and trace["total_ms"] >= 0
     assert answer["citations"][0]["page"] == sources[0]["page"]
 
 
@@ -125,6 +128,7 @@ def test_off_topic_question_skips_llm(tmp_path, embedder):
         events = dict(parse_sse(c.post("/api/ask", json={"question": "zzz qqq xxx", "doc_id": SAMPLE_DOC_ID}).text))
     assert events["answer"]["verdict"] == "not_in_policy"
     assert events["answer"]["used_llm"] is False
+    assert events["answer"]["trace"]["gate"]["passed"] is False and events["answer"]["trace"]["llm"] is None
     assert llm.calls == 0
 
 

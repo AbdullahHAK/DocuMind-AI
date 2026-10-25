@@ -10,6 +10,7 @@ POST /api/ask                        ask a question; streams Server-Sent Events
 import json
 import logging
 import re
+import time
 import uuid
 from collections.abc import Iterator
 from pathlib import Path
@@ -172,13 +173,34 @@ def ask(body: AskRequest, request: Request):
 
     question = body.question.strip()
 
+    def retrieval_trace(retrieval: RetrievalResult) -> dict:
+        best = max([s for s in (retrieval.best_policy_score, retrieval.best_federal_score) if s is not None], default=None)
+        return {
+            "query": {"expanded": retrieval.search_query != question, "search_query": retrieval.search_query},
+            "retrieval": {
+                "candidates": retrieval.candidates,
+                "search_ms": round(retrieval.search_ms),
+                "rerank_ms": round(retrieval.rerank_ms),
+                "policy_chunks": sum(1 for sc in retrieval.policy if sc.linked_from is None),
+                "federal_chunks": len(retrieval.federal),
+            },
+            "gate": {"passed": retrieval.gate_passed, "best_score": None if best is None else round(best, 2),
+                     "threshold": svc.settings.gate_threshold},
+            "graph": {"linked_clauses": [sc.chunk.section for sc in retrieval.policy if sc.linked_from]},
+            "security": {"document_lines_removed": len(record.security_flags)},
+        }
+
     def answer_events() -> Iterator[str]:
+        started = time.perf_counter()
         yield sse("status", {"stage": "searching", "message": "Searching your policy..."})
         retrieval = svc.retriever.retrieve(question, body.doc_id)
         yield sse("sources", _source_previews(retrieval))
+        trace = retrieval_trace(retrieval)
 
         if not retrieval.found_anything:
-            yield sse("answer", fallback_answer().model_dump())  # relevance gate: no LLM call
+            answer = fallback_answer()  # relevance gate: no LLM call
+            answer.trace = {**trace, "llm": None, "total_ms": round((time.perf_counter() - started) * 1000)}
+            yield sse("answer", answer.model_dump())
             return
         if svc.answers is None:
             yield sse("error", {"message": "The AI service isn't configured on this server yet."})
@@ -193,6 +215,7 @@ def ask(body: AskRequest, request: Request):
                 f"This document contained {len(record.security_flags)} line(s) that looked like instructions "
                 "to an AI system rather than policy text. They were removed and ignored."
             )
+        answer.trace = {**trace, **answer.trace, "total_ms": round((time.perf_counter() - started) * 1000)}
         yield sse("answer", answer.model_dump())
 
     def events() -> Iterator[str]:

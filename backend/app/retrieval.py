@@ -16,6 +16,7 @@ so federal text can never crowd out the user's own policy (or vice versa),
 and the answer can keep "what your policy says" apart from "what the law says".
 """
 
+import time
 from dataclasses import dataclass, field
 
 from app.config import Settings
@@ -41,6 +42,11 @@ class RetrievalResult:
     best_federal_score: float | None = None
 
     search_query: str = ""
+    # observability: what this request cost, for the "under the hood" trace
+    search_ms: float = 0.0
+    rerank_ms: float = 0.0
+    candidates: int = 0
+    gate_passed: bool = False
 
     @property
     def found_anything(self) -> bool:
@@ -77,20 +83,24 @@ class Retriever:
         gate = s.gate_threshold if gate_threshold is None else gate_threshold
         query = expand_query(question)
 
-        policy_ranked = self._rerank(
-            query, self.store.hybrid_search(query, doc_id=doc_id, kind="policy", limit=s.retrieval_candidates)
-        )
-        federal_ranked = self._rerank(
-            query, self.store.hybrid_search(query, doc_id=FEDERAL_DOC_ID, limit=s.retrieval_candidates // 2)
-        )
+        started = time.perf_counter()
+        policy_candidates = self.store.hybrid_search(query, doc_id=doc_id, kind="policy", limit=s.retrieval_candidates)
+        federal_candidates = self.store.hybrid_search(query, doc_id=FEDERAL_DOC_ID, limit=s.retrieval_candidates // 2)
+        searched = time.perf_counter()
+        policy_ranked = self._rerank(query, policy_candidates)
+        federal_ranked = self._rerank(query, federal_candidates)
         result = RetrievalResult(
             best_policy_score=policy_ranked[0].score if policy_ranked else None,
             best_federal_score=federal_ranked[0].score if federal_ranked else None,
             search_query=query,
+            search_ms=(searched - started) * 1000,
+            rerank_ms=(time.perf_counter() - searched) * 1000,
+            candidates=len(policy_candidates) + len(federal_candidates),
         )
         best = max([sc.score for sc in policy_ranked[:1] + federal_ranked[:1]], default=float("-inf"))
         if best < gate:
             return result  # off-topic: nothing passes the gate
+        result.gate_passed = True
 
         result.policy = policy_ranked[: s.policy_top_k]
         if s.graph_expansion:

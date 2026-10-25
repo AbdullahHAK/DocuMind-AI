@@ -19,7 +19,7 @@ People pay for health insurance and never read the 60-page policy. Then a claim 
 | **Verified citations** | Every quote must actually appear in the cited excerpt (fuzzy-matched to survive PDF line breaks). Fabricated quotes are removed, and a "Covered" verdict with no surviving evidence is downgraded to "Unclear". |
 | **Code does the math** | For "my MRI costs $1,800, what will I pay?", the LLM only identifies the cost rule (deductible? 30% coinsurance?). A unit-tested Python function computes the dollars. |
 | **Knows when to say "I don't know"** | A relevance gate stops off-topic questions *before* the LLM is called. That's cheaper, and the model can't improvise from irrelevant text. |
-| **Measured, not vibes** | A 34-question evaluation set with ground-truth pages and verdicts. Retrieval: **100% hit@6, MRR 0.95** (from 97% / 0.82 before query expansion). |
+| **Measured, not vibes** | A 34-question evaluation set with ground-truth pages and verdicts. Retrieval: **100% hit@6, MRR 0.95**. End to end: **97% correct verdicts, 100% of citations on the right page, 0 hallucinated quotes**. |
 
 ## Architecture
 
@@ -92,6 +92,15 @@ Retrieval eval on the sample policy:
 |---|---|---|
 | Hybrid search + rerank | 97% | 0.82 |
 | + lay-term query expansion | **100%** | **0.95** |
+
+End-to-end answer eval (34 questions, Gemini 3.5 Flash-Lite, free tier):
+
+| | Verdict correct | Citation on the right page | Hallucinated quotes | Off-topic handled |
+|---|---|---|---|---|
+| First prompt | 82% | 100% | 0 | 4/4 |
+| + sharper verdict definitions | **97%** | **100%** | **0** | **4/4** |
+
+The first run's misses weren't wrong facts: the prompt counted ordinary copays as "conditions", and didn't say that "how many visits?" about a specific service still needs a coverage verdict. Raw results are in `backend/eval/results/`.
 
 ## API
 

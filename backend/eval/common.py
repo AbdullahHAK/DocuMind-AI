@@ -10,7 +10,7 @@ sys.path.insert(0, str(BACKEND_DIR))
 from qdrant_client import QdrantClient  # noqa: E402
 
 from app.config import Settings  # noqa: E402
-from app.embeddings import Embedder  # noqa: E402
+from app.embeddings import build_embedder  # noqa: E402
 from app.indexer import index_federal_corpus, index_policy_pdf  # noqa: E402
 from app.retrieval import Retriever  # noqa: E402
 from app.vectorstore import VectorStore  # noqa: E402
@@ -26,7 +26,7 @@ def load_questions() -> list[dict]:
 def build_retriever(settings: Settings | None = None) -> Retriever:
     """Index the sample + federal corpus into a throwaway in-memory Qdrant."""
     settings = settings or Settings()
-    embedder = Embedder(settings)
+    embedder = build_embedder(settings)
     store = VectorStore(QdrantClient(":memory:"), "eval", embedder)
     store.ensure_collection()
     index_federal_corpus(store, settings)

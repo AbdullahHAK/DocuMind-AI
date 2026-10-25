@@ -14,7 +14,7 @@ from qdrant_client import QdrantClient
 from app.answering import AnswerService
 from app.config import Settings
 from app.documents import DocumentRecord, DocumentRegistry
-from app.embeddings import Embedder
+from app.embeddings import build_embedder
 from app.indexer import index_federal_corpus, index_policy_pdf
 from app.llm import StructuredLLM, build_llm
 from app.ratelimit import DailyBudget, SlidingWindowLimiter
@@ -90,8 +90,8 @@ def build_services(
     embedder=None,
     llm: StructuredLLM | None = None,
 ) -> Services:
-    embedder = embedder or Embedder(settings)
-    store = VectorStore(qdrant or create_client(settings), settings.qdrant_collection, embedder)
+    embedder = embedder or build_embedder(settings)
+    store = VectorStore(qdrant or create_client(settings), settings.collection_name, embedder)
     llm = llm or build_llm(settings)
     return Services(
         settings=settings,

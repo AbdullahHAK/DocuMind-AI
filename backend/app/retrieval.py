@@ -20,6 +20,7 @@ import time
 from dataclasses import dataclass, field
 
 from app.config import Settings
+from app.embeddings import cosine
 from app.indexer import FEDERAL_DOC_ID
 from app.models import Chunk
 from app.query_expansion import expand_query
@@ -78,26 +79,44 @@ class Retriever:
             for chunk in self.store.get_chunks(targets)
         ]
 
+    def _similarity_ranked(self, query: str, doc_id: str, kind, limit: int) -> list[ScoredChunk]:
+        """No-reranker mode: keep the hybrid (RRF) order, score each hit by dense cosine
+        similarity so the relevance gate still has a calibrated number to test."""
+        hits, query_vector = self.store.hybrid_search_with_vectors(query, doc_id=doc_id, kind=kind, limit=limit, with_vectors=True)
+        return [ScoredChunk(chunk, cosine(query_vector, vector) if vector else 0.0) for chunk, vector in hits]
+
     def retrieve(self, question: str, doc_id: str, *, gate_threshold: float | None = None) -> RetrievalResult:
         s = self.settings
-        gate = s.gate_threshold if gate_threshold is None else gate_threshold
         query = expand_query(question)
+        rerank = getattr(self.embedder, "can_rerank", True)
+        if rerank:
+            gate = s.gate_threshold if gate_threshold is None else gate_threshold
+            federal_min = s.federal_min_score
+        else:
+            gate = s.gate_similarity if gate_threshold is None else gate_threshold
+            federal_min = s.federal_min_similarity
 
         started = time.perf_counter()
-        policy_candidates = self.store.hybrid_search(query, doc_id=doc_id, kind="policy", limit=s.retrieval_candidates)
-        federal_candidates = self.store.hybrid_search(query, doc_id=FEDERAL_DOC_ID, limit=s.retrieval_candidates // 2)
-        searched = time.perf_counter()
-        policy_ranked = self._rerank(query, policy_candidates)
-        federal_ranked = self._rerank(query, federal_candidates)
+        if rerank:
+            policy_candidates = self.store.hybrid_search(query, doc_id=doc_id, kind="policy", limit=s.retrieval_candidates)
+            federal_candidates = self.store.hybrid_search(query, doc_id=FEDERAL_DOC_ID, limit=s.retrieval_candidates // 2)
+            searched = time.perf_counter()
+            policy_ranked = self._rerank(query, policy_candidates)
+            federal_ranked = self._rerank(query, federal_candidates)
+        else:
+            policy_ranked = self._similarity_ranked(query, doc_id, "policy", s.retrieval_candidates)
+            federal_ranked = self._similarity_ranked(query, FEDERAL_DOC_ID, None, s.retrieval_candidates // 2)
+            policy_candidates, federal_candidates = policy_ranked, federal_ranked
+            searched = time.perf_counter()
         result = RetrievalResult(
-            best_policy_score=policy_ranked[0].score if policy_ranked else None,
-            best_federal_score=federal_ranked[0].score if federal_ranked else None,
+            best_policy_score=max((sc.score for sc in policy_ranked), default=None),
+            best_federal_score=max((sc.score for sc in federal_ranked), default=None),
             search_query=query,
             search_ms=(searched - started) * 1000,
             rerank_ms=(time.perf_counter() - searched) * 1000,
             candidates=len(policy_candidates) + len(federal_candidates),
         )
-        best = max([sc.score for sc in policy_ranked[:1] + federal_ranked[:1]], default=float("-inf"))
+        best = max([sc.score for sc in policy_ranked + federal_ranked], default=float("-inf"))
         if best < gate:
             return result  # off-topic: nothing passes the gate
         result.gate_passed = True
@@ -106,5 +125,5 @@ class Retriever:
         if s.graph_expansion:
             result.policy += self._follow_references(result.policy)
         # federal text is optional context, so it must clear a stricter bar of its own
-        result.federal = [sc for sc in federal_ranked if sc.score >= s.federal_min_score][: s.federal_top_k]
+        result.federal = [sc for sc in federal_ranked if sc.score >= federal_min][: s.federal_top_k]
         return result

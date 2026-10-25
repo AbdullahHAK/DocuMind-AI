@@ -51,10 +51,12 @@ def main() -> None:
     fed_ok = sum(any(t in r["federal"] for t in r["expected_federal"]) for r in fed_checks)
     print(f"federal source found: {fed_ok}/{len(fed_checks)}")
 
-    current = retriever.settings.gate_threshold
+    reranked = getattr(retriever.embedder, "can_rerank", True)
+    current = retriever.settings.gate_threshold if reranked else retriever.settings.gate_similarity
     print(f"\nRelevance gate sweep (current threshold = {current}):")
     print(f"{'threshold':>10} {'in-scope kept':>15} {'out-of-scope blocked':>22}")
-    for t in (-12, -11, -10, -9.5, -9, -8, -6, -4, -2, 0):
+    sweep = (-12, -11, -10, -9.5, -9, -8, -6, -4, -2, 0) if reranked else (0.4, 0.45, 0.5, 0.55, 0.6, 0.62, 0.65, 0.68, 0.7, 0.75)
+    for t in sweep:
         kept = sum(r["best"] >= t for r in in_scope)
         blocked = sum(r["best"] < t for r in out_scope)
         marker = "  <- current" if t == current else ""

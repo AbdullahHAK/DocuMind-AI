@@ -91,6 +91,14 @@ class VectorStore:
     def hybrid_search(
         self, query: str, *, doc_id: str | None = None, kind: ChunkKind | None = None, limit: int = 24
     ) -> list[Chunk]:
+        return [chunk for chunk, _ in self.hybrid_search_with_vectors(query, doc_id=doc_id, kind=kind, limit=limit)[0]]
+
+    def hybrid_search_with_vectors(
+        self, query: str, *, doc_id: str | None = None, kind: ChunkKind | None = None, limit: int = 24,
+        with_vectors: bool = False,
+    ) -> tuple[list[tuple[Chunk, list[float] | None]], list[float]]:
+        """Same search; optionally also returns each hit's dense vector and the query's
+        dense vector, so callers can score similarity without a reranker."""
         dense, sparse = self.embedder.embed_query(query)
         query_filter = _filter(doc_id, kind)
         result = self.client.query_points(
@@ -107,5 +115,12 @@ class VectorStore:
             query=models.FusionQuery(fusion=models.Fusion.RRF),
             limit=limit,
             with_payload=True,
+            with_vectors=[DENSE] if with_vectors else False,
         )
-        return [Chunk.from_payload(point.payload) for point in result.points]
+        hits = []
+        for point in result.points:
+            vector = None
+            if with_vectors and point.vector:
+                vector = point.vector.get(DENSE) if isinstance(point.vector, dict) else point.vector
+            hits.append((Chunk.from_payload(point.payload), vector))
+        return hits, dense

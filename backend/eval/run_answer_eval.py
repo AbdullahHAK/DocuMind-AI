@@ -26,7 +26,7 @@ from common import EVAL_DOC_ID, SAMPLE_PDF, build_retriever, load_questions
 
 from app.answering import AnswerError, AnswerService
 from app.config import Settings
-from app.services import build_llm_client
+from app.llm import build_llm
 
 GROUPS = {
     "covered": "yes",
@@ -41,14 +41,15 @@ GROUPS = {
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=None, help="only run the first N questions")
+    parser.add_argument("--delay", type=float, default=4.0, help="seconds between questions (free-tier rate limits)")
     args = parser.parse_args()
 
     settings = Settings()
-    client = build_llm_client(settings)
-    if client is None:
-        raise SystemExit("Set ANTHROPIC_API_KEY in backend/.env first.")
+    llm = build_llm(settings)
+    if llm is None:
+        raise SystemExit("Set GEMINI_API_KEY (free) or ANTHROPIC_API_KEY in backend/.env first.")
     retriever = build_retriever(settings)
-    service = AnswerService(client, settings)
+    service = AnswerService(llm, settings)
     facts = json.loads(SAMPLE_PDF.with_suffix(".facts.json").read_text(encoding="utf-8"))
 
     questions = load_questions()[: args.limit]
@@ -82,6 +83,8 @@ def main() -> None:
             "out_of_scope": q.get("out_of_scope", False),
         }
         rows.append(row)
+        if row["used_llm"]:
+            time.sleep(args.delay)
         mark = "ok " if row["exact"] else ("~  " if row["lenient"] else "XX ")
         print(f"{mark}{q['id']:22} expected={q['expected_verdict']:24} got={verdict:24} pages={pages} {seconds:.1f}s")
 
@@ -97,7 +100,7 @@ def main() -> None:
         "llm_calls_skipped_by_gate": sum(not r["used_llm"] for r in rows),
         "unverified_citations_dropped": sum(r["unverified_dropped"] for r in rows),
         "avg_seconds": round(sum(r["seconds"] for r in rows) / len(rows), 1),
-        "model": settings.llm_model,
+        "model": llm.name,
         "effort": settings.llm_effort,
     }
     print("\n" + json.dumps(summary, indent=2))

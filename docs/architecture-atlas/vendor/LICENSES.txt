@@ -1,0 +1,9 @@
+cytoscape 3.30.2 (MIT) - https://github.com/cytoscape/cytoscape.js
+Copyright (c) 2016-2024, The Cytoscape Consortium.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+
+marked 12.0.2 (MIT) - https://github.com/markedjs/marked
+# License information
+
+## Contribution License Agreement

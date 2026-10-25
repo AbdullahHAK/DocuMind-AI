@@ -39,20 +39,20 @@ flowchart LR
         H --> R[Cross-encoder rerank]
         R --> G{Relevance gate}
         G -- off-topic --> F["Fallback answer, no LLM call"]
-        G -- relevant --> LLM["Claude, structured output"]
+        G -- relevant --> LLM["Gemini or Claude, structured output"]
         LLM --> V[Verify quotes against source text]
         V --> CC[Python cost calculator]
         CC --> SSE[Stream to UI via SSE]
     end
 ```
 
-**Stack:** Python 3.12, FastAPI, Qdrant (embedded locally, Qdrant Cloud optional), fastembed (local ONNX models: `bge-small-en-v1.5`, BM25, `ms-marco-MiniLM` cross-encoder), Claude via the Anthropic SDK, React 19 + TypeScript + Vite. One Docker image serves both API and UI.
+**Stack:** Python 3.12, FastAPI, Qdrant (embedded locally, Qdrant Cloud optional), fastembed (local ONNX models: `bge-small-en-v1.5`, BM25, `ms-marco-MiniLM` cross-encoder), Google Gemini by default (free tier) or Anthropic Claude behind one provider interface, React 19 + TypeScript + Vite. One Docker image serves both API and UI.
 
 A step-by-step walkthrough of every component and design decision is in **[docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)**.
 
 ## Run it locally
 
-**Prerequisites:** Python 3.12+, Node 20+, and an [Anthropic API key](https://console.anthropic.com/).
+**Prerequisites:** Python 3.12+, Node 20+, and a free [Gemini API key](https://aistudio.google.com/apikey) (or an [Anthropic API key](https://console.anthropic.com/)).
 
 ```bash
 # 1. Backend
@@ -60,7 +60,7 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
 pip install -r requirements-dev.txt
-cp .env.example .env              # then paste your ANTHROPIC_API_KEY into .env
+cp .env.example .env              # then paste your GEMINI_API_KEY into .env
 uvicorn app.main:app --reload     # http://localhost:8000
 ```
 
@@ -81,7 +81,7 @@ Without an API key the app still runs: you'll see which policy sections were ret
 cd backend
 pytest -q                              # 90 tests, ~15 s, no network/API key needed
 python eval/run_retrieval_eval.py      # retrieval quality, free (local models only)
-python eval/run_answer_eval.py         # full pipeline with Claude, ~$1 for 34 questions
+python eval/run_answer_eval.py         # full pipeline with the LLM (free on the Gemini free tier)
 ```
 
 The tests use a fake embedder and a fake LLM client, so they're fast and deterministic, and CI runs them on every push. They cover the chunker, hybrid search, the relevance gate, citation verification (including fabricated quotes), the cost calculator (checked against the policy's own worked examples), rate limits, path-traversal-safe document IDs, and the full upload → ask flow through the HTTP API.
@@ -111,7 +111,7 @@ One container serves everything. See **[docs/DEPLOY.md](docs/DEPLOY.md)** for Hu
 
 ```bash
 docker build -t am-i-covered .
-docker run -p 7860:7860 -e ANTHROPIC_API_KEY=sk-ant-... am-i-covered
+docker run -p 7860:7860 -e GEMINI_API_KEY=... am-i-covered
 ```
 
 ## Safety and privacy

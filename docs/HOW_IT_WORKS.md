@@ -26,7 +26,7 @@ PDF -> text per page -> chunks (with page + section) -> two vectors per chunk ->
 
 ```
 question -> expand words -> hybrid search -> rerank -> relevance gate
-         -> Claude (structured output) -> verify quotes -> compute cost -> stream to browser
+         -> LLM (structured output) -> verify quotes -> compute cost -> stream to browser
 ```
 
 ---
@@ -89,7 +89,9 @@ The frontend ([frontend/src/api.ts](../frontend/src/api.ts)) reads the stream wi
 
 **Chunking.** LLMs and embedding models work best on focused pieces of text. Too big and the vector is a blur of many topics; too small and the clause loses its context. Structure-aware chunking (headings, pages) beats fixed-size cutting for legal documents.
 
-**Structured output.** Instead of free text, the API constrains Claude to return JSON that matches our schema. The SDK's `messages.parse()` validates it into a Pydantic object, so there's no regex parsing of prose.
+**Structured output.** Instead of free text, the API constrains the model to return JSON that matches our schema (Gemini: JSON mode + `response_json_schema`; Claude: `messages.parse()`). The result is validated into a Pydantic object, so there's no regex parsing of prose.
+
+**Provider layer.** [llm.py](../backend/app/llm.py) hides which LLM is used behind one method, `generate(system, user, schema)`. Gemini (free tier) is the default; Claude is one setting away. The Gemini adapter tries a chain of models: the free tier often answers "503 overloaded" or "429 quota", and each model has its own quota, so falling back to the next model keeps the app answering.
 
 **Grounding and hallucination.** "Hallucination" is the model stating things that aren't in its sources. We reduce it in four layers: (1) only relevant excerpts are provided, (2) the prompt requires word-for-word quotes, (3) the server verifies every quote, (4) verdicts without evidence are downgraded.
 
@@ -145,7 +147,8 @@ backend/
     retrieval.py        hybrid search -> rerank -> relevance gate
     prompts.py          system prompt + XML-tagged excerpts
     schemas.py          LLM output schema + API response models
-    answering.py        Claude call, errors, fallback answer
+    llm.py              provider layer: Gemini (model fallback chain) + Claude
+    answering.py        LLM call, verification, fallback answer
     verification.py     quote checking, verdict downgrade
     costs.py            deductible/coinsurance/out-of-pocket math
     plan_facts.py       extract plan numbers from uploads

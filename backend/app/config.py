@@ -40,7 +40,15 @@ class Settings(BaseSettings):
     qdrant_api_key: str | None = None
     qdrant_collection: str = "chunks"
 
-    # --- Embedding / reranking models (run locally via fastembed) ----------
+    # --- Embedding / reranking models -------------------------------------
+    # "local": fastembed ONNX models in-process (dense + BM25 + cross-encoder).
+    # "gemini": dense vectors from the Gemini embedding API, BM25 local, no
+    # reranker - for hosts with very little CPU (e.g. Render free, 0.1 CPU).
+    embedding_provider: str = "local"
+    gemini_embedding_model: str = "gemini-embedding-001"
+    embedding_dimensions: int = 768  # gemini mode only (local bge-small is 384)
+    # Gemini free tier counts each embedded text as a request (100/min); stay under it.
+    embedding_texts_per_minute: int = 90
     dense_model: str = "BAAI/bge-small-en-v1.5"
     sparse_model: str = "Qdrant/bm25"
     rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"
@@ -80,6 +88,18 @@ class Settings(BaseSettings):
     trust_proxy_headers: bool = False  # set true behind a reverse proxy
 
     cors_origins: list[str] = ["http://localhost:5173"]
+
+    # Gemini-embedding mode gates on cosine similarity instead of reranker logits.
+    # Calibrated with eval/run_retrieval_eval.py (EMBEDDING_PROVIDER=gemini).
+    gate_similarity: float = 0.62
+    federal_min_similarity: float = 0.65
+
+    @property
+    def collection_name(self) -> str:
+        """Vector sizes differ per provider, so each provider gets its own collection."""
+        if self.embedding_provider == "local":
+            return self.qdrant_collection
+        return f"{self.qdrant_collection}_{self.embedding_provider}"
 
     @property
     def uploads_dir(self) -> Path:

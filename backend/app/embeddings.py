@@ -53,8 +53,9 @@ class Embedder:
         self.rerank("warm up", ["warm up"])
 
     def embed_documents(self, texts: list[str]) -> tuple[list[list[float]], list[SparseVector]]:
-        dense = [v.tolist() for v in self._dense.embed(texts, batch_size=32)]
-        sparse = [_to_sparse(v) for v in self._sparse.embed(texts, batch_size=32)]
+        size = self.settings.embed_batch_size
+        dense = [v.tolist() for v in self._dense.embed(texts, batch_size=size)]
+        sparse = [_to_sparse(v) for v in self._sparse.embed(texts, batch_size=size)]
         return dense, sparse
 
     def embed_query(self, text: str) -> tuple[list[float], SparseVector]:

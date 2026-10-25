@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     dense_model: str = "BAAI/bge-small-en-v1.5"
     sparse_model: str = "Qdrant/bm25"
     rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"
+    # Texts embedded per model call. Smaller batches lower peak memory (ONNX
+    # buffers grow with batch size) without changing the vectors; use 4-8 on
+    # 512 MB hosts.
+    embed_batch_size: int = 32
 
     # --- Chunking ----------------------------------------------------------
     chunk_max_chars: int = 1100

@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react'
 import { documentFileUrl, uploadDocument } from '../api'
 import { formatMoney as money } from '../format'
-import type { DocumentInfo, PlanFacts } from '../types'
+import type { DocumentInfo, Health, PlanFacts } from '../types'
 
 interface Props {
   doc: DocumentInfo | null
   loadError: string | null
+  llmProvider: Health['llm_provider']
   onUploaded: (doc: DocumentInfo) => void
   onUseSample: () => void
 }
@@ -38,7 +39,9 @@ function FactsGrid({ facts }: { facts: PlanFacts }) {
   )
 }
 
-export function DocumentPanel({ doc, loadError, onUploaded, onUseSample }: Props) {
+const PROVIDER_NAMES = { gemini: 'Google Gemini', anthropic: 'Anthropic Claude' } as const
+
+export function DocumentPanel({ doc, loadError, llmProvider, onUploaded, onUseSample }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -126,8 +129,9 @@ export function DocumentPanel({ doc, loadError, onUploaded, onUseSample }: Props
       )}
 
       <p className="note">
-        Uploaded files are deleted automatically after 24 hours. Answers are for understanding your coverage, not legal or
-        medical advice. Always confirm with your insurer.
+        Uploaded files are deleted automatically after 24 hours.
+        {llmProvider && ` Your question and the relevant policy excerpts are sent to ${PROVIDER_NAMES[llmProvider]} to write the answer.`}{' '}
+        Answers are for understanding your coverage, not legal or medical advice. Always confirm with your insurer.
       </p>
     </aside>
   )

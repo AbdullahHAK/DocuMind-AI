@@ -82,7 +82,7 @@ POLICY_TEXT = "\n".join(
 
 
 def test_health(client):
-    assert client.get("/api/health").json() == {"status": "ok", "llm_configured": True}
+    assert client.get("/api/health").json() == {"status": "ok", "llm_configured": True, "llm_provider": "fake"}
 
 
 def test_sample_document_is_registered_with_facts(client):

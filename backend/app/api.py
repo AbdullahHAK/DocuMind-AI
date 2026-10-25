@@ -60,7 +60,9 @@ def _get_document(svc: Services, doc_id: str) -> DocumentRecord:
 
 @router.get("/health")
 def health(request: Request) -> dict:
-    return {"status": "ok", "llm_configured": services(request).llm_configured}
+    svc = services(request)
+    provider = svc.llm.name.split(":", 1)[0] if svc.llm else None  # "gemini" | "anthropic" | None
+    return {"status": "ok", "llm_configured": svc.llm_configured, "llm_provider": provider}
 
 
 @router.get("/documents/{doc_id}")

@@ -84,4 +84,5 @@ export interface DocumentInfo {
 export interface Health {
   status: string
   llm_configured: boolean
+  llm_provider: 'gemini' | 'anthropic' | null
 }

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { fetchDocument, fetchHealth, SAMPLE_DOC_ID } from './api'
 import { Chat } from './components/Chat'
 import { DocumentPanel } from './components/DocumentPanel'
-import type { DocumentInfo } from './types'
+import type { DocumentInfo, Health } from './types'
 
 const STORAGE_KEY = 'amicovered:doc'
 
@@ -26,6 +26,7 @@ export default function App() {
   const [doc, setDoc] = useState<DocumentInfo | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [llmReady, setLlmReady] = useState(true)
+  const [llmProvider, setLlmProvider] = useState<Health['llm_provider']>(null)
 
   const load = useCallback(async (docId: string) => {
     try {
@@ -42,7 +43,10 @@ export default function App() {
   useEffect(() => {
     load(readSavedDocId() ?? SAMPLE_DOC_ID)
     fetchHealth()
-      .then((h) => setLlmReady(h.llm_configured))
+      .then((h) => {
+        setLlmReady(h.llm_configured)
+        setLlmProvider(h.llm_provider)
+      })
       .catch(() => setLlmReady(false))
   }, [load])
 
@@ -75,6 +79,7 @@ export default function App() {
         <DocumentPanel
           doc={doc}
           loadError={loadError}
+          llmProvider={llmProvider}
           onUploaded={(uploaded) => {
             setDoc(uploaded)
             saveDocId(uploaded.doc_id)

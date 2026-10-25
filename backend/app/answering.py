@@ -11,7 +11,7 @@ from app.config import Settings
 from app.costs import CostRule, PlanCosts, estimate_cost
 from app.llm import LLMError, StructuredLLM
 from app.prompts import SYSTEM_PROMPT, build_user_message, source_ids
-from app.security import redact_unsupported_contacts
+from app.security import redact_unsupported_contacts, strip_markup
 from app.retrieval import RetrievalResult
 from app.schemas import Answer, CostEstimateOut, LLMAnswer, LLMCostRule
 from app.verification import verify_citations
@@ -99,6 +99,7 @@ class AnswerService:
 
         def clean(text: str) -> str:
             nonlocal removed
+            text, _ = strip_markup(text)  # answers are plain text; never pass HTML through
             text, n = redact_unsupported_contacts(text, source_text)
             removed += n
             return text

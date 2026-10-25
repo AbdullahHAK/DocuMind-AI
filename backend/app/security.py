@@ -97,6 +97,20 @@ def redact_unsupported_contacts(text: str, source_text: str) -> tuple[str, int]:
 
 
 # ---------------------------------------------------------------------------
+# Output: no markup
+# ---------------------------------------------------------------------------
+
+# Answers are plain text. Any tag in model output is either noise or an attempt
+# to get HTML/JS rendered by a client that doesn't escape (LLM05).
+TAG_RE = re.compile(r"<\s*/?\s*[a-zA-Z!][^<>]{0,500}>")
+
+
+def strip_markup(text: str) -> tuple[str, int]:
+    cleaned, n = TAG_RE.subn("", text)
+    return re.sub(r"\s{2,}", " ", cleaned).strip() if n else text, n
+
+
+# ---------------------------------------------------------------------------
 # Plan facts: every number must be in the document
 # ---------------------------------------------------------------------------
 

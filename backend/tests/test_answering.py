@@ -101,3 +101,9 @@ def test_contact_details_not_in_sources_are_redacted():
     answer = _service(llm).answer("q", _retrieval(), FACTS)
     assert "900-555-0199" not in answer.explanation and "evil" not in answer.questions_to_ask[0]
     assert any("Removed 2" in w for w in answer.warnings)
+
+
+def test_markup_in_model_output_is_stripped():
+    llm = FakeLLM(parsed=_llm_answer(headline='<img src=x onerror="alert(1)"> Yes, with prior authorization.'))
+    answer = _service(llm).answer("q", _retrieval(), FACTS)
+    assert answer.headline == "Yes, with prior authorization."

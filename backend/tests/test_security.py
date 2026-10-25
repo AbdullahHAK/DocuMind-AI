@@ -106,3 +106,19 @@ def test_inconsistent_deductible_above_oop_max_is_dropped():
     doc = "Deductible: $9,000. Out-of-pocket maximum: $8,500."
     facts, dropped = ground_plan_facts({"deductible_individual": 9000, "oop_max_individual": 8500}, doc)
     assert facts["deductible_individual"] is None and facts["oop_max_individual"] is None
+
+
+# --------------------------------------------------------------- markup
+
+def test_html_and_script_tags_are_stripped():
+    from app.security import strip_markup
+
+    text, n = strip_markup('<img src=x onerror="alert(document.cookie)"> IVF is <b>not</b> covered.<script>x()</script>')
+    assert "<" not in text and n == 5
+    assert text == "IVF is not covered.x()"
+
+
+def test_comparisons_in_plain_text_survive():
+    from app.security import strip_markup
+
+    assert strip_markup("Members age < 19 and visits > 30 per year") == ("Members age < 19 and visits > 30 per year", 0)

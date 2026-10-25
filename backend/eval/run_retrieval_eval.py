@@ -20,8 +20,9 @@ def main() -> None:
     for q in questions:
         # gate disabled: look at the raw ranking first; gate thresholds are swept below
         result = retriever.retrieve(q["question"], EVAL_DOC_ID, gate_threshold=float("-inf"))
-        pages = [sc.chunk.page for sc in result.policy]
-        scores = [sc.score for sc in result.policy]
+        ranked = [sc for sc in result.policy if sc.linked_from is None]  # graph-linked chunks have no score
+        pages = [sc.chunk.page for sc in ranked]
+        scores = [sc.score for sc in ranked]
         first_hit = next((i for i, p in enumerate(pages) if p in q["expected_pages"]), None)
         best = max([*scores, result.best_federal_score if result.best_federal_score is not None else -99.0])
         rows.append({

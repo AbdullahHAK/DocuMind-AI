@@ -1,0 +1,13 @@
+{
+  "notes": "Multi-hop questions: a correct answer needs every clause in required_clauses. The second clause is usually reached only through a cross-reference in the first (\"see 7.5\").",
+  "questions": [
+    {"id": "glp1-ozempic", "question": "Is Ozempic covered if my doctor prescribes it?", "required_clauses": ["6.4", "7.5"]},
+    {"id": "glp1-semaglutide", "question": "Are GLP-1 drugs like semaglutide covered?", "required_clauses": ["6.4", "7.5"]},
+    {"id": "abroad-mexico", "question": "I got hurt on a trip to Mexico. What does my plan cover there?", "required_clauses": ["5.3", "7.10"]},
+    {"id": "hearing-family", "question": "My 10-year-old needs hearing aids. What about me, I'm 40?", "required_clauses": ["3.11", "7.8"]},
+    {"id": "hearing-exams-adult", "question": "Are hearing exams covered for adults?", "required_clauses": ["7.8", "3.11"]},
+    {"id": "dental-what", "question": "What dental care does the plan cover?", "required_clauses": ["7.3", "3.10"]},
+    {"id": "mri-approval", "question": "Do I need approval before an MRI?", "required_clauses": ["3.4", "4.1"]},
+    {"id": "newborn-keep", "question": "How do I keep my newborn on the plan after the birth?", "required_clauses": ["3.7", "9.2"]}
+  ]
+}

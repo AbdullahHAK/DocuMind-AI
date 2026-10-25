@@ -142,13 +142,16 @@ def sse(event: str, data) -> str:
 
 def _source_previews(retrieval: RetrievalResult) -> list[dict]:
     policy, federal = source_ids(retrieval)
+    sid_of = {sc.chunk.chunk_id: sid for sid, sc in policy.items()}
     previews = []
     for sid, sc in [*policy.items(), *federal.items()]:
         c = sc.chunk
         previews.append(
             SourcePreview(
                 source_id=sid, kind=c.kind, page=c.page, section=c.section, title=c.source_title,
-                url=c.source_url, text=c.text, score=round(sc.score, 2),
+                url=c.source_url, text=c.text,
+                score=None if sc.linked_from else round(sc.score, 2),
+                linked_from=sid_of.get(sc.linked_from),
             ).model_dump()
         )
     return previews

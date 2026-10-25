@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from app.config import Settings
+from app.graph import link_chunks
 from app.ingest.chunker import chunk_pages
 from app.ingest.markdown import load_federal_corpus
 from app.ingest.pdf import Page, PdfLoadError, load_pdf
@@ -21,10 +22,13 @@ from app.vectorstore import VectorStore
 log = logging.getLogger(__name__)
 
 FEDERAL_DOC_ID = "federal"
+# Part of every content hash: bump it when chunking/linking changes so stored
+# documents are re-indexed instead of silently keeping the old chunks.
+PIPELINE_VERSION = "2-clause-graph"
 
 
 def content_hash(paths: list[Path]) -> str:
-    digest = hashlib.sha256()
+    digest = hashlib.sha256(PIPELINE_VERSION.encode())
     for path in sorted(paths):
         digest.update(path.name.encode())
         digest.update(path.read_bytes())
@@ -59,6 +63,7 @@ class IndexedPolicy:
     chunks: int
     pages: list[Page]  # sanitized text, reused for plan-facts extraction
     injection_findings: list[InjectionFinding] = field(default_factory=list)
+    graph_edges: int = 0
 
 
 def load_policy_pages(path: Path, settings: Settings) -> tuple[list[Page], list[InjectionFinding]]:
@@ -96,10 +101,11 @@ def index_policy_pdf(
         max_chars=settings.chunk_max_chars,
         overlap_chars=settings.chunk_overlap_chars,
     )
-    result = IndexedPolicy(chunks=len(chunks), pages=pages, injection_findings=findings)
+    edges = link_chunks(chunks)
+    result = IndexedPolicy(chunks=len(chunks), pages=pages, injection_findings=findings, graph_edges=edges)
     if skip_if_current and store.count(doc_id=doc_id, version=version) == len(chunks):
         log.info("%s up to date (%d chunks)", doc_id, len(chunks))
         return result
-    log.info("Indexing %s: %d pages, %d chunks", doc_id, len(pages), len(chunks))
+    log.info("Indexing %s: %d pages, %d chunks, %d cross-reference edges", doc_id, len(pages), len(chunks), edges)
     _replace(store, doc_id, _stamp(chunks, version))
     return result

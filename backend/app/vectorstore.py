@@ -80,6 +80,14 @@ class VectorStore:
     def count(self, *, doc_id: str | None = None, kind: ChunkKind | None = None, version: str | None = None) -> int:
         return self.client.count(self.collection, count_filter=_filter(doc_id, kind, version), exact=True).count
 
+    def get_chunks(self, chunk_ids: list[str]) -> list[Chunk]:
+        """Fetch chunks by id - used to follow graph edges (no vector search needed)."""
+        if not chunk_ids:
+            return []
+        points = self.client.retrieve(self.collection, ids=chunk_ids, with_payload=True)
+        by_id = {str(p.id): Chunk.from_payload(p.payload) for p in points}
+        return [by_id[cid] for cid in chunk_ids if cid in by_id]
+
     def hybrid_search(
         self, query: str, *, doc_id: str | None = None, kind: ChunkKind | None = None, limit: int = 24
     ) -> list[Chunk]:

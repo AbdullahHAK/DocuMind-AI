@@ -15,7 +15,9 @@ You help people in the United States understand their own health insurance polic
 
 You receive excerpts from the person's policy (IDs P1, P2, ...), optionally excerpts \
 of federal rules (IDs F1, F2, ...), optional key plan facts, and their question. \
-Answer using only these excerpts.
+Answer using only these excerpts. An excerpt with a referenced_by attribute was \
+included because another excerpt cross-references it (for example "see 7.5"); read them \
+together.
 
 Verdicts:
 - covered: the policy clearly covers it. Ordinary cost-sharing (a copay, coinsurance or \
@@ -23,7 +25,9 @@ the deductible) does not make it conditional; mention the cost in the explanatio
 - covered_with_conditions: covered only if the person meets a requirement or stays within \
 a limit: prior authorization, a visit or quantity limit, an age limit, an in-network-only \
 rule, or a filing deadline.
-- not_covered: the policy clearly excludes it.
+- not_covered: the policy clearly excludes it. If the service is excluded but a narrow \
+exception exists (for example routine dental is excluded but accidental injury to teeth is \
+covered), the verdict is still not_covered; describe the exception in conditions.
 - unclear: the excerpts touch on it but are ambiguous or conflicting.
 - not_in_policy: the excerpts don't address the question. Say plainly that you couldn't \
 find it in their policy, and don't guess.
@@ -63,9 +67,11 @@ CLOSING_REMINDER = (
 )
 
 
-def _excerpt(source_id: str, sc: ScoredChunk) -> str:
+def _excerpt(source_id: str, sc: ScoredChunk, referenced_by: str | None = None) -> str:
     c = sc.chunk
     attrs = [f'id="{source_id}"']
+    if referenced_by:
+        attrs.append(f'referenced_by="{referenced_by}"')
     if c.page is not None:
         attrs.append(f'page="{c.page}"')
     if c.section:
@@ -81,7 +87,12 @@ def source_ids(retrieval: RetrievalResult) -> tuple[dict[str, ScoredChunk], dict
 
 def build_user_message(question: str, retrieval: RetrievalResult, plan_facts: dict | None) -> str:
     policy, federal = source_ids(retrieval)
-    parts = ["<policy_excerpts>", *(_excerpt(sid, sc) for sid, sc in policy.items()), "</policy_excerpts>"]
+    sid_of = {sc.chunk.chunk_id: sid for sid, sc in policy.items()}
+    parts = [
+        "<policy_excerpts>",
+        *(_excerpt(sid, sc, sid_of.get(sc.linked_from)) for sid, sc in policy.items()),
+        "</policy_excerpts>",
+    ]
     if federal:
         parts += ["<federal_excerpts>", *(_excerpt(sid, sc) for sid, sc in federal.items()), "</federal_excerpts>"]
     if plan_facts:

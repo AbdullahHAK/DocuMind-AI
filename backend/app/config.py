@@ -57,6 +57,9 @@ class Settings(BaseSettings):
     # were picked from the sweep in eval/run_retrieval_eval.py.
     gate_threshold: float = -6.0  # best chunk below this -> off-topic, skip the LLM
     federal_min_score: float = -2.0  # federal chunks must clear this to be attached
+    # Clause graph: follow "see 7.5"-style cross-references one hop from the top chunks.
+    graph_expansion: bool = True
+    graph_max_linked: int = 3
 
     # --- Uploads -----------------------------------------------------------
     max_upload_mb: int = 10

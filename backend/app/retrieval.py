@@ -29,6 +29,7 @@ from app.vectorstore import VectorStore
 class ScoredChunk:
     chunk: Chunk
     score: float  # cross-encoder logit: higher = more relevant
+    linked_from: str | None = None  # chunk_id that cross-references this one (graph expansion)
 
 
 @dataclass
@@ -57,6 +58,20 @@ class Retriever:
         ranked = [ScoredChunk(c, s) for c, s in zip(candidates, scores)]
         return sorted(ranked, key=lambda sc: sc.score, reverse=True)
 
+    def _follow_references(self, top: list[ScoredChunk]) -> list[ScoredChunk]:
+        """One hop through the clause graph: add clauses the top chunks point at ("see 7.5")."""
+        have = {sc.chunk.chunk_id for sc in top}
+        wanted: dict[str, str] = {}  # target chunk_id -> referring chunk_id, in rank order
+        for sc in top:
+            for ref in sc.chunk.extra.get("refs", []):
+                if ref not in have and ref not in wanted:
+                    wanted[ref] = sc.chunk.chunk_id
+        targets = list(wanted)[: self.settings.graph_max_linked]
+        return [
+            ScoredChunk(chunk, score=float("nan"), linked_from=wanted[chunk.chunk_id])
+            for chunk in self.store.get_chunks(targets)
+        ]
+
     def retrieve(self, question: str, doc_id: str, *, gate_threshold: float | None = None) -> RetrievalResult:
         s = self.settings
         gate = s.gate_threshold if gate_threshold is None else gate_threshold
@@ -78,6 +93,8 @@ class Retriever:
             return result  # off-topic: nothing passes the gate
 
         result.policy = policy_ranked[: s.policy_top_k]
+        if s.graph_expansion:
+            result.policy += self._follow_references(result.policy)
         # federal text is optional context, so it must clear a stricter bar of its own
         result.federal = [sc for sc in federal_ranked if sc.score >= s.federal_min_score][: s.federal_top_k]
         return result

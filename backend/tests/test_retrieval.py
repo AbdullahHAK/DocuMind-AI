@@ -41,3 +41,18 @@ def test_results_are_sorted_by_rerank_score(store, embedder):
     scores = [sc.score for sc in result.policy]
     assert scores == sorted(scores, reverse=True)
     assert result.policy[0].chunk.text.startswith("Emergency room")
+
+
+def test_graph_expansion_follows_cross_references(store, embedder):
+    exclusion = _chunk("mine", 1, "Drugs prescribed primarily for weight loss are not covered.", "policy")
+    glp1 = _chunk("mine", 0, "GLP-1 drugs are covered for type 2 diabetes. Weight loss drugs: see 7.5.", "policy")
+    glp1.extra["refs"] = [exclusion.chunk_id]
+    store.upsert([glp1, exclusion])
+
+    settings = Settings(gate_threshold=-100, policy_top_k=1)
+    with_graph = Retriever(store, embedder, settings).retrieve("Are GLP-1 drugs covered for diabetes?", "mine")
+    assert [sc.chunk.chunk_id for sc in with_graph.policy] == [glp1.chunk_id, exclusion.chunk_id]
+    assert with_graph.policy[1].linked_from == glp1.chunk_id
+
+    without = Retriever(store, embedder, settings.model_copy(update={"graph_expansion": False}))
+    assert len(without.retrieve("Are GLP-1 drugs covered for diabetes?", "mine").policy) == 1

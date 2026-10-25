@@ -109,7 +109,8 @@ class SourcePreview(BaseModel):
     title: str
     url: str | None
     text: str
-    score: float
+    score: float | None
+    linked_from: str | None = None  # source_id of the excerpt that cross-references this one
 
 
 class AskRequest(BaseModel):

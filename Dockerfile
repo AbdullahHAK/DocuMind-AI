@@ -35,6 +35,9 @@ RUN python -c "from app.config import Settings; from app.embeddings import Embed
 # policy). At runtime startup() sees the same content hash and skips
 # re-embedding, so cold starts on scale-to-zero hosts (Cloud Run) are faster.
 RUN python -c "from app.config import Settings; from app.services import build_services; build_services(Settings()).startup()"
+# Same for EMBEDDING_PROVIDER=gemini (small hosts): the bundled documents'
+# vectors come from data/embeddings/ (precomputed), so no API key is needed here.
+RUN EMBEDDING_PROVIDER=gemini python -c "from app.config import Settings; from app.services import build_services; build_services(Settings()).startup()"
 
 EXPOSE 7860
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --proxy-headers --forwarded-allow-ips='*'"]

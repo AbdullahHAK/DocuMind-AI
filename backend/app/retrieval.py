@@ -1,6 +1,6 @@
 """Two-stage retrieval: cheap-and-wide, then expensive-and-precise.
 
-Stage 1  hybrid search (dense + BM25, fused with RRF) pulls ~24 candidates.
+Stage 1  hybrid search (dense + BM25, fused with RRF) pulls ~12 candidates.
 Stage 2  a cross-encoder reranks them and we keep the best few.
 
 Relevance gate: if even the best candidate scores below ``gate_threshold``,

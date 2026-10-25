@@ -66,7 +66,8 @@ class Embedder:
     def rerank(self, query: str, texts: list[str]) -> list[float]:
         if not texts:
             return []
-        return [float(s) for s in self._reranker.rerank(query, texts, batch_size=32)]
+        # small batches: every pair in a batch is padded to the longest one
+        return [float(s) for s in self._reranker.rerank(query, texts, batch_size=8)]
 
 
 class _Sparse:

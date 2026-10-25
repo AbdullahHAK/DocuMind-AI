@@ -63,7 +63,7 @@ The **federal rules** ([backend/data/federal/](../backend/data/federal/)) are ha
 |---|---|---|
 | 1 | `api.ask` | Validate the request (Pydantic), check the document exists, check the per-IP rate limit. |
 | 2 | [query_expansion.py](../backend/app/query_expansion.py) | Add insurance terms for everyday words: "nose job" gets "cosmetic surgery", "Wegovy" gets "GLP-1 semaglutide". |
-| 3 | `VectorStore.hybrid_search` | Two searches inside Qdrant (dense and BM25), restricted to *this* document, merged with **Reciprocal Rank Fusion**. Returns ~24 candidates. Run separately for the policy and for federal rules. |
+| 3 | `VectorStore.hybrid_search` | Two searches inside Qdrant (dense and BM25), restricted to *this* document, merged with **Reciprocal Rank Fusion**. Returns ~12 candidates. Run separately for the policy and for federal rules. |
 | 4 | `Retriever._rerank` | A **cross-encoder** scores each (question, chunk) pair and the list is re-sorted. |
 | 5 | `Retriever.retrieve` | **Relevance gate**: if the best score is below −6, the question is off-topic and we return a fallback answer **without calling the LLM**. |
 | 6 | SSE `sources` event | The UI immediately shows what was found, before the answer is ready. |
@@ -85,7 +85,7 @@ The frontend ([frontend/src/api.ts](../frontend/src/api.ts)) reads the stream wi
 
 **Hybrid search + RRF.** We run both searches and merge the two ranked lists with **Reciprocal Rank Fusion**: each chunk gets `1/(k + rank)` from each list, and the scores are summed. RRF only uses *ranks*, so we never have to make cosine scores and BM25 scores comparable. A chunk that is #1 in either list rises to the top.
 
-**Cross-encoder reranking.** Embeddings compare two separately computed vectors (fast, approximate). A cross-encoder reads the question and the chunk *together* and outputs one relevance score: much more accurate, but too slow for thousands of chunks. So it's used as stage 2, on ~24 candidates. This "retrieve wide, rerank narrow" pattern is standard in production search.
+**Cross-encoder reranking.** Embeddings compare two separately computed vectors (fast, approximate). A cross-encoder reads the question and the chunk *together* and outputs one relevance score: much more accurate, but too slow for thousands of chunks. So it's used as stage 2, on ~12 candidates. This "retrieve wide, rerank narrow" pattern is standard in production search.
 
 **Chunking.** LLMs and embedding models work best on focused pieces of text. Too big and the vector is a blur of many topics; too small and the clause loses its context. Structure-aware chunking (headings, pages) beats fixed-size cutting for legal documents.
 
@@ -106,7 +106,7 @@ The frontend ([frontend/src/api.ts](../frontend/src/api.ts)) reads the stream wi
 | Local embedding models (fastembed/ONNX) | OpenAI / Voyage embedding APIs | No second API key, no per-query cost, works offline, fast enough on CPU. Trade-off: bigger container (~200 MB of models). |
 | Qdrant | pgvector, Chroma, FAISS | Native hybrid search (dense + sparse + RRF in one query), an embedded mode for dev/tests and a managed cloud for production with the *same client code*. |
 | Hybrid search | Dense only | The eval showed exact terms (clause numbers, drug names) matter in insurance text. |
-| Rerank top 24 | Rerank everything / no rerank | Accuracy of a cross-encoder at the cost of only 24 model calls. |
+| Rerank top 12 | Rerank everything / no rerank | Accuracy of a cross-encoder at the cost of only 12 model calls. The eval scored the same at 12, 16 and 24 candidates, and the reranker is the slowest step on CPU. |
 | Lay-term dictionary | LLM query rewriting | Deterministic, free, zero latency, unit-testable. An LLM rewrite would add a paid call to every question. Trade-off: the dictionary needs maintenance. |
 | One relevance gate | Per-chunk score cutoff | The eval showed the reranker is poorly calibrated on insurance text (a correct chunk scored −8.8), so per-chunk cutoffs dropped good context. A single lenient gate only blocks clearly off-topic questions; the LLM's `not_in_policy` verdict is the second line of defense. |
 | Structured output | Free-text answers | The UI needs a verdict, citations and lists in fixed fields, and verification needs `source_id` + `quote` pairs. |

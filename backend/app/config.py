@@ -50,7 +50,9 @@ class Settings(BaseSettings):
     chunk_overlap_chars: int = 150
 
     # --- Retrieval ---------------------------------------------------------
-    retrieval_candidates: int = 24  # hybrid search pulls this many, reranker trims
+    # hybrid search pulls this many and the cross-encoder reranks them. The reranker
+    # is the slowest step on CPU; the eval scored identically at 24, 16 and 12.
+    retrieval_candidates: int = 12
     policy_top_k: int = 6
     federal_top_k: int = 3
     # Cross-encoder scores are logits (> 0 ~ "probably relevant"). Both values

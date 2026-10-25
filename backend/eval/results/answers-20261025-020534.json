@@ -1,0 +1,590 @@
+{
+  "summary": {
+    "questions": 34,
+    "verdict_exact": 0.9705882352941176,
+    "verdict_lenient": 0.9705882352941176,
+    "citation_on_expected_page": 1.0,
+    "out_of_scope_handled": 1.0,
+    "llm_calls_skipped_by_gate": 3,
+    "unverified_citations_dropped": 0,
+    "avg_seconds": 7.5,
+    "model": "gemini:gemini-3.5-flash-lite",
+    "effort": "medium"
+  },
+  "rows": [
+    {
+      "id": "dental-adult",
+      "question": "Is adult dental care covered?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        10
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 8.2,
+      "headline": "Routine adult dental care is not covered by your plan.",
+      "out_of_scope": false
+    },
+    {
+      "id": "dental-cleaning",
+      "question": "I'm 34. Will the plan pay for a teeth cleaning at the dentist?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        10
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 4.4,
+      "headline": "Routine teeth cleanings are not covered for members age 19 and older.",
+      "out_of_scope": false
+    },
+    {
+      "id": "clause-ref",
+      "question": "What does clause 7.3(b) say?",
+      "expected": "informational",
+      "verdict": "informational",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        10
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 4.8,
+      "headline": "Clause 7.3(b) states that routine dental care is not covered for members age 19 and older.",
+      "out_of_scope": false
+    },
+    {
+      "id": "mri-prior-auth",
+      "question": "Do I need prior authorization for an MRI?",
+      "expected": "covered_with_conditions",
+      "verdict": "covered_with_conditions",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        5,
+        7
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 6.9,
+      "headline": "You need prior authorization for non-emergency MRIs.",
+      "out_of_scope": false
+    },
+    {
+      "id": "mri-cost",
+      "question": "My knee MRI will cost $1,800 and I haven't paid anything toward my deductible yet. What will I pay?",
+      "expected": "covered_with_conditions",
+      "verdict": "covered_with_conditions",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        5,
+        14
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 8.6,
+      "headline": "Your knee MRI is covered if you get prior authorization, and you will pay the full $1,800 toward your deductible.",
+      "out_of_scope": false
+    },
+    {
+      "id": "no-prior-auth-oon",
+      "question": "What happens if I see an out-of-network doctor and nobody gets prior authorization?",
+      "expected": "covered_with_conditions",
+      "verdict": "informational",
+      "exact": false,
+      "lenient": false,
+      "cited_pages": [
+        7
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 15.5,
+      "headline": "If you use an out-of-network provider and do not get required prior authorization, your benefits are reduced by 50%.",
+      "out_of_scope": false
+    },
+    {
+      "id": "abroad-fracture",
+      "question": "I broke my arm while on vacation in Spain. Am I covered?",
+      "expected": "covered_with_conditions",
+      "verdict": "covered_with_conditions",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        8
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 10.5,
+      "headline": "Emergency and urgent care for your broken arm while in Spain are covered.",
+      "out_of_scope": false
+    },
+    {
+      "id": "evacuation",
+      "question": "If I get seriously sick abroad, will the plan pay to fly me back home to the US?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        11
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 6.3,
+      "headline": "Medical evacuation and repatriation back to the United States are not covered by your plan.",
+      "out_of_scope": false
+    },
+    {
+      "id": "wegovy-weight-loss",
+      "question": "Is Wegovy covered if my doctor prescribes it for weight loss?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        11
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 10.5,
+      "headline": "Wegovy is not covered when it is prescribed primarily for weight loss.",
+      "out_of_scope": false
+    },
+    {
+      "id": "ozempic-diabetes",
+      "question": "Is Ozempic covered for my type 2 diabetes?",
+      "expected": "covered_with_conditions",
+      "verdict": "covered_with_conditions",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        9
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 6.4,
+      "headline": "Ozempic is covered for type 2 diabetes, but you need prior authorization first.",
+      "out_of_scope": false
+    },
+    {
+      "id": "er-cost",
+      "question": "How much does an emergency room visit cost me?",
+      "expected": "covered",
+      "verdict": "covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        4
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 8.5,
+      "headline": "An emergency room visit costs a $400 copay per visit, and your deductible does not apply.",
+      "out_of_scope": false
+    },
+    {
+      "id": "er-admitted",
+      "question": "Do I still pay the ER copay if I end up being admitted to the hospital?",
+      "expected": "covered",
+      "verdict": "covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        4
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 8.9,
+      "headline": "You do not have to pay the emergency room copay if you are admitted to the hospital as an inpatient.",
+      "out_of_scope": false
+    },
+    {
+      "id": "pt-limit",
+      "question": "How many physical therapy sessions can I get this year?",
+      "expected": "covered_with_conditions",
+      "verdict": "covered_with_conditions",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        6
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 6.2,
+      "headline": "Your plan covers up to 30 physical therapy visits per plan year, combined with occupational and speech therapies.",
+      "out_of_scope": false
+    },
+    {
+      "id": "ivf",
+      "question": "Does the plan cover IVF?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        10
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 4.5,
+      "headline": "Your plan does not cover in vitro fertilization (IVF).",
+      "out_of_scope": false
+    },
+    {
+      "id": "lasik",
+      "question": "Can I get LASIK eye surgery covered?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        10
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 3.9,
+      "headline": "LASIK eye surgery is not covered by your plan.",
+      "out_of_scope": false
+    },
+    {
+      "id": "therapy-anxiety",
+      "question": "Is therapy for anxiety covered, and is there a limit on sessions?",
+      "expected": "covered",
+      "verdict": "covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        5
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 5.1,
+      "headline": "Therapy for anxiety is covered by your plan, and there is no limit on the number of in-network visits.",
+      "out_of_scope": false
+    },
+    {
+      "id": "annual-physical",
+      "question": "Is my yearly checkup free?",
+      "expected": "covered",
+      "verdict": "covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        4
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 6.8,
+      "headline": "Your yearly checkup is free when you see a network provider.",
+      "out_of_scope": false
+    },
+    {
+      "id": "son-24",
+      "question": "Can my 24-year-old son stay on my plan?",
+      "expected": "covered",
+      "verdict": "covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        13
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 4.4,
+      "headline": "Your 24-year-old son can stay on your plan because children under age 26 are eligible for coverage.",
+      "out_of_scope": false
+    },
+    {
+      "id": "appeal-deadline",
+      "question": "My claim was denied. How long do I have to appeal?",
+      "expected": "informational",
+      "verdict": "informational",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        12
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 5.4,
+      "headline": "You have 180 days to file an internal appeal after receiving a claim denial notice.",
+      "out_of_scope": false
+    },
+    {
+      "id": "hearing-aids-adult",
+      "question": "I'm 45. Are hearing aids covered?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        11
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 5.0,
+      "headline": "Hearing aids are not covered for members age 19 and older under your policy.",
+      "out_of_scope": false
+    },
+    {
+      "id": "acupuncture",
+      "question": "Is acupuncture covered?",
+      "expected": "covered_with_conditions",
+      "verdict": "covered_with_conditions",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        11
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 5.2,
+      "headline": "Acupuncture is covered only for chronic low back pain, up to 12 visits per plan year.",
+      "out_of_scope": false
+    },
+    {
+      "id": "nose-job",
+      "question": "Will insurance pay for a nose job to change how my nose looks?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        10
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 11.5,
+      "headline": "Your plan does not cover a nose job done to change your appearance.",
+      "out_of_scope": false
+    },
+    {
+      "id": "deductible",
+      "question": "What is my deductible?",
+      "expected": "informational",
+      "verdict": "informational",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        2
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 8.6,
+      "headline": "Your in-network deductible is $3,000 per person ($6,000 per family), and your out-of-network deductible is $6,000 per person ($12,000 per family).",
+      "out_of_scope": false
+    },
+    {
+      "id": "oop-max",
+      "question": "What's the most I could pay in a year?",
+      "expected": "informational",
+      "verdict": "informational",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        2
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 12.6,
+      "headline": "The most you could pay for covered in-network services in a year is $8,500 per person or $17,000 per family.",
+      "out_of_scope": false
+    },
+    {
+      "id": "ground-ambulance",
+      "question": "Is an ambulance ride covered?",
+      "expected": "covered_with_conditions",
+      "verdict": "covered_with_conditions",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        4
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 13.8,
+      "headline": "Ambulance rides are covered if they are medically necessary and for an emergency.",
+      "out_of_scope": false
+    },
+    {
+      "id": "chiro-oon",
+      "question": "Can I see an out-of-network chiropractor?",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        6
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 8.3,
+      "headline": "Out-of-network chiropractic care is not covered by your plan.",
+      "out_of_scope": false
+    },
+    {
+      "id": "insulin",
+      "question": "How much do I pay for insulin?",
+      "expected": "covered",
+      "verdict": "covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        9
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 9.2,
+      "headline": "Insulin costs $35 for a 30-day supply, and your deductible does not apply.",
+      "out_of_scope": false
+    },
+    {
+      "id": "newborn",
+      "question": "Is my newborn baby covered automatically?",
+      "expected": "covered_with_conditions",
+      "verdict": "covered_with_conditions",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        13
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 9.6,
+      "headline": "Yes, your newborn baby is covered automatically for the first 31 days after birth.",
+      "out_of_scope": false
+    },
+    {
+      "id": "anesthesiologist-nsa",
+      "question": "I had surgery at an in-network hospital but the anesthesiologist was out-of-network. Can they bill me extra?",
+      "expected": "covered",
+      "verdict": "covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        8
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 10.9,
+      "headline": "Your plan covers your care, and federal rules protect you from extra balance billing by an out-of-network anesthesiologist at an in-network facility.",
+      "out_of_scope": false
+    },
+    {
+      "id": "glasses-adult",
+      "question": "Does the plan pay for my new glasses? I'm 30.",
+      "expected": "not_covered",
+      "verdict": "not_covered",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        10
+      ],
+      "page_hit": true,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 8.3,
+      "headline": "Your plan does not cover eyeglasses for members age 19 and older.",
+      "out_of_scope": false
+    },
+    {
+      "id": "oos-car",
+      "question": "Does this plan pay for repairs to my car?",
+      "expected": "not_in_policy",
+      "verdict": "not_in_policy",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [],
+      "page_hit": null,
+      "used_llm": false,
+      "unverified_dropped": 0,
+      "seconds": 2.0,
+      "headline": "I couldn't find anything about this in your policy.",
+      "out_of_scope": true
+    },
+    {
+      "id": "oos-pizza",
+      "question": "Can you recommend a good pizza place nearby?",
+      "expected": "not_in_policy",
+      "verdict": "not_in_policy",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [],
+      "page_hit": null,
+      "used_llm": false,
+      "unverified_dropped": 0,
+      "seconds": 1.8,
+      "headline": "I couldn't find anything about this in your policy.",
+      "out_of_scope": true
+    },
+    {
+      "id": "oos-pet",
+      "question": "Is my dog's vet visit covered?",
+      "expected": "not_in_policy",
+      "verdict": "not_in_policy",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [],
+      "page_hit": null,
+      "used_llm": false,
+      "unverified_dropped": 0,
+      "seconds": 1.5,
+      "headline": "I couldn't find anything about this in your policy.",
+      "out_of_scope": true
+    },
+    {
+      "id": "oos-stock",
+      "question": "What's the stock price of Evergreen Mutual?",
+      "expected": "not_in_policy",
+      "verdict": "not_in_policy",
+      "exact": true,
+      "lenient": true,
+      "cited_pages": [
+        1
+      ],
+      "page_hit": null,
+      "used_llm": true,
+      "unverified_dropped": 0,
+      "seconds": 9.5,
+      "headline": "I couldn't find a stock price for Evergreen Mutual in your policy.",
+      "out_of_scope": true
+    }
+  ]
+}

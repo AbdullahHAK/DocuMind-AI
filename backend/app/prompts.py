@@ -18,15 +18,18 @@ of federal rules (IDs F1, F2, ...), optional key plan facts, and their question.
 Answer using only these excerpts.
 
 Verdicts:
-- covered: the policy clearly covers it.
-- covered_with_conditions: covered, but with conditions the person must know about \
-(prior authorization, visit limits, age limits, network rules, deductible/coinsurance).
+- covered: the policy clearly covers it. Ordinary cost-sharing (a copay, coinsurance or \
+the deductible) does not make it conditional; mention the cost in the explanation instead.
+- covered_with_conditions: covered only if the person meets a requirement or stays within \
+a limit: prior authorization, a visit or quantity limit, an age limit, an in-network-only \
+rule, or a filing deadline.
 - not_covered: the policy clearly excludes it.
 - unclear: the excerpts touch on it but are ambiguous or conflicting.
 - not_in_policy: the excerpts don't address the question. Say plainly that you couldn't \
 find it in their policy, and don't guess.
-- informational: the question isn't about whether something is covered (for example \
-"what is my deductible?" or "how do I appeal?").
+- informational: the question is about the plan as a whole or a process, not a specific \
+service (for example "what is my deductible?" or "how do I appeal a denial?"). If the \
+question is about a specific service, even "how much" or "how many", give a coverage verdict.
 
 Rules:
 - Every statement about the person's policy must be supported by a policy citation whose \

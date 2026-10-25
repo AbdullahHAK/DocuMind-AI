@@ -20,8 +20,9 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from app.answering import AnswerError, fallback_answer
 from app.documents import DocumentRecord, InvalidDocumentId, validate_doc_id
 from app.indexer import index_policy_pdf
-from app.ingest.pdf import PdfLoadError, load_pdf
+from app.ingest.pdf import PdfLoadError
 from app.plan_facts import extract_plan_facts
+from app.security import ground_plan_facts
 from app.prompts import source_ids
 from app.retrieval import RetrievalResult
 from app.schemas import AskRequest, SourcePreview
@@ -109,23 +110,29 @@ def upload_document(request: Request, file: UploadFile = File(...)):
     title = _safe_title(file.filename)
 
     try:
-        chunks, pages = index_policy_pdf(svc.store, pdf_path, doc_id=doc_id, title=title, settings=svc.settings)
+        indexed = index_policy_pdf(svc.store, pdf_path, doc_id=doc_id, title=title, settings=svc.settings)
     except PdfLoadError as exc:
         pdf_path.unlink(missing_ok=True)
         raise HTTPException(422, str(exc)) from exc
 
     facts = None
-    if svc.llm is not None:
-        facts = extract_plan_facts(svc.llm, load_pdf(pdf_path))
+    # the extraction is an LLM call, so it spends from the same daily budget as questions
+    if svc.llm is not None and svc.daily_budget.try_spend():
+        facts = extract_plan_facts(svc.llm, indexed.pages)
+        # every number must literally appear in the (sanitized) document text
+        facts, dropped = ground_plan_facts(facts, "\n".join(p.text for p in indexed.pages))
+        if dropped:
+            log.warning("Dropped ungrounded plan facts for %s: %s", doc_id, dropped)
     if facts and facts.get("plan_name"):
         title = str(facts["plan_name"])[:80]
 
     record = DocumentRecord(
         doc_id=doc_id, title=title, filename=f"{title}.pdf", pdf_path=str(pdf_path),
-        pages=pages, chunks=chunks, facts=facts,
+        pages=len(indexed.pages), chunks=indexed.chunks, facts=facts,
+        security_flags=[{"rule": f.rule, "text": f.line[:200]} for f in indexed.injection_findings],
     )
     svc.registry.save(record)
-    log.info("Indexed upload %s: %d pages, %d chunks", doc_id, pages, chunks)
+    log.info("Indexed upload %s: %d pages, %d chunks", doc_id, len(indexed.pages), indexed.chunks)
     return record.public()
 
 
@@ -178,6 +185,11 @@ def ask(body: AskRequest, request: Request):
             return
         yield sse("status", {"stage": "answering", "message": "Reading the relevant sections..."})
         answer = svc.answers.answer(question, retrieval, record.facts)
+        if record.security_flags:
+            answer.warnings.append(
+                f"This document contained {len(record.security_flags)} line(s) that looked like instructions "
+                "to an AI system rather than policy text. They were removed and ignored."
+            )
         yield sse("answer", answer.model_dump())
 
     def events() -> Iterator[str]:

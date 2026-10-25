@@ -27,6 +27,7 @@ export function SourcesList({ sources, docId }: { sources: SourcePreview[]; docI
                 </a>
               ) : null}
             </header>
+            {s.linked_from && <small className="linked">Pulled in because {s.linked_from} cross-references it</small>}
             <p>{s.text}</p>
           </li>
         ))}

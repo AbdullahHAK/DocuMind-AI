@@ -666,3 +666,52 @@ textarea {
   color: var(--text-muted);
   text-align: center;
 }
+
+/* ---------- under the hood ---------- */
+.trace summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.trace ol {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0 0 0 14px;
+  border-left: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trace li {
+  position: relative;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.trace li::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.trace li.trace-warn::before { background: var(--amber); }
+.trace li.trace-skip::before { background: var(--gray); }
+
+.trace li span {
+  color: var(--text-muted);
+}
+
+.sources .linked {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--accent);
+  margin-bottom: 2px;
+}

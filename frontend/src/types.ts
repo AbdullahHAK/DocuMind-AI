@@ -42,6 +42,7 @@ export interface Answer {
   cost_estimate: CostEstimate | null
   warnings: string[]
   used_llm: boolean
+  trace: Trace
 }
 
 export interface SourcePreview {
@@ -52,7 +53,8 @@ export interface SourcePreview {
   title: string
   url: string | null
   text: string
-  score: number
+  score: number | null
+  linked_from: string | null
 }
 
 export interface PlanFacts {
@@ -85,4 +87,23 @@ export interface Health {
   status: string
   llm_configured: boolean
   llm_provider: 'gemini' | 'anthropic' | null
+}
+
+export interface Trace {
+  query?: { expanded: boolean; search_query: string }
+  retrieval?: { candidates: number; search_ms: number; rerank_ms: number; policy_chunks: number; federal_chunks: number }
+  gate: { passed: boolean; best_score: number | null; threshold: number }
+  graph: { linked_clauses: (string | null)[] }
+  llm: { model?: string; input_tokens?: number | null; output_tokens?: number | null; fallbacks_used?: number; ms: number } | null
+  verification?: {
+    quotes_proposed: number
+    quotes_verified: number
+    contacts_removed: number
+    markup_removed: number
+    conflict_flagged: boolean
+    verdict_from_model: Verdict
+    final_verdict: Verdict
+  }
+  security?: { document_lines_removed: number }
+  total_ms?: number
 }

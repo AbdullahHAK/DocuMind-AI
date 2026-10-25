@@ -3,6 +3,7 @@ import { shortSection } from '../format'
 import type { Answer, SourcePreview } from '../types'
 import { CostBreakdown } from './CostBreakdown'
 import { SourcesList } from './SourcesList'
+import { TracePanel } from './TracePanel'
 import { VerdictBadge } from './VerdictBadge'
 
 interface Props {
@@ -86,6 +87,7 @@ export function AnswerCard({ answer, sources, docId }: Props) {
 
       <List title="Ask your insurer" items={answer.questions_to_ask} />
       <SourcesList sources={sources} docId={docId} />
+      <TracePanel trace={answer.trace} />
     </article>
   )
 }

@@ -21,7 +21,7 @@ def _llm_answer(**overrides):
         verdict="covered_with_conditions", headline="Yes, with prior authorization.", explanation="...",
         policy_citations=[LLMPolicyCitation(source_id="P1", quote="Prior Authorization is required.")],
         conditions=["Prior authorization"], exclusions=[], federal_notes=[], questions_to_ask=["Is it in-network?"],
-        cost_rule=None,
+        conflicting_provisions=None, cost_rule=None,
     )
     data.update(overrides)
     return LLMAnswer(**data)
@@ -84,3 +84,20 @@ def test_llm_errors_propagate_as_answer_errors():
     assert AnswerError is LLMError
     with pytest.raises(AnswerError, match="busy"):
         _service(FakeLLM(error=LLMError("busy"))).answer("q", _retrieval())
+
+
+def test_conflicting_provisions_downgrade_verdict_and_warn():
+    llm = FakeLLM(parsed=_llm_answer(verdict="covered", conflicting_provisions="A rider reverses the exclusion."))
+    answer = _service(llm).answer("q", _retrieval(), FACTS)
+    assert answer.verdict == "unclear"
+    assert any("contradict" in w for w in answer.warnings)
+
+
+def test_contact_details_not_in_sources_are_redacted():
+    llm = FakeLLM(parsed=_llm_answer(
+        explanation="Call 1-900-555-0199 to get approval.",
+        questions_to_ask=["Should I pay at https://evil.example-login.com?"],
+    ))
+    answer = _service(llm).answer("q", _retrieval(), FACTS)
+    assert "900-555-0199" not in answer.explanation and "evil" not in answer.questions_to_ask[0]
+    assert any("Removed 2" in w for w in answer.warnings)

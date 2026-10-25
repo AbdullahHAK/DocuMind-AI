@@ -27,7 +27,8 @@ def test_message_contains_tagged_excerpts_facts_and_question():
     assert '<excerpt id="F1">' in msg
     assert "deductible_individual: 3000" in msg
     assert "insurer" not in msg  # None facts are skipped
-    assert msg.rstrip().endswith("Is dental covered?\n</question>")
+    assert "<question>\nIs dental covered?\n</question>" in msg
+    assert msg.rstrip().endswith("</reminder>")  # the rules get the last word, after the untrusted text
 
 
 def test_document_text_cannot_break_out_of_its_tag():

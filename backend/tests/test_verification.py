@@ -19,7 +19,7 @@ def _answer(verdict="not_covered", citations=(), federal=()):
     return LLMAnswer(
         verdict=verdict, headline="h", explanation="e",
         policy_citations=[LLMPolicyCitation(source_id=s, quote=q) for s, q in citations],
-        conditions=[], exclusions=[], questions_to_ask=[], cost_rule=None,
+        conditions=[], exclusions=[], questions_to_ask=[], conflicting_provisions=None, cost_rule=None,
         federal_notes=[LLMFederalNote(source_id=s, note="n") for s in federal],
     )
 

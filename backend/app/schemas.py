@@ -52,6 +52,9 @@ class LLMAnswer(BaseModel):
     exclusions: list[str] = Field(description="Relevant things the policy does NOT cover.")
     federal_notes: list[LLMFederalNote]
     questions_to_ask: list[str] = Field(description="2-4 specific questions to ask the insurer or provider.")
+    conflicting_provisions: str | None = Field(
+        description="If excerpts contradict each other on this question, describe the conflict in one sentence. Otherwise null."
+    )
     cost_rule: LLMCostRule | None = Field(description="Only when the question is about cost and the policy states the cost-sharing.")
 
 

@@ -11,6 +11,7 @@ from app.config import Settings
 from app.costs import CostRule, PlanCosts, estimate_cost
 from app.llm import LLMError, StructuredLLM
 from app.prompts import SYSTEM_PROMPT, build_user_message, source_ids
+from app.security import redact_unsupported_contacts
 from app.retrieval import RetrievalResult
 from app.schemas import Answer, CostEstimateOut, LLMAnswer, LLMCostRule
 from app.verification import verify_citations
@@ -86,15 +87,34 @@ class AnswerService:
         policy_sources, federal_sources = source_ids(retrieval)
         verdict, citations, federal, warnings = verify_citations(llm, policy_sources, federal_sources)
 
-        return Answer(
+        if llm.conflicting_provisions:
+            warnings.append(f"Your policy text seems to contradict itself: {llm.conflicting_provisions} "
+                            "Ask your insurer which provision applies.")
+            if verdict in ("covered", "covered_with_conditions", "not_covered"):
+                verdict = "unclear"
+
+        # Contact details in free-text fields must come from the excerpts the model was given.
+        source_text = "\n".join(sc.chunk.text for sc in [*retrieval.policy, *retrieval.federal])
+        removed = 0
+
+        def clean(text: str) -> str:
+            nonlocal removed
+            text, n = redact_unsupported_contacts(text, source_text)
+            removed += n
+            return text
+
+        answer = Answer(
             verdict=verdict,
-            headline=llm.headline,
-            explanation=llm.explanation,
+            headline=clean(llm.headline),
+            explanation=clean(llm.explanation),
             citations=citations,
-            conditions=llm.conditions,
-            exclusions=llm.exclusions,
-            federal=federal,
-            questions_to_ask=llm.questions_to_ask,
+            conditions=[clean(c) for c in llm.conditions],
+            exclusions=[clean(e) for e in llm.exclusions],
+            federal=[f.model_copy(update={"note": clean(f.note)}) for f in federal],
+            questions_to_ask=[clean(q) for q in llm.questions_to_ask],
             cost_estimate=compute_cost(llm.cost_rule, plan_facts),
             warnings=warnings,
         )
+        if removed:
+            answer.warnings.append(f"Removed {removed} phone number(s) or link(s) that don't appear in your policy.")
+        return answer

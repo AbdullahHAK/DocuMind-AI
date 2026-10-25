@@ -1,0 +1,32 @@
+# Render Blueprint: free web service (512 MB RAM, 0.1 CPU, sleeps after 15 min idle).
+# Render → New → Blueprint → pick this repo. You'll be asked for GEMINI_API_KEY.
+#
+# Why these settings (measured in Docker at 0.1 CPU / 512 MB):
+# - EMBEDDING_PROVIDER=gemini: local ONNX reranking took 90-123 s per answer at
+#   0.1 CPU; with Gemini embeddings answers take ~6-7 s and memory stays ~150 MB.
+# - MAX_UPLOAD_PAGES=20: keeps uploads within the Gemini free tier's 100
+#   embedded texts per minute (~5 chunks per page).
+services:
+  - type: web
+    name: am-i-covered
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false  # secret: entered in the Render dashboard, never stored in git
+      - key: EMBEDDING_PROVIDER
+        value: gemini
+      - key: EMBED_BATCH_SIZE
+        value: "4"
+      - key: MAX_UPLOAD_PAGES
+        value: "20"
+      - key: QUESTIONS_PER_IP_PER_HOUR
+        value: "20"
+      - key: UPLOADS_PER_IP_PER_HOUR
+        value: "5"
+      - key: QUESTIONS_PER_DAY_GLOBAL
+        value: "300"

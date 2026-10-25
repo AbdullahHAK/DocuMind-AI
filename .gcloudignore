@@ -1,0 +1,17 @@
+# Files NOT uploaded by `gcloud run deploy --source .` (Cloud Build context).
+# Secrets and local state must never leave the machine.
+.git
+.gitignore
+.gcloudignore
+**/.env
+**/.venv/
+**/node_modules/
+**/__pycache__/
+**/.pytest_cache/
+backend/storage/
+backend/.cache/
+frontend/dist/
+backend/eval/results/
+backend/redteam/results/
+docs/
+SECURITY.md

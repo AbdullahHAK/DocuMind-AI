@@ -20,6 +20,14 @@ services:
         sync: false  # secret: entered in the Render dashboard, never stored in git
       - key: EMBEDDING_PROVIDER
         value: gemini
+      # Measured 2026-10-26: flash-lite took 20-29 s per call on the free tier while
+      # 3.5-flash took ~3 s, so 3.5-flash is primary and flash-lite the fallback.
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash
+      - key: GEMINI_FALLBACK_MODELS
+        value: '["gemini-3.5-flash-lite", "gemini-3.8-flash"]'
+      - key: LLM_TIMEOUT_SECONDS
+        value: "20"
       - key: EMBED_BATCH_SIZE
         value: "4"
       - key: MAX_UPLOAD_PAGES
